@@ -269,11 +269,10 @@ body{display:block!important;}
 <body>
 <section class="auth-screen" id="authScreen" aria-label="Sign in to Sweet Match">
   <div class="auth-card">
-    <div style="text-align: left; margin-bottom: 10px;">
-      <button type="button" id="backToGameBtn" class="soft" style="padding: 6px 12px; font-size: 0.75rem;">← Back to Game</button>
-    </div>
+<div style="text-align: left; margin-bottom: 10px;">
+  <button type="button" id="backToGameBtn" class="soft" style="padding: 6px 12px; font-size: 0.75rem;">← Back to Game</button>
+</div>
     <div class="auth-brand"><div class="brand-mark">🍬</div><div><h1>Sweet <span>Match!</span></h1><div class="demo-badge" style="display:inline-block;margin-top:5px">MATCH · PLAY · REWARD</div></div></div>
-    
     <p class="auth-lead">A little match, a lot of magic. Play puzzles, collect coins and climb the leaderboard.</p>
     <div class="auth-visual" aria-hidden="true"><span>🍓</span><span>💎</span><span>🍋</span><span>🍇</span><span>🌿</span></div>
     <div class="auth-social">
@@ -330,7 +329,7 @@ body{display:block!important;}
       </section>
 
       <section class="page-view" id="view-play">
-        <div class="page-heading"><div><h2>🎮 Play Sweet Match</h2><p>Complete the fixed 100-level journey across five magical seasons. No levels beyond Level 100.</p></div><span class="demo-badge" id="seasonBadge">🌳 Candy Forest</span></div>
+        <div class="page-heading"><div><h2>🎮 Play Sweet Match</h2><p>Play through the available levels. The game owner can add, edit, clone, or remove levels from the admin panel.</p></div><span class="demo-badge" id="seasonBadge">🌳 Candy Forest</span></div>
         <div class="play-grid">
           <section class="content-card game-panel">
             <div class="level-toolbar"><span class="season-badge" id="seasonLabel">Season 1 · Candy Forest</span><button id="levelMapBtn" class="soft" type="button">🗺️ Level Map · 100</button></div>
@@ -389,7 +388,7 @@ body{display:block!important;}
 
       <section class="page-view" id="view-profile">
         <div class="page-heading"><div><h2>👤 Player profile</h2><p>Manage your display name, country and sign-in option.</p></div></div>
-        <div class="section-grid"><section class="content-card"><h3>Player details</h3><div class="profile-grid"><div><label class="field-label" for="playerName">Player name</label><input class="field" id="playerName" maxlength="20" value="Guest Player" autocomplete="nickname"></div><div><label class="field-label" for="countryCode">Country</label><select class="field" id="countryCode"><option value="US">United States</option><option value="PK">Pakistan</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="IN">India</option><option value="AE">United Arab Emirates</option><option value="AU">Australia</option><option value="BD">Bangladesh</option><option value="OTHER">Other</option></select></div></div><p class="tiny-note">Profile details in this demo are stored on this device.</p></section>
+        <div class="section-grid"><section class="content-card"><h3>Player details</h3><div style="display:flex;align-items:center;gap:12px;margin:4px 0 12px"><img id="playerPhotoPreview" alt="Player profile" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect width='100%25' height='100%25' rx='48' fill='%23f1e7ff'/%3E%3Ctext x='50%25' y='57%25' font-size='42' text-anchor='middle' fill='%237650d8'%3E%F0%9F%91%A4%3C/text%3E%3C/svg%3E" style="width:68px;height:68px;border-radius:50%;object-fit:cover;border:2px solid var(--line);background:#fff"><div style="min-width:0;flex:1"><label class="field-label" for="playerPhotoFile">Update profile picture</label><input class="field" id="playerPhotoFile" type="file" accept="image/jpeg,image/png,image/webp"><p class="tiny-note">JPG, PNG or WEBP · max 500 KB · requires backend</p></div></div><div class="profile-grid"><div><label class="field-label" for="playerName">Player name</label><input class="field" id="playerName" maxlength="20" value="Guest Player" autocomplete="nickname"></div><div><label class="field-label" for="countryCode">Country</label><select class="field" id="countryCode"><option value="US">United States</option><option value="PK">Pakistan</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="IN">India</option><option value="AE">United Arab Emirates</option><option value="AU">Australia</option><option value="BD">Bangladesh</option><option value="OTHER">Other</option></select></div></div><p class="tiny-note">Player ID: <strong id="playerPublicId">Connect backend to generate your ID</strong></p><p class="tiny-note">Total play time: <strong id="playerPlayHours">0h 0m</strong></p><p class="tiny-note">In live mode, the backend stores your IP address for account security and abuse prevention. Explain this in your privacy notice.</p></section>
         <section class="content-card"><h3>Account & security</h3><p id="accountSummary">You are playing as a guest. No account is required.</p><p class="tiny-note">Google, Facebook and email authentication become active after the owner connects a Firebase project. Guest play remains available.</p><button id="profileAuthBtn" type="button" style="width:100%">Sign in or register</button><button class="secondary" id="adminLoginBtn" type="button" style="width:100%;margin-top:10px">🔐 Admin login / payment approvals</button><button class="soft" id="resetProgress" type="button" style="width:100%;margin-top:10px">Reset demo data</button></section></div>
         <section class="content-card" style="margin-top:13px"><div class="notice"><strong>Before publishing</strong><br>Authentication is separate from the secure game backend. A production release still needs server-side coin balances, verified rewarded ads, referral validation, live leaderboards, privacy disclosures and abuse prevention.</div></section>
       </section>
@@ -400,16 +399,17 @@ body{display:block!important;}
       </section>
     </main>
   </div>
-  <p class="footer-note">Demo preview: without a configured backend, coins, progress, payment requests and demo admin approvals are stored in this browser only. Real payment approvals and cross-device coin balances require the included backend to be configured and deployed.</p>
+  <p class="footer-note">Live mode requires the separate secure backend and database. IP addresses and activity time are recorded for security and game analytics; publish a privacy notice before collecting this data.</p>
 </div>
 
-<div class="overlay" id="levelMapOverlay" role="dialog" aria-modal="true" aria-labelledby="levelMapTitle"><div class="modal level-map-modal"><h2 id="levelMapTitle">🗺️ Level Map</h2><p>Exactly 100 levels · 5 seasons. Level 100 is the final level; there is no Level 101.</p><div class="season-cards" id="seasonCards"></div><div class="level-map-legend"><span>🟣 Current level</span><span>⭐ Completed</span><span>🔒 Locked</span></div><div class="level-map-grid" id="levelMapGrid"></div><div class="modal-actions"><button class="soft" id="closeLevelMapBtn" type="button">Back to game</button></div></div></div>
+<div class="overlay" id="levelMapOverlay" role="dialog" aria-modal="true" aria-labelledby="levelMapTitle"><div class="modal level-map-modal"><h2 id="levelMapTitle">🗺️ Level Map</h2><p>The level list is managed by the game owner. The last available level is the final level.</p><div class="season-cards" id="seasonCards"></div><div class="level-map-legend"><span>🟣 Current level</span><span>⭐ Completed</span><span>🔒 Locked</span></div><div class="level-map-grid" id="levelMapGrid"></div><div class="modal-actions"><button class="soft" id="closeLevelMapBtn" type="button">Back to game</button></div></div></div>
 <div class="overlay" id="levelResultOverlay" role="dialog" aria-modal="true" aria-labelledby="levelResultTitle"><div class="modal"><h2 id="levelResultTitle">Level complete!</h2><div id="levelResultBody"></div><div class="modal-actions" id="levelResultActions"></div></div></div>
 <div class="overlay" id="demoAdOverlay" role="dialog" aria-modal="true" aria-labelledby="demoAdTitle"><div class="modal"><h2 id="demoAdTitle">Test Rewarded Ad</h2><p>This is a development preview, not a real ad. If you complete this test, the game simulates a reward of <strong>500 coins</strong>. In production, only a verified ad completion can grant rewards.</p><div class="modal-actions"><button class="soft" id="cancelDemoAd" type="button">Cancel</button><button id="completeDemoAd" type="button">Complete test & earn 500</button></div></div></div>
 <div class="overlay" id="aiAdOverlay" role="dialog" aria-modal="true" aria-labelledby="aiAdTitle"><div class="modal"><h2 id="aiAdTitle">🎬 AI Auto-Play Reward</h2><p>In demo mode, completing this test ad adds <strong>500 coins</strong>, then AI automatically resumes if you have enough coins. Each AI level costs 5,000 coins. AI use is unlimited while you can afford it; only AI reward ads are limited to 3 per day. This is a simulation, not a real ad.</p><p class="tiny-note">Production rewards must be granted only after a rewarded-ad provider verifies completion on the server.</p><div class="modal-actions"><button class="soft" id="cancelAiAd" type="button">Cancel</button><button id="completeAiAdBtn" type="button">Complete test ad · +500</button></div></div></div>
-<div class="overlay" id="adminLoginOverlay" role="dialog" aria-modal="true" aria-labelledby="adminLoginTitle"><div class="modal"><h2 id="adminLoginTitle">🔐 Admin Login</h2><p id="adminLoginDescription">Demo login is only for testing this HTML file. It is not secure enough for a public website.</p><form id="adminLoginForm" class="auth-form"><label for="demoAdminUser">Username</label><input class="field" id="demoAdminUser" autocomplete="username" required placeholder="Admin username"><label for="demoAdminPassword">Password</label><input class="field" id="demoAdminPassword" type="password" autocomplete="current-password" required placeholder="Admin password"><button type="submit">Sign in as admin</button></form><p class="auth-status" id="adminLoginStatus" role="status"></p><p class="tiny-note">Local preview credentials: <strong>admin</strong> / <strong>ChangeMe123!</strong>. Do not deploy these credentials. Production admin access must use server-verified roles.</p><div class="modal-actions"><button class="soft" id="cancelAdminLogin" type="button">Cancel</button></div></div></div>
+<div class="overlay" id="adminLoginOverlay" role="dialog" aria-modal="true" aria-labelledby="adminLoginTitle"><div class="modal"><h2 id="adminLoginTitle">🔐 Admin Login</h2><p id="adminLoginDescription">Demo login is only for testing this HTML file. It is not secure enough for a public website.</p><form id="adminLoginForm" class="auth-form"><label for="demoAdminUser">Username</label><input class="field" id="demoAdminUser" autocomplete="username" required placeholder="Admin username"><label for="demoAdminPassword">Password</label><input class="field" id="demoAdminPassword" type="password" autocomplete="current-password" required placeholder="Admin password"><button type="submit">Sign in as admin</button></form><p class="auth-status" id="adminLoginStatus" role="status"></p><p class="tiny-note">Admin access is verified by the backend using your Firebase account role. There is no shared demo password.</p><div class="modal-actions"><button class="soft" id="cancelAdminLogin" type="button">Cancel</button></div></div></div>
 <div class="toast" id="globalToast" role="status" aria-live="polite"></div>
 
+<script>window.SWEET_MATCH_API_BASE_URL = ""; // Paste your deployed backend URL here, e.g. https://sweet-match-api.onrender.com</script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 
@@ -445,9 +445,7 @@ const AI_CLEAR_COST = 5000;
 const AI_AD_REWARD = 500;
 const AI_AD_DAILY_LIMIT = 3;
 const PAYMENT_QUEUE_KEY = "sweetMatchCoinPayments_demo_v1";
-const DEMO_ADMIN_USERNAME = "admin";
-const DEMO_ADMIN_PASSWORD = "ChangeMe123!";
-const BACKEND_API_BASE_URL = ""; // Set this to the deployed API URL to enable secure server mode.
+const BACKEND_API_BASE_URL = window.SWEET_MATCH_API_BASE_URL || ""; // Set this to the deployed secure API URL.
 const COIN_PACKAGES = {
   "20000": {coins:20000, usd:3, pkr:832},
   "50000": {coins:50000, usd:5, pkr:1386}
@@ -455,7 +453,7 @@ const COIN_PACKAGES = {
 const REFERRAL_REWARD = 3000;
 const DEMO_MODE = true;
 const SAVE_KEY = "sweetMatchAdventure_rewards_demo_v1";
-const LEVEL_COUNT = 100;
+let LEVEL_COUNT = 100;
 const SEASONS = [
   {name:"Candy Forest",emoji:"🌳",desc:"Berry trails and sugar trees"},
   {name:"Sugar Desert",emoji:"🏜️",desc:"Golden dunes and lemon gems"},
@@ -463,7 +461,28 @@ const SEASONS = [
   {name:"Gummy Galaxy",emoji:"🪐",desc:"Cosmic sweets and star dust"},
   {name:"Chocolate Kingdom",emoji:"🏰",desc:"The grand candy finale"}
 ];
-
+function defaultLevelRecord(level) {
+  const n=Math.max(1,Math.floor(Number(level)||1));
+  const seasonIndex=Math.floor((n-1)/20);
+  const season=SEASONS[seasonIndex]?.name || `Bonus World ${Math.floor((n-1)/20)+1}`;
+  const type=n%5===0?"timed":n%3===0?"jelly":"score";
+  return {id:`default-${n}`,number:n,name:`Level ${n}`,season,type,targetScore:450+(n-1)*4,moves:Math.max(20,24-Math.floor((n-1)/20)),timeLimit:type==="timed"?60+Math.floor((n-1)/20)*15:0,jellyGoal:type==="jelly"?Math.min(30,14+Math.floor(n/10)*2):0,difficulty:n<=20?"Easy":n<=40?"Medium":n<=60?"Hard":n<=80?"Expert":"Master"};
+}
+let levelCatalog=Array.from({length:100},(_,i)=>defaultLevelRecord(i+1));
+function levelRecord(level) {
+  const n=Math.max(1,Math.min(LEVEL_COUNT,Math.floor(Number(level)||1)));
+  return levelCatalog[n-1] || defaultLevelRecord(n);
+}
+function formatPlayTime(seconds) {
+  const total=Math.max(0,Math.floor(Number(seconds)||0));
+  const hours=Math.floor(total/3600), minutes=Math.floor((total%3600)/60);
+  return `${hours}h ${minutes}m`;
+}
+let remoteProfile=null;
+let activityInterval=null;
+let activityUid=null;
+let activityRequestInFlight=false;
+let activityHeartbeatCount=0;
 let grid = [], jellyGrid = [], selected = null, hintCells = [], score = 0, moves = 0, busy = false, animations = [];
 let levelConfig = {type:"score",timeLimit:0,jellyGoal:0};
 let timerEndsAt = 0, levelOver = false, lastTimerSecond = -1, currentLevelStartMoves = 24;
@@ -578,7 +597,7 @@ function setStatus(message) {
   }
 }
 function backendConfigured() {
-  return Boolean(BACKEND_API_BASE_URL && BACKEND_API_BASE_URL.trim());
+  return Boolean((window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL) && String(window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).trim() && !String(window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).includes("YOUR-BACKEND-URL"));
 }
 async function backendRequest(path, options = {}) {
   if (!backendConfigured()) return null;
@@ -588,7 +607,7 @@ async function backendRequest(path, options = {}) {
   const token = await currentUser.getIdToken();
   const headers = {"Authorization": `Bearer ${token}`};
   if (options.body !== undefined) headers["Content-Type"] = "application/json";
-  const response = await fetch(`${BACKEND_API_BASE_URL.replace(/\/+$/, "")}${path}`, {
+  const response = await fetch(`${String(window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).replace(/\/+$/, "")}${path}`, {
     method: options.method || "GET",
     headers,
     body: options.body === undefined ? undefined : JSON.stringify(options.body)
@@ -622,6 +641,7 @@ function applyRemoteState(remoteState, restartLevel = false, preserveCurrentLeve
   save.completedLevels = remoteState.completedLevels && typeof remoteState.completedLevels === "object" ? remoteState.completedLevels : save.completedLevels;
   save.aiUsesDate = remoteState.aiUsesDate || save.aiUsesDate || dateKey();
   save.aiUsesCount = Math.max(0, Math.floor(Number(remoteState.aiUsesCount ?? save.aiUsesCount) || 0));
+  save.bestScore = Math.max(Number(save.bestScore)||0, Math.floor(Number(remoteState.bestScore)||0));
   persist();
   refreshDashboard();
   renderLevelMap();
@@ -634,7 +654,7 @@ async function syncRemotePlayerState(restartLevel = false) {
 }
 async function publicBackendRequest(path) {
   if (!backendConfigured()) return null;
-  const response = await fetch(`${BACKEND_API_BASE_URL.replace(/\/+$/, "")}${path}`, {headers:{"Accept":"application/json"}});
+  const response = await fetch(`${String(window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).replace(/\/+$/, "")}${path}`, {headers:{"Accept":"application/json"}});
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error || `Server request failed (${response.status}).`);
   return data;
@@ -842,43 +862,23 @@ async function handleAdminPaymentAction(event) {
   renderMyPayments();
 }
 async function openAdminAccess() {
-  if (backendConfigured()) {
-    if (!currentUser) {
-      setStatus("Sign in with the administrator's Firebase account first.");
-      showAuth(true);
-      return;
-    }
-    try {
-      await backendRequest("/api/admin/coin-orders");
-      isAdminMode = true;
-      setActiveView("admin");
-      await renderAdminPayments();
-    } catch (error) {
-      setStatus(`Admin access denied: ${error.message}`);
-    }
+  if (!backendConfigured()) { setStatus("Admin dashboard is disabled until the secure backend is configured."); return; }
+  if (!currentUser) {
+    setStatus("Sign in with your Firebase administrator account first.");
+    showAuth(true);
     return;
   }
-  $("adminLoginOverlay").classList.add("show");
-  $("adminLoginStatus").textContent = "";
+  try {
+    await backendRequest("/api/admin/coin-orders");
+    isAdminMode = true;
+    setActiveView("admin");
+    await renderAdminPayments();
+  } catch (error) { setStatus(`Admin access denied: ${error.message}`); }
 }
 function closeAdminLogin() { $("adminLoginOverlay").classList.remove("show"); }
 function handleDemoAdminLogin(event) {
   event.preventDefault();
-  if (backendConfigured()) {
-    $("adminLoginStatus").textContent = "Demo admin login is disabled when the backend is configured. Sign in with your Firebase admin account.";
-    return;
-  }
-  const username = $("demoAdminUser").value.trim();
-  const password = $("demoAdminPassword").value;
-  if (username !== DEMO_ADMIN_USERNAME || password !== DEMO_ADMIN_PASSWORD) {
-    $("adminLoginStatus").textContent = "Incorrect demo admin username or password.";
-    return;
-  }
-  isAdminMode = true;
-  closeAdminLogin();
-  $("adminLoginForm").reset();
-  setActiveView("admin");
-  renderAdminPayments();
+  $("adminLoginStatus").textContent = "Local admin login is disabled for security. Configure the backend and assign your Firebase UID as an administrator.";
 }
 async function syncPaymentRequestViews() {
   renderMyPayments();
@@ -923,10 +923,10 @@ function refreshDashboard() {
   $("playerName").value = save.playerName || "Guest Player";
   $("countryCode").value = save.countryCode || "US";
   $("referralCode").textContent = save.referralCode;
-  $("referralCount").textContent = `${save.referralCount} · demo`;
+  $("referralCount").textContent = backendConfigured() ? `${save.referralCount} tracked` : `${save.referralCount} · demo`;
   $("referralStatus").textContent = save.appliedReferralCode
-    ? `Code ${save.appliedReferralCode} saved locally; it has not been verified or paid.`
-    : "Referral tracking is a preview until a shared backend is connected.";
+    ? (backendConfigured() ? `Referral code ${save.appliedReferralCode} recorded. Rewards are subject to verification.` : `Code ${save.appliedReferralCode} saved locally; it has not been verified or paid.`)
+    : (backendConfigured() ? "Your referrals are tracked by the server." : "Referral tracking is a preview until a shared backend is connected.");
   if (typeof updateAccountDisplay === "function") updateAccountDisplay();
 }
 function renderLeaderboard() {
@@ -952,14 +952,97 @@ function updateProfile() {
   save.countryCode = $("countryCode").value || "US";
   persist();
   renderLeaderboard();
+  if(backendConfigured() && currentUser) backendRequest("/api/player/profile",{method:"PATCH",body:{displayName:save.playerName,countryCode:save.countryCode}})
+    .then(data=>{remoteProfile=data.profile||remoteProfile;refreshDashboard();})
+    .catch(error=>setStatus(`Profile sync failed: ${error.message}`));
 }
-function targetFor(level) { return 450 + (Math.max(1, Math.min(LEVEL_COUNT, level)) - 1) * 4; }
-function movesFor(level) { return Math.max(20, 24 - Math.floor((level - 1) / 20)); }
-function seasonIndex(level) { return Math.min(4, Math.floor((level - 1) / 20)); }
+function targetFor(level) { return Math.max(1,Math.floor(Number(levelRecord(level).targetScore)||450)); }
+function movesFor(level) { return Math.max(1,Math.floor(Number(levelRecord(level).moves)||24)); }
+function seasonIndex(level) { return Math.max(0,[...new Set(levelCatalog.map(item=>item.season||"Candy Forest"))].indexOf(levelRecord(level).season||"Candy Forest")); }
 function getLevelConfig(level) {
-  if (level % 5 === 0) return {type:"timed",timeLimit:60 + Math.floor((level - 1) / 20) * 15,jellyGoal:0};
-  if (level % 3 === 0) return {type:"jelly",timeLimit:0,jellyGoal:Math.min(30,14 + Math.floor(level / 10) * 2)};
-  return {type:"score",timeLimit:0,jellyGoal:0};
+  const item=levelRecord(level);
+  return {type:["score","timed","jelly"].includes(item.type)?item.type:"score",timeLimit:Math.max(0,Math.floor(Number(item.timeLimit)||0)),jellyGoal:Math.max(0,Math.floor(Number(item.jellyGoal)||0))};
+}
+async function loadRemoteLevels() {
+  if(!backendConfigured()) return;
+  try {
+    const data=await publicBackendRequest("/api/levels");
+    if(Array.isArray(data.levels) && data.levels.length) {
+      levelCatalog=data.levels.map((item,index)=>({
+        id:String(item.id||`remote-${index+1}`),number:index+1,name:String(item.name||`Level ${index+1}`),season:String(item.season||"Candy Forest"),
+        type:["score","timed","jelly"].includes(item.type)?item.type:"score",targetScore:Math.max(1,Number(item.targetScore)||450+(index*4)),
+        moves:Math.max(1,Number(item.moves)||24),timeLimit:Math.max(0,Number(item.timeLimit)||0),jellyGoal:Math.max(0,Number(item.jellyGoal)||0),difficulty:String(item.difficulty||"Medium")
+      }));
+      LEVEL_COUNT=levelCatalog.length;
+      save.currentLevel=Math.max(1,Math.min(LEVEL_COUNT,Number(save.currentLevel)||1));
+      save.maxUnlocked=Math.max(1,Math.min(LEVEL_COUNT,Number(save.maxUnlocked)||1));
+      persist();
+      levelConfig=getLevelConfig(save.currentLevel);
+      refreshDashboard();renderLevelMap();updateLevelHUD();
+    }
+  } catch(error) { console.warn("Could not load remote levels:",error.message); }
+}
+window.sweetMatchRefreshLevels=loadRemoteLevels;
+async function loadPlayerProfile() {
+  if(!backendConfigured() || !currentUser) return;
+  try {
+    const data=await backendRequest("/api/player/profile");
+    remoteProfile=data.profile||null;
+    if(!remoteProfile) return;
+    if(remoteProfile.displayName) save.playerName=String(remoteProfile.displayName).slice(0,20);
+    if(remoteProfile.countryCode) save.countryCode=remoteProfile.countryCode;
+    if(remoteProfile.referralCode) save.referralCode=remoteProfile.referralCode;
+    save.referralCount=Number(remoteProfile.referralCount)||0;
+    if(remoteProfile.referredByCode) save.appliedReferralCode=remoteProfile.referredByCode;
+    persist();
+    const idEl=$("playerPublicId"), hoursEl=$("playerPlayHours"), photoEl=$("playerPhotoPreview");
+    if(idEl) idEl.textContent=remoteProfile.playerId||"—";
+    if(hoursEl) hoursEl.textContent=formatPlayTime(remoteProfile.totalPlaySeconds);
+    if(photoEl && (remoteProfile.photoUrl||currentUser.photoURL)) photoEl.src=remoteProfile.photoUrl||currentUser.photoURL;
+    refreshDashboard();
+    const incoming=new URLSearchParams(location.search).get("ref");
+    if(incoming && !remoteProfile.referredByCode && incoming.toUpperCase()!==String(remoteProfile.referralCode||"").toUpperCase()) {
+      try { await backendRequest("/api/referrals/apply",{method:"POST",body:{code:incoming}}); const updated=await backendRequest("/api/player/profile"); remoteProfile=updated.profile||remoteProfile; save.referralCount=Number(remoteProfile.referralCount)||0; save.appliedReferralCode=remoteProfile.referredByCode||incoming.toUpperCase(); persist(); refreshDashboard(); } catch(error) { console.warn("Referral code could not be applied:",error.message); }
+    }
+  } catch(error) { console.warn("Could not load player profile:",error.message); }
+}
+function stopActivityTracking(sendEnd=true) {
+  if(activityInterval) clearInterval(activityInterval);
+  activityInterval=null;
+  const wasActive=Boolean(activityUid);
+  activityUid=null;
+  if(sendEnd && wasActive && backendConfigured() && currentUser) backendRequest("/api/player/session/end",{method:"POST",body:{}}).catch(()=>{});
+}
+function startActivityTracking() {
+  if(!backendConfigured() || !currentUser || document.visibilityState!=="visible") return;
+  if(activityUid===currentUser.uid && activityInterval) return;
+  stopActivityTracking(false);
+  activityUid=currentUser.uid;
+  backendRequest("/api/player/session/start",{method:"POST",body:{}}).catch(error=>{console.warn("Session start failed:",error.message);if(/banned/i.test(error.message))setStatus("This account is blocked from online play.");});
+  activityInterval=setInterval(async()=>{
+    if(!currentUser || currentUser.uid!==activityUid || document.visibilityState!=="visible" || activityRequestInFlight) return;
+    activityRequestInFlight=true;
+    try {
+      await backendRequest("/api/player/session/heartbeat",{method:"POST",body:{}});
+      activityHeartbeatCount++;
+      if(activityHeartbeatCount%4===0) loadPlayerProfile();
+    }
+    catch(error) { if(/banned/i.test(error.message)) { stopActivityTracking(false); setStatus("This account is blocked from online play."); } }
+    finally { activityRequestInFlight=false; }
+  },30000);
+}
+async function saveProfilePhoto(file) {
+  if(!file) return;
+  if(!backendConfigured() || !currentUser) { setStatus("Profile picture upload requires a configured backend and player session."); return; }
+  if(!["image/jpeg","image/png","image/webp"].includes(file.type)) { setStatus("Choose a JPG, PNG, or WEBP image."); return; }
+  if(file.size>500*1024) { setStatus("Profile picture must be 500 KB or smaller."); return; }
+  try {
+    const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result||""));reader.onerror=()=>reject(new Error("Could not read image."));reader.readAsDataURL(file);});
+    const result=await backendRequest("/api/player/profile",{method:"PATCH",body:{photoUrl:dataUrl}});
+    remoteProfile=result.profile||remoteProfile;
+    if($("playerPhotoPreview")) $("playerPhotoPreview").src=dataUrl;
+    setStatus("Profile picture updated.");
+  } catch(error) { setStatus(`Could not update profile picture: ${error.message}`); }
 }
 function countJelly() {
   let total=0;
@@ -970,6 +1053,7 @@ function updateLevelHUD() {
   if (!$('levelNum')) return;
   const level=save.currentLevel || 1, config=levelConfig || getLevelConfig(level), target=targetFor(level);
   $('levelNum').textContent=`${level} / ${LEVEL_COUNT}`;
+  if($('levelMapBtn')) $('levelMapBtn').textContent=`🗺️ Level Map · ${LEVEL_COUNT}`;
   if (config.type === 'jelly') {
     const left = countJelly();
     $('scoreMetricLabel').textContent = 'Jelly left / Goal';
@@ -982,9 +1066,11 @@ function updateLevelHUD() {
   }
   $('moveCount').textContent=config.type==='timed' ? '∞' : String(moves);
   $('levelTypeLabel').textContent=config.type==='jelly' ? 'Jelly mission' : config.type==='timed' ? 'Timed challenge' : 'Score mission';
-  const season=SEASONS[seasonIndex(level)];
-  $('seasonLabel').textContent=`Season ${seasonIndex(level)+1} · ${season.name}`;
-  $('seasonBadge').textContent=`${season.emoji} ${season.name}`;
+  const record=levelRecord(level);
+  const seasonName=record.season||SEASONS[seasonIndex(level)]?.name||"Candy Forest";
+  const seasonEmoji=SEASONS.find(item=>item.name===seasonName)?.emoji||"🍬";
+  $('seasonLabel').textContent=`${seasonName} · Level ${level}`;
+  $('seasonBadge').textContent=`${seasonEmoji} ${seasonName}`;
   $('missionText').textContent=config.type==='jelly' ? `🍮 Clear ${config.jellyGoal} jelly tiles to finish this level` : config.type==='timed' ? `⏱ Reach ${target.toLocaleString()} points before time runs out` : `⭐ Reach ${target.toLocaleString()} points to finish this level`;
   $('jellyCount').hidden=config.type!=='jelly';
   $('jellyCount').textContent=`🍮 ${countJelly()} / ${config.jellyGoal} jelly tiles left`;
@@ -1007,15 +1093,18 @@ function openLevelMap() {
 }
 function closeLevelMap() { $('levelMapOverlay').classList.remove('show'); }
 function renderLevelMap() {
-  const unlockedSeason=Math.ceil(save.maxUnlocked/20);
-  $('seasonCards').innerHTML=SEASONS.map((season,i)=>{
-    const start=i*20+1,end=(i+1)*20,completed=Array.from({length:20},(_,j)=>start+j).filter(n=>save.completedLevels[n]).length;
-    const locked=i+1>unlockedSeason;
-    return `<div class="season-card ${locked?'locked':''}"><span style="font-size:1.25rem">${season.emoji}</span><strong>${i+1}. ${season.name}</strong><span>${locked?'🔒 Locked':`Levels ${start}–${end}`}</span><br><small>${completed}/20 complete</small></div>`;
+  const groups=[...new Set(levelCatalog.map(item=>item.season||"Candy Forest"))];
+  $('seasonCards').innerHTML=groups.map((name,i)=>{
+    const levels=levelCatalog.map((item,index)=>({item,number:index+1})).filter(x=>(x.item.season||"Candy Forest")===name).map(x=>x.number);
+    const start=levels[0]||1,end=levels[levels.length-1]||start;
+    const completed=levels.filter(n=>save.completedLevels[n]).length;
+    const locked=start>save.maxUnlocked;
+    const emoji=SEASONS.find(item=>item.name===name)?.emoji||"🍬";
+    return `<div class="season-card ${locked?'locked':''}"><span style="font-size:1.25rem">${emoji}</span><strong>${i+1}. ${escapeHtml(name)}</strong><span>${locked?'🔒 Locked':`Levels ${start}–${end}`}</span><br><small>${completed}/${levels.length} complete</small></div>`;
   }).join('');
   $('levelMapGrid').innerHTML=Array.from({length:LEVEL_COUNT},(_,i)=>i+1).map(level=>{
     const locked=level>save.maxUnlocked,stars=Math.max(0,Math.min(3,Number(save.levelStars[level])||0));
-    const icon=getLevelConfig(level).type==='jelly'?'🍮':getLevelConfig(level).type==='timed'?'⏱':'';
+    const record=levelRecord(level), icon=record.type==='jelly'?'🍮':record.type==='timed'?'⏱':'';
     return `<button class="level-tile ${level===save.currentLevel?'current':''} ${locked?'locked':''}" data-level="${level}" type="button" ${locked?'disabled':''} aria-label="Level ${level}${locked?', locked':''}">${icon?`<small>${icon}</small><br>`:''}${level}<span class="tile-stars">${stars?'★'.repeat(stars)+'☆'.repeat(3-stars):locked?'🔒':'☆☆☆'}</span></button>`;
   }).join('');
 }
@@ -1028,7 +1117,7 @@ function showLevelResult(won, reason='', rewardEarned=false) {
   if(won) {
     actions.innerHTML=save.currentLevel<LEVEL_COUNT
       ? `<button data-level-action="next" type="button">Next Level →</button><button class="secondary" data-level-action="map" type="button">Level Map</button>`
-      : `<button data-level-action="replay" type="button">Replay Level 100</button><button class="secondary" data-level-action="map" type="button">Level Map</button>`;
+      : `<button data-level-action="replay" type="button">Replay Level ${LEVEL_COUNT}</button><button class="secondary" data-level-action="map" type="button">Level Map</button>`;
   } else {
     actions.innerHTML=`<button data-level-action="retry" type="button">↻ Retry Level</button><button class="secondary" data-level-action="map" type="button">Level Map</button>`;
   }
@@ -1049,7 +1138,7 @@ function completeLevel() {
   persist();refreshDashboard();renderLevelMap();
   const completingWithAi = aiAutoRunning || aiCompleting;
   if (!completingWithAi) showLevelResult(true,'',!wasCompleted);
-  setStatus(level===LEVEL_COUNT?'Amazing! You completed all 100 levels! No further levels exist.':`Level ${level} complete! Level ${level+1} is unlocked.`);
+  setStatus(level===LEVEL_COUNT?`Amazing! You completed all ${LEVEL_COUNT} levels!`:`Level ${level} complete! Level ${level+1} is unlocked.`);
   if (backendConfigured() && currentUser && !completingWithAi) {
     pendingCloudProgress = backendRequest("/api/player/complete-level", {method:"POST",body:{level,score,jellyCleared:countJelly()===0}})
       .then(data => {
@@ -1410,7 +1499,7 @@ async function aiClearCurrentLevel() {
     if (save.completedLevels[save.currentLevel] && save.currentLevel < LEVEL_COUNT && save.maxUnlocked >= save.currentLevel + 1) {
       startLevel(save.currentLevel + 1);
     } else if (save.currentLevel === LEVEL_COUNT && save.completedLevels[LEVEL_COUNT]) {
-      setStatus("All 100 levels are complete. There is no next level."); return;
+      setStatus(`All ${LEVEL_COUNT} levels are complete. There is no next level.`); return;
     } else if (!save.completedLevels[save.currentLevel]) {
       startLevel(save.currentLevel);
     }
@@ -1510,7 +1599,7 @@ async function aiClearCurrentLevel() {
       setStatus(`🤖 AI actually played and completed Level ${level}. +${LEVEL_COMPLETION_REWARD.toLocaleString()} coins for first completion.`);
       if (level>=LEVEL_COUNT) {
         save.currentLevel=LEVEL_COUNT; persist(); refreshDashboard(); renderLevelMap();
-        setStatus("🎉 AI played and completed Level 100. All levels are finished; no Level 101 exists.");
+        setStatus(`🎉 AI completed the final level (${LEVEL_COUNT}). All available levels are finished.`);
         break;
       }
       startLevel(level+1);
@@ -1619,14 +1708,23 @@ function handleIncomingReferral() {
     $("referralStatus").textContent=`Invite code ${normalized} detected and saved locally. It will need backend verification before any reward is paid.`;
   }
 }
-function applyFriendCode() {
+async function applyFriendCode() {
   const code=$("friendCode").value.trim().toUpperCase();
   if(!code){setStatus("Enter a friend's referral code first.");return;}
   if(code===save.referralCode.toUpperCase()){setStatus("You cannot apply your own referral code.");return;}
+  if(backendConfigured() && currentUser) {
+    try {
+      const data=await backendRequest("/api/referrals/apply",{method:"POST",body:{code}});
+      remoteProfile=data.profile||remoteProfile;
+      save.appliedReferralCode=code;save.referralCount=Number(remoteProfile?.referralCount)||save.referralCount;persist();refreshDashboard();$("friendCode").value="";
+      $("referralStatus").textContent=`Referral code ${code} was recorded by the server. Rewards are subject to verification.`;
+      setStatus("Referral tracked successfully.");return;
+    } catch(error) { setStatus(`Referral could not be applied: ${error.message}`);return; }
+  }
   if(save.appliedReferralCode){setStatus("A referral code has already been saved on this device.");return;}
   save.appliedReferralCode=code.slice(0,20);persist();refreshDashboard();$("friendCode").value="";
-  $("referralStatus").textContent=`Code ${save.appliedReferralCode} saved in demo mode only. No referral coins have been issued.`;
-  setStatus("Referral code saved locally; live verification is not connected.");
+  $("referralStatus").textContent=`Code ${save.appliedReferralCode} saved locally in demo mode.`;
+  setStatus("Referral saved locally only; backend verification is not connected.");
 }
 function resetDemoData() {
   if (backendConfigured()) { setStatus("This button only resets local demo data. Cloud progress must be managed through a secure admin operation."); return; }
@@ -1687,8 +1785,10 @@ function showApp(mode = "guest") {
   setActiveView("play");
   refreshDashboard();
   renderLeaderboard();
-  if (mode === "account" && backendConfigured() && currentUser) {
-    syncRemotePlayerState(true).catch(error => setStatus(`Cloud sync unavailable: ${error.message}`));
+  if (backendConfigured() && currentUser) {
+    loadRemoteLevels().then(() => syncRemotePlayerState(true)).catch(error => setStatus(`Cloud sync unavailable: ${error.message}`));
+    loadPlayerProfile();
+    startActivityTracking();
   }
 }
 function setActiveView(name) {
@@ -1704,6 +1804,7 @@ function setActiveView(name) {
   });
   document.querySelectorAll(".nav-btn[data-view]").forEach(button => button.classList.toggle("active", button.dataset.view === name));
   if (name === "leaderboard") renderLeaderboard();
+  if (name === "profile" && backendConfigured() && currentUser) loadPlayerProfile();
   if (name === "rewards") { syncDailyCount(); refreshDashboard(); }
   if (name === "coins") {
     renderMyPayments(); loadPaymentInstructions();
@@ -1731,16 +1832,17 @@ function initAuthFlow() {
       auth = firebase.auth();
       auth.onAuthStateChanged(user => {
         currentUser = user || null;
+        if (!user) stopActivityTracking(false);
         if (user) {
-          sessionMode = "account";
-          localStorage.setItem(SESSION_KEY, "account");
+          sessionMode = user.isAnonymous ? "guest" : "account";
+          localStorage.setItem(SESSION_KEY, sessionMode);
           if (user.displayName && (!save.playerName || save.playerName === "Guest Player")) {
             save.playerName = user.displayName.slice(0,20);
             persist();
           }
           refreshDashboard();
-          showApp("account");
-        } else if (localStorage.getItem(SESSION_KEY) === "guest") {
+          showApp(sessionMode);
+        } else if (localStorage.getItem(SESSION_KEY) === "guest" && !backendConfigured()) {
           showApp("guest");
         } else {
           localStorage.removeItem(SESSION_KEY);
@@ -1805,15 +1907,24 @@ async function handleEmailAuth(event) {
   }
 }
 async function continueAsGuest() {
-  if (auth && currentUser) {
-    try { await auth.signOut(); } catch (_) {}
+  if (backendConfigured() && auth) {
+    try {
+      if (currentUser) await auth.signOut();
+      await auth.signInAnonymously();
+      return;
+    } catch(error) {
+      setAuthStatus(`Guest tracking needs Firebase Anonymous Authentication enabled: ${error.message}`);
+      return;
+    }
   }
+  if (auth && currentUser) { try { await auth.signOut(); } catch (_) {} }
   currentUser = null;
   if (!save.playerName || save.playerName.trim() === "") save.playerName = "Guest Player";
   showApp("guest");
 }
 async function handleAccountAction() {
-  if (sessionMode === "account" && auth && currentUser) {
+  if (auth && currentUser && (sessionMode === "account" || currentUser.isAnonymous)) {
+    stopActivityTracking(true);
     try { await auth.signOut(); } catch (error) { setStatus("Sign out failed: " + (error.message || "please try again")); return; }
     currentUser = null;
     localStorage.removeItem(SESSION_KEY);
@@ -1879,13 +1990,18 @@ $("shareInviteBtn").addEventListener("click",shareInvite);
 $("applyCodeBtn").addEventListener("click",applyFriendCode);
 $("playerName").addEventListener("change",updateProfile);
 $("countryCode").addEventListener("change",updateProfile);
+$("playerPhotoFile").addEventListener("change",event=>saveProfilePhoto(event.target.files?.[0]));
 $("playerName").addEventListener("keydown",event=>{if(event.key==="Enter"){$("playerName").blur();updateProfile();}});
 $("resetProgress").addEventListener("click",resetDemoData);
 document.querySelectorAll(".tab").forEach(button=>button.addEventListener("click",()=>{
   document.querySelectorAll(".tab").forEach(tab=>{tab.classList.toggle("active",tab===button);tab.setAttribute("aria-selected",String(tab===button));});
   renderLeaderboard();
 }));
-document.addEventListener("visibilitychange",()=>{if(!document.hidden){syncDailyCount();refreshDashboard();}});
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden){syncDailyCount();refreshDashboard();startActivityTracking();}
+  else stopActivityTracking(true);
+});
+window.addEventListener("pagehide",()=>stopActivityTracking(true));
 window.addEventListener("storage",event=>{if(event.key===SAVE_KEY){save=loadSave();refreshDashboard();renderLeaderboard();}});
 
 refreshDashboard();
@@ -1898,6 +2014,7 @@ initAuthFlow();
 requestAnimationFrame(draw);
 })();
 </script>
+<script src="admin-tools.js"></script>
 <!-- AUDIO SYSTEM FOR SUGAR RUSH ADVENTURE -->
 <script>
 (function() {
@@ -1977,7 +2094,47 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+// Audio System
+(function() {
+  const audioFiles = {
+    bgm: new Audio('Audio/game music.mp3'),
+    pop: new Audio('Audio/Pop.mp3'),
+    button: new Audio('Audio/Button Tap.mp3')
+  };
 
+  audioFiles.bgm.loop = true;
+  audioFiles.bgm.volume = 0.4;
+  let isBgmPlaying = false;
+
+  function playSFX(audioObj, volume = 0.7) {
+    try {
+      const soundClone = audioObj.cloneNode();
+      soundClone.volume = volume;
+      soundClone.play().catch(e => {});
+    } catch(e) {}
+  }
+
+  function startBGM() {
+    if (!isBgmPlaying) {
+      audioFiles.bgm.play().then(() => {
+        isBgmPlaying = true;
+      }).catch(e => {});
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    startBGM();
+    const button = e.target.closest('button, .level-tile, [role="button"]');
+    if (button) {
+      playSFX(audioFiles.button, 0.6);
+    }
+  });
+
+  window.playPopSound = function() {
+    playSFX(audioFiles.pop, 0.8);
+  };
+})();
+</script>
   
 </body>
 </html>

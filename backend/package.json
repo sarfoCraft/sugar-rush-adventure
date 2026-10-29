@@ -1,0 +1,22 @@
+{
+  "name": "sweet-match-admin-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Secure API backend for Sweet Match game administration and player analytics",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "check": "node --check server.js && node --check admin-tools.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^13.0.2",
+    "helmet": "^8.0.0",
+    "pg": "^8.13.1"
+  }
+}
