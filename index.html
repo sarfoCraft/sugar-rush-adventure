@@ -269,6 +269,9 @@ body{display:block!important;}
 <body>
 <section class="auth-screen" id="authScreen" aria-label="Sign in to Sweet Match">
   <div class="auth-card">
+    <div style="position:absolute; top:15px; left:15px; z-index:100;">
+  <button type="button" id="backToGameBtn" class="soft" style="padding:6px 12px; font-size:0.75rem;">← Back</button>
+</div>
     <div class="auth-brand"><div class="brand-mark">🍬</div><div><h1>Sweet <span>Match!</span></h1><div class="demo-badge" style="display:inline-block;margin-top:5px">MATCH · PLAY · REWARD</div></div></div>
     <p class="auth-lead">A little match, a lot of magic. Play puzzles, collect coins and climb the leaderboard.</p>
     <div class="auth-visual" aria-hidden="true"><span>🍓</span><span>💎</span><span>🍋</span><span>🍇</span><span>🌿</span></div>
@@ -1953,6 +1956,65 @@ requestAnimationFrame(draw);
       playSFX(audioFiles.pop, 0.5);
     });
   }
+})();
+</script>
+  <!-- AUDIO SYSTEM & BACK BUTTON FIX -->
+<script>
+// Back button functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const backBtn = document.getElementById('backToGameBtn');
+  if (backBtn) {
+    backBtn.addEventListener('click', function() {
+      const authScreen = document.getElementById('authScreen');
+      const appShell = document.getElementById('appShell');
+      if (authScreen) authScreen.hidden = true;
+      if (appShell) {
+        appShell.hidden = false;
+        appShell.classList.add('game-focus');
+      }
+    });
+  }
+});
+
+// Audio System
+(function() {
+  const audioFiles = {
+    bgm: new Audio('Audio/game music.mp3'),
+    pop: new Audio('Audio/Pop.mp3'),
+    button: new Audio('Audio/Button Tap.mp3')
+  };
+
+  audioFiles.bgm.loop = true;
+  audioFiles.bgm.volume = 0.4;
+  let isBgmPlaying = false;
+
+  function playSFX(audioObj, volume = 0.7) {
+    try {
+      const soundClone = audioObj.cloneNode();
+      soundClone.volume = volume;
+      soundClone.play().catch(e => {});
+    } catch(e) {}
+  }
+
+  function startBGM() {
+    if (!isBgmPlaying) {
+      audioFiles.bgm.play().then(() => {
+        isBgmPlaying = true;
+      }).catch(e => {});
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    startBGM();
+    const button = e.target.closest('button, .level-tile, [role="button"]');
+    if (button) {
+      playSFX(audioFiles.button, 0.6);
+    }
+  });
+
+  window.playPopSound = function() {
+    playSFX(audioFiles.pop, 0.8);
+  };
 })();
 </script>
   
