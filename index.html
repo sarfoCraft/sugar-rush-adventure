@@ -1894,5 +1894,67 @@ initAuthFlow();
 requestAnimationFrame(draw);
 })();
 </script>
+<!-- AUDIO SYSTEM FOR SUGAR RUSH ADVENTURE -->
+<script>
+(function() {
+  // Define Audio Objects matching exact filenames and paths
+  const audioFiles = {
+    bgm: new Audio('Audio/game music.mp3'),
+    pop: new Audio('Audio/Pop.mp3'),
+    button: new Audio('Audio/Button Tap.mp3')
+  };
+
+  // Configure Background Music
+  audioFiles.bgm.loop = true;
+  audioFiles.bgm.volume = 0.4; // 40% volume for background music
+
+  let isBgmPlaying = false;
+
+  // Helper to safely play sound effects
+  function playSFX(audioObj, volume = 0.7) {
+    try {
+      const soundClone = audioObj.cloneNode();
+      soundClone.volume = volume;
+      soundClone.play().catch(e => {}); // catch browser autoplay restrictions
+    } catch(e) {}
+  }
+
+  // Helper to start background music after first click/tap
+  function startBGM() {
+    if (!isBgmPlaying) {
+      audioFiles.bgm.play().then(() => {
+        isBgmPlaying = true;
+      }).catch(e => {
+        // Retries on next interaction if blocked
+      });
+    }
+  }
+
+  // Play button tap sound on any button click across the game
+  document.addEventListener('click', function(e) {
+    startBGM(); // Ensure BGM starts after any user click
+
+    const button = e.target.closest('button, .level-tile, [role="button"]');
+    if (button) {
+      playSFX(audioFiles.button, 0.6);
+    }
+  });
+
+  // Expose global sound trigger for game match popping sounds
+  window.playPopSound = function() {
+    playSFX(audioFiles.pop, 0.8);
+  };
+  
+  // Attach pop sound trigger to canvas interactions/touches
+  const canvas = document.querySelector('canvas');
+  if (canvas) {
+    canvas.addEventListener('pointerdown', function() {
+      startBGM();
+      playSFX(audioFiles.pop, 0.5);
+    });
+  }
+})();
+</script>
+  
 </body>
 </html>
