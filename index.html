@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#7650d8">
+<title>Sweet Match — Play, Rewards & Leaderboards</title>
+<style>
+:root{--ink:#35234d;--pink:#ff5d9e;--purple:#7650d8;--cream:#fff8ef;--muted:#806d91;--line:#eadcf5;--green:#0e9b7c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;padding:18px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:radial-gradient(circle at 12% 10%,#ffe0f0 0,transparent 32%),radial-gradient(circle at 90% 90%,#d9f8ff 0,transparent 35%),linear-gradient(135deg,#fff7e8,#f1e7ff)}
+button,input,select{font:inherit}
+button{cursor:pointer;border:0;border-radius:13px;padding:11px 14px;font-weight:800;color:#fff;background:linear-gradient(135deg,#ff5d9e,#ff8b72);box-shadow:0 4px 0 #d94c82;transition:transform .12s,filter .12s}
+button:hover{filter:brightness(1.04);transform:translateY(-1px)}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 #d94c82}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+button.secondary{background:linear-gradient(135deg,#7650d8,#9a73f1);box-shadow:0 4px 0 #5839a6}
+button.soft{background:#fff;color:var(--ink);box-shadow:0 3px 0 #e4d5ef;border:1px solid var(--line)}
+button.green{background:linear-gradient(135deg,#12a98a,#32cba6);box-shadow:0 4px 0 #087d65}
+.app{width:min(100%,1180px);margin:0 auto}
+.brand{text-align:center;margin:0 0 16px}
+.brand h1{font-size:clamp(2rem,5vw,3.25rem);line-height:1.1;letter-spacing:-1.5px;margin:0}
+.brand h1 span{color:var(--pink)}
+.brand p{color:var(--muted);margin:8px 0 0}
+.top-actions{display:flex;gap:9px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:13px}
+.wallet-chip{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;background:#fff;border:1px solid var(--line);border-radius:13px;font-weight:900;box-shadow:0 3px 0 #e4d5ef}
+.demo-badge{font-size:.72rem;font-weight:900;letter-spacing:.5px;padding:5px 9px;border-radius:999px;color:#81520b;background:#fff0c4;border:1px solid #f5dda0}
+.layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(310px,.85fr);gap:16px;align-items:start}
+.panel,.card{background:#ffffffdf;border:2px solid white;border-radius:20px;padding:14px;box-shadow:0 9px 25px #5a3a7915;min-width:0}
+.game-panel{padding:15px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:13px;padding:9px 11px;min-width:0}
+.stat small{display:block;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:800}
+.stat strong{font-size:clamp(1.1rem,2.4vw,1.45rem);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.stat .substat{display:block;font-size:.72rem;color:var(--muted);margin-top:3px}
+.progress-track{height:8px;background:#eee4f6;border-radius:9px;overflow:hidden;margin-top:5px}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#ff5d9e,#ffc64a);transition:width .2s}
+.board-wrap{padding:8px;border:2px solid white;border-radius:18px;background:#fff;box-shadow:inset 0 0 0 1px #f0e4ff}
+canvas{display:block;width:100%;height:auto;border-radius:11px;touch-action:manipulation}
+.game-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:12px}
+.game-actions button{font-size:.86rem}
+.help{text-align:center;color:var(--muted);font-size:.82rem;margin:12px 4px 0;line-height:1.5}
+.status{min-height:1.6em;text-align:center;margin:8px 2px 0;font-size:.85rem;font-weight:750;color:#8c4d9e}
+.side-stack{display:grid;gap:12px}
+.card h2{font-size:1.02rem;margin:0 0 10px;display:flex;align-items:center;gap:7px}
+.card p{margin:7px 0;color:var(--muted);font-size:.82rem;line-height:1.45}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.field-label{display:block;font-size:.72rem;font-weight:850;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin:9px 0 5px}
+.field{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:10px;font:inherit;color:var(--ink);background:#fff;outline:none}
+.field:focus{border-color:#b89ae9;box-shadow:0 0 0 3px #7650d81c}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.daily-count{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:4px 0 8px;font-weight:850}
+.daily-count strong{font-variant-numeric:tabular-nums;color:#b63c86}
+.reward-progress{height:10px;background:#f1e7f8;border-radius:999px;overflow:hidden}
+.reward-progress span{display:block;width:0;height:100%;border-radius:999px;background:linear-gradient(90deg,#ff5d9e,#ffc64a);transition:width .2s}
+.reward-button{width:100%;margin-top:10px}
+.tiny-note{font-size:.73rem!important}
+.code-box{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 11px;background:#fff;border:1px dashed #d4bfe9;border-radius:11px}
+.code-box strong{font-size:1.08rem;letter-spacing:1.5px}
+.code-box button{padding:8px 10px;font-size:.76rem;box-shadow:none}
+.referral-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
+.referral-actions button{font-size:.82rem;padding:10px 8px}
+.referral-meta{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:10px;padding:10px;background:#fff;border:1px solid var(--line);border-radius:11px;font-size:.8rem}
+.referral-meta strong{color:#6842ac}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px}
+.tab{padding:8px 4px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--muted);font-size:.76rem;box-shadow:none}
+.tab.active{background:#7650d8;color:#fff;border-color:#7650d8}
+.leaderboard-view{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px;min-height:118px}
+.board-empty-icon{font-size:1.55rem;margin-bottom:3px}
+.local-score-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid var(--line);padding-top:10px;margin-top:10px;font-size:.82rem}
+.local-score-row strong{font-variant-numeric:tabular-nums}
+.notice{background:linear-gradient(110deg,#fff1f8,#f6f0ff);border:1px solid #f0d8f2;border-radius:13px;padding:11px 12px;font-size:.78rem;line-height:1.45;color:#6d557f}
+.notice strong{color:#4d3563}
+.footer-note{text-align:center;color:var(--muted);font-size:.72rem;line-height:1.5;margin:15px auto 4px;max-width:850px}
+.overlay{position:fixed;inset:0;background:#211331b5;display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+.overlay.show{display:flex}
+.modal{width:min(100%,430px);max-height:88vh;overflow:auto;background:#fffafc;border:3px solid white;border-radius:22px;padding:22px;box-shadow:0 25px 70px #180b2d55;animation:pop .18s ease-out}
+.modal h2{margin:0 0 8px;font-size:1.45rem}
+.modal p{line-height:1.5;color:var(--muted);font-size:.9rem}
+.modal-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+.modal-actions button{flex:1}
+@keyframes pop{from{transform:scale(.94);opacity:.5}to{transform:scale(1);opacity:1}}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.side-stack{grid-template-columns:repeat(2,minmax(0,1fr))}.leaderboard-card,.notice-card{grid-column:1/-1}}
+@media(max-width:560px){.game-actions{grid-template-columns:1fr 1fr}.game-actions #aiClearBtn{grid-column:1/-1}body{padding:10px}.panel,.card{padding:11px;border-radius:17px}.side-stack{grid-template-columns:1fr}.leaderboard-card,.notice-card{grid-column:auto}.stats{gap:5px}.stat{padding:8px}.stat small{font-size:.6rem}.game-panel{padding:10px}.board-wrap{padding:5px}.tabs{gap:4px}.tab{font-size:.7rem}.brand h1{letter-spacing:-1px}.profile-grid{grid-template-columns:1fr 1fr}}
+
+/* Professional multi-screen app shell */
+body{padding:18px}
+.auth-screen[hidden],.app-shell[hidden]{display:none!important}
+.auth-screen{min-height:calc(100vh - 36px);display:grid;place-items:center;padding:12px}
+.auth-card{width:min(100%,490px);padding:clamp(22px,5vw,34px);border-radius:28px;background:#ffffffeb;border:2px solid #fff;box-shadow:0 22px 65px #51316d20}
+.auth-brand{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px}
+.brand-mark{width:54px;height:54px;display:grid;place-items:center;border-radius:18px;background:linear-gradient(135deg,#ff5d9e,#9b6bfa);font-size:1.7rem;box-shadow:0 7px 0 #e9c8ef}
+.auth-brand h1{margin:0;font-size:1.8rem;letter-spacing:-1px}.auth-brand h1 span{color:var(--pink)}
+.auth-lead{text-align:center;color:var(--muted);line-height:1.55;margin:0 auto 20px;max-width:350px}
+.auth-visual{display:flex;justify-content:center;gap:9px;margin:14px 0 23px;font-size:1.8rem}
+.auth-visual span{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;background:#fff;border:1px solid var(--line);box-shadow:0 4px 0 #eadcf5}
+.auth-social{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}
+button.provider-btn{background:#fff;color:#3c3150;border:1px solid #e8deef;box-shadow:0 3px 0 #e4d5ef;padding:12px 9px}
+.provider-icon{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;margin-right:6px;font-weight:950;background:#f5f1fb;color:#7650d8}
+.provider-btn.facebook .provider-icon{background:#1877f2;color:#fff}
+.auth-divider{display:flex;align-items:center;gap:10px;color:#a091b1;font-size:.76rem;margin:17px 0}.auth-divider:before,.auth-divider:after{content:"";height:1px;background:var(--line);flex:1}
+.auth-form{display:grid;gap:9px}.auth-form label{font-size:.75rem;font-weight:850;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-top:3px}
+.auth-form .field{padding:12px 13px}.auth-submit{width:100%;margin-top:5px}
+.auth-switch{width:100%;margin-top:13px;background:transparent;color:#7650d8;box-shadow:none;padding:9px;border:0}
+.guest-btn{width:100%;margin-top:5px;background:linear-gradient(135deg,#7650d8,#9a73f1);box-shadow:0 4px 0 #5839a6}
+.auth-status{min-height:1.3em;font-size:.8rem;line-height:1.45;text-align:center;color:#a12e58;margin:10px 0 0}
+.auth-footnote{text-align:center;color:var(--muted);font-size:.72rem;line-height:1.5;margin:18px 0 0}
+.app-shell{width:min(100%,1280px);margin:0 auto}
+.app-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 2px 17px}
+.app-logo{display:flex;align-items:center;gap:10px;min-width:0}.app-logo .brand-mark{width:43px;height:43px;border-radius:14px;font-size:1.35rem;box-shadow:0 4px 0 #e9c8ef}
+.app-logo h1{font-size:1.32rem;margin:0;line-height:1.1;letter-spacing:-.7px}.app-logo p{font-size:.76rem;color:var(--muted);margin:4px 0 0}
+.topbar-right{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+.app-grid{display:grid;grid-template-columns:195px minmax(0,1fr);gap:17px;align-items:start}
+.nav-rail{position:sticky;top:14px;padding:10px;background:#ffffffb8;border:1px solid #fff;border-radius:20px;box-shadow:0 9px 25px #5a3a7910;display:grid;gap:5px}
+.nav-caption{font-size:.65rem;font-weight:900;color:#a08daf;letter-spacing:1.3px;text-transform:uppercase;padding:10px 10px 5px}
+.nav-btn{display:flex;align-items:center;gap:10px;text-align:left;padding:11px 12px;border-radius:12px;background:transparent;color:#776489;box-shadow:none;border:1px solid transparent;font-size:.86rem;font-weight:800}
+.nav-btn .nav-icon{width:25px;text-align:center;font-size:1.05rem}
+.nav-btn.active{background:linear-gradient(110deg,#fce5f1,#f0e9ff);color:#6942aa;border-color:#ead8fa;box-shadow:none}
+.workspace{min-width:0;min-height:70vh}
+.page-view{display:none;animation:pageIn .16s ease-out}.page-view.active{display:block}
+@keyframes pageIn{from{opacity:.55;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.page-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:2px 0 14px}
+.page-heading h2{font-size:clamp(1.35rem,3vw,1.85rem);letter-spacing:-.8px;margin:0}.page-heading p{margin:5px 0 0;color:var(--muted);font-size:.85rem;line-height:1.45}
+.hero-card{position:relative;overflow:hidden;padding:clamp(20px,4vw,32px);border-radius:24px;background:linear-gradient(120deg,#fff0f7,#f1eaff 72%,#e7faff);border:1px solid #fff;box-shadow:0 12px 28px #5a3a7910;margin-bottom:14px}
+.hero-card:after{content:"🍬";position:absolute;right:7%;top:14%;font-size:clamp(3rem,8vw,6rem);opacity:.2;transform:rotate(15deg);pointer-events:none}
+.hero-card h2{font-size:clamp(1.55rem,4vw,2.35rem);letter-spacing:-1px;line-height:1.12;margin:0 0 9px;max-width:560px}.hero-card p{color:#755f89;line-height:1.55;margin:0 0 18px;max-width:530px;font-size:.92rem}
+.hero-actions{display:flex;gap:9px;flex-wrap:wrap}.hero-actions button{min-width:145px}
+.overview-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.overview-stat{background:#ffffffdf;border:1px solid #fff;border-radius:17px;padding:14px;box-shadow:0 7px 20px #5a3a7910;min-width:0}
+.overview-stat .ov-icon{font-size:1.35rem}.overview-stat small{display:block;font-size:.69rem;font-weight:850;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;margin-top:7px}.overview-stat strong{display:block;font-size:clamp(1.2rem,3vw,1.7rem);margin-top:2px;overflow-wrap:anywhere}
+.quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.quick-card{padding:15px;background:#ffffffd9;border:1px solid #fff;border-radius:17px;box-shadow:0 7px 20px #5a3a7910;min-width:0}.quick-card .quick-icon{font-size:1.5rem}.quick-card h3{font-size:.96rem;margin:8px 0 5px}.quick-card p{font-size:.78rem;color:var(--muted);line-height:1.45;margin:0 0 12px}.quick-card button{width:100%;font-size:.78rem;padding:10px 8px}
+.content-card{padding:clamp(14px,2.4vw,22px);background:#ffffffdf;border:2px solid white;border-radius:21px;box-shadow:0 9px 25px #5a3a7915;margin-bottom:13px;min-width:0}
+.content-card h3{margin:0 0 9px;font-size:1.02rem}.content-card>p{color:var(--muted);font-size:.84rem;line-height:1.55}
+.play-grid{display:grid;grid-template-columns:minmax(0,1fr) 235px;gap:13px;align-items:start}.play-side{display:grid;gap:12px}
+.play-side .content-card{padding:15px}.play-side ul{padding-left:19px;color:var(--muted);font-size:.81rem;line-height:1.75;margin:8px 0}
+.reward-hero{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:19px;border-radius:18px;background:linear-gradient(115deg,#fff0f7,#f4edff);border:1px solid #f3d9f1}
+.reward-hero h3{margin:0 0 5px}.reward-hero p{margin:0;color:var(--muted);font-size:.83rem;line-height:1.45}.reward-big{font-size:2.3rem}
+.section-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.section-grid>.content-card{margin:0}
+.toast{position:fixed;right:18px;bottom:18px;z-index:60;max-width:min(420px,calc(100vw - 36px));padding:12px 16px;border-radius:13px;background:#35234d;color:white;font-size:.83rem;font-weight:750;box-shadow:0 12px 35px #21133135;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .18s,transform .18s}.toast.show{opacity:1;transform:translateY(0)}
+.account-pill{background:#fff;border:1px solid var(--line);color:#6d557f;box-shadow:0 3px 0 #e4d5ef;padding:9px 12px;font-size:.78rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:900px){.app-grid{grid-template-columns:1fr}.nav-rail{position:static;display:flex;overflow:auto;gap:5px;padding:7px;order:2}.nav-caption{display:none}.nav-btn{flex:1;justify-content:center;min-width:86px;text-align:center;flex-direction:column;gap:4px;padding:9px 8px;font-size:.7rem}.nav-btn .nav-icon{width:auto;font-size:1.15rem}.workspace{order:1}.play-grid{grid-template-columns:minmax(0,1fr) 210px}}
+@media(max-width:650px){body{padding:10px 10px 86px}.auth-screen{min-height:calc(100vh - 20px);padding:0}.auth-card{padding:22px 18px;border-radius:23px}.auth-social{grid-template-columns:1fr}.auth-brand h1{font-size:1.6rem}.app-topbar{padding:4px 0 13px;align-items:center}.app-logo p{display:none}.app-logo .brand-mark{width:38px;height:38px}.app-logo h1{font-size:1.1rem}.topbar-right{gap:6px}.wallet-chip{padding:8px 10px;font-size:.78rem}.account-pill{padding:8px 9px;max-width:105px;font-size:.7rem}.app-grid{display:block}.nav-rail{position:fixed;z-index:30;left:8px;right:8px;bottom:8px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;padding:6px;border-radius:17px;background:#fffF;border:1px solid #fff;box-shadow:0 8px 30px #3b1d4b25;backdrop-filter:blur(16px)}.nav-btn{min-width:0;padding:7px 1px;font-size:.58rem;border-radius:10px;gap:3px}.nav-btn .nav-icon{font-size:1.03rem}.workspace{min-height:0}.overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.overview-stat{padding:10px 8px;border-radius:13px}.overview-stat small{font-size:.58rem}.overview-stat strong{font-size:1.15rem}.hero-card{padding:20px 17px;border-radius:19px}.hero-card:after{right:2%;top:5%;font-size:3.4rem}.hero-card h2{font-size:1.7rem;max-width:80%}.hero-card p{font-size:.83rem;max-width:90%}.hero-actions button{min-width:0;flex:1}.quick-grid{grid-template-columns:1fr}.quick-card{display:grid;grid-template-columns:38px minmax(0,1fr);column-gap:8px;padding:12px}.quick-card .quick-icon{grid-row:span 3}.quick-card h3{margin:0 0 3px}.quick-card p{margin:0 0 8px}.quick-card button{grid-column:2}.play-grid{grid-template-columns:1fr}.play-side{grid-template-columns:1fr}.section-grid{grid-template-columns:1fr}.page-heading{align-items:flex-start}.page-heading h2{font-size:1.45rem}.reward-hero{padding:15px}.reward-big{font-size:1.9rem}.tabs{grid-template-columns:repeat(4,minmax(0,1fr))}.tab{font-size:.67rem;padding:8px 2px}.toast{bottom:86px;right:10px;max-width:calc(100vw - 20px)}}
+@media(min-width:901px){.nav-rail{min-height:calc(100vh - 125px)}}
+
+/* Responsive layout hotfix: keep the active screen visible and the mobile navigation anchored. */
+html,body{width:100%;min-height:100%;}
+body{display:block!important;}
+.app-shell{display:block;min-height:100vh;width:min(100%,1280px);margin:0 auto;}
+.app-shell[hidden],.auth-screen[hidden]{display:none!important;}
+.workspace{display:block!important;min-width:0;width:100%;min-height:0;}
+.page-view{display:none!important;width:100%;visibility:visible;}
+.page-view.active{display:block!important;visibility:visible!important;opacity:1;}
+@media(max-width:900px){
+  body{padding:10px 10px 92px!important;}
+  .app-grid{display:flex!important;flex-direction:column!important;gap:12px;width:100%;}
+  .workspace{order:0!important;min-height:0!important;width:100%;}
+  .nav-rail{position:fixed!important;left:8px!important;right:8px!important;bottom:8px!important;top:auto!important;width:auto!important;min-height:0!important;height:auto!important;display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:2px!important;padding:6px!important;z-index:100!important;order:1!important;background:rgba(255,255,255,.97)!important;border:1px solid #eadcf5!important;border-radius:17px!important;box-shadow:0 8px 30px #3b1d4b25!important;backdrop-filter:blur(16px);}
+  .nav-caption{display:none!important;}
+  .nav-btn{display:flex!important;flex:initial!important;min-width:0!important;width:100%;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;gap:3px!important;padding:7px 1px!important;font-size:.62rem!important;white-space:normal;}
+  .nav-btn .nav-icon{width:auto!important;font-size:1.03rem!important;line-height:1.15;}
+  .workspace{margin-bottom:8px;}
+}
+@media(min-width:901px){
+  .app-grid{display:grid!important;grid-template-columns:195px minmax(0,1fr)!important;gap:17px!important;align-items:start;}
+  .nav-rail{position:sticky!important;top:14px!important;left:auto!important;right:auto!important;bottom:auto!important;width:auto!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;}
+  .nav-btn{display:flex;flex-direction:row;justify-content:flex-start;min-width:0;}
+}
+
+
+/* Restored 100-level progression UI */
+.level-progress-track{height:7px;background:#eee4f6;border-radius:99px;overflow:hidden;margin-top:7px}
+.level-progress-track span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff5d9e,#ffc64a);transition:width .18s}
+.level-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 11px}
+.level-mission{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 12px;padding:10px 12px;border:1px solid #f0d8f2;border-radius:12px;background:linear-gradient(110deg,#fff1f8,#f6f0ff);font-size:.82rem;font-weight:850}
+.level-mission .mission-detail{color:#9a3b87}
+.timer-chip{padding:4px 9px;border-radius:9px;background:#fff;border:1px solid #e6d8f7;color:#6c3fbd;font-weight:950;font-variant-numeric:tabular-nums}
+.timer-chip.urgent{color:#c9234f;background:#fff0f3;border-color:#ffb7c9}
+.level-map-modal{width:min(100%,760px)}
+.season-cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:12px 0}
+.season-card{padding:9px 7px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:.72rem;text-align:center;min-width:0}
+.season-card strong{display:block;font-size:.76rem;margin:4px 0 2px}
+.season-card.locked{opacity:.48}
+.level-map-grid{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px;margin:12px 0}
+.level-tile{padding:7px 2px!important;min-width:0;border-radius:9px!important;background:#fff!important;color:var(--ink)!important;box-shadow:0 2px 0 #e4d5ef!important;border:1px solid var(--line)!important;font-size:.8rem!important;line-height:1.1}
+.level-tile.current{background:#ff5d9e!important;color:#fff!important;border-color:#ff5d9e!important;box-shadow:0 2px 0 #d94c82!important}
+.level-tile.locked{opacity:.35;cursor:not-allowed}
+.level-tile .tile-stars{display:block;font-size:.52rem;letter-spacing:-1px;color:#e9ad12;margin-top:4px;white-space:nowrap}
+.level-map-legend{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.75rem}
+.level-result-score{font-size:1.7rem;font-weight:950;color:#7650d8;margin:8px 0}
+@media(max-width:650px){.season-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.level-map-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}.level-tile{padding:9px 3px!important}.level-mission{font-size:.75rem}.level-toolbar button{padding:9px 11px}}
+
+
+/* AI auto-clear, coin shop and payment review additions */
+.ai-clear-button{background:linear-gradient(135deg,#7650d8,#4f8bff);box-shadow:0 4px 0 #3c5fc1}
+.coin-pack-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:13px}
+.coin-pack{padding:17px;border:1px solid #eadcf5;border-radius:17px;background:linear-gradient(135deg,#fff,#fff5fa);box-shadow:0 6px 18px #5a3a7910}
+.coin-pack h3{margin:7px 0 5px;font-size:1.05rem}
+.coin-pack .pack-coins{font-size:1.6rem;font-weight:950;color:#6842ac}
+.coin-pack .pack-price{font-size:1rem;font-weight:900}
+.coin-pack p{font-size:.77rem;color:var(--muted);line-height:1.45;margin:5px 0 10px}
+.coin-pack button{width:100%}
+.payment-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.payment-form .full{grid-column:1/-1}
+.payment-form label{display:block;font-size:.72rem;font-weight:850;color:var(--muted);letter-spacing:.4px;text-transform:uppercase;margin:2px 0 5px}
+.payment-form button{width:100%}
+.order-list{display:grid;gap:9px}
+.order-row{padding:12px;border:1px solid var(--line);border-radius:13px;background:#fff;display:grid;gap:7px}
+.order-row-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.order-row strong{overflow-wrap:anywhere}
+.order-meta{font-size:.77rem;color:var(--muted);line-height:1.5;overflow-wrap:anywhere}
+.order-actions{display:flex;gap:7px;flex-wrap:wrap}
+.order-actions button{font-size:.75rem;padding:8px 10px}
+.status-pill{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:#fff0c4;color:#81520b;font-size:.68rem;font-weight:900;text-transform:uppercase}
+.status-pill.approved{background:#dff8ee;color:#087d65}
+.status-pill.rejected{background:#ffe8ef;color:#a12e58}
+.status-pill.pending{background:#fff0c4;color:#81520b}
+.admin-warning{margin:10px 0;padding:11px 12px;border:1px solid #f5dda0;border-radius:12px;background:#fff8e5;color:#795514;font-size:.78rem;line-height:1.5}
+.payment-instructions{margin:10px 0;padding:12px;border:1px dashed #d4bfe9;border-radius:12px;background:#fff;font-size:.8rem;line-height:1.55;color:#6d557f}
+.ai-usage{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:9px;padding:10px 12px;background:#fff;border:1px solid var(--line);border-radius:11px;font-size:.8rem}
+.ai-usage strong{color:#6842ac;font-variant-numeric:tabular-nums}
+.empty-state{padding:16px;border:1px dashed #d4bfe9;border-radius:12px;color:var(--muted);font-size:.82rem;line-height:1.5;text-align:center;background:#fff}
+@media(max-width:650px){
+ .coin-pack-grid{grid-template-columns:1fr}
+ .payment-form{grid-template-columns:1fr}
+ .payment-form .full{grid-column:auto}
+}
+
+
+/* Focused play screen: keep the game board centered and visible on open. */
+#appShell.game-focus .app-grid{min-height:calc(100dvh - 96px);align-items:center}
+#appShell.game-focus .workspace{width:100%;min-height:calc(100dvh - 150px)!important;display:block!important}
+#appShell.game-focus #view-play{display:flex!important;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100dvh - 160px);width:100%;padding:0}
+#appShell.game-focus #view-play>.page-heading{display:none!important}
+#appShell.game-focus .play-grid{display:block!important;width:100%;max-width:850px;margin:0 auto}
+#appShell.game-focus .play-side{display:none!important}
+#appShell.game-focus .game-panel{width:100%;max-width:850px;margin:0 auto;padding:10px}
+#appShell.game-focus .level-toolbar{margin-bottom:7px}
+#appShell.game-focus .board-wrap{display:grid;place-items:center;padding:5px}
+#appShell.game-focus canvas{width:min(100%,640px,calc(100dvh - 360px));height:auto;max-width:100%;aspect-ratio:1;object-fit:contain;margin:0 auto}
+#appShell.game-focus .help{display:none!important}
+#appShell.game-focus .game-actions{max-width:640px;margin:9px auto 0}
+#appShell.game-focus .status{min-height:1.2em;margin:4px 0 0}
+#appShell.game-focus .footer-note{display:none!important}
+@media(max-width:900px){
+  #appShell.game-focus .app-grid{display:flex!important;flex-direction:column!important;gap:0;min-height:0}
+  #appShell.game-focus .workspace{min-height:calc(100dvh - 160px)!important;margin-bottom:0;width:100%}
+  #appShell.game-focus #view-play{min-height:calc(100dvh - 165px)!important}
+  #appShell.game-focus canvas{width:min(100%,640px,calc(100dvh - 400px));max-height:calc(100dvh - 400px)}
+  #appShell.game-focus .level-toolbar{justify-content:center}
+  #appShell.game-focus .season-badge{display:none}
+  #appShell.game-focus .game-panel{padding:8px}
+}
+@media(max-height:620px) and (max-width:900px){
+  #appShell.game-focus canvas{width:min(100%,640px,calc(100dvh - 400px));max-height:calc(100dvh - 400px)}
+  #appShell.game-focus .stats{margin-bottom:6px}
+  #appShell.game-focus .stat{padding:6px 8px}
+  #appShell.game-focus .level-mission{margin-bottom:6px;padding:7px 9px}
+}
+@media(max-height:620px) and (min-width:901px){
+  #appShell.game-focus canvas{width:min(100%,640px,calc(100dvh - 340px));max-height:calc(100dvh - 340px)}
+  #appShell.game-focus .stats{margin-bottom:6px}
+  #appShell.game-focus .stat{padding:6px 8px}
+  #appShell.game-focus .level-mission{margin-bottom:6px;padding:7px 9px}
+}
+
+</style>
+</head>
+<body>
+<section class="auth-screen" id="authScreen" aria-label="Sign in to Sweet Match">
+  <div class="auth-card">
+    <div class="auth-brand"><div class="brand-mark">🍬</div><div><h1>Sweet <span>Match!</span></h1><div class="demo-badge" style="display:inline-block;margin-top:5px">MATCH · PLAY · REWARD</div></div></div>
+    <p class="auth-lead">A little match, a lot of magic. Play puzzles, collect coins and climb the leaderboard.</p>
+    <div class="auth-visual" aria-hidden="true"><span>🍓</span><span>💎</span><span>🍋</span><span>🍇</span><span>🌿</span></div>
+    <div class="auth-social">
+      <button class="provider-btn google" id="googleSignInBtn" type="button"><span class="provider-icon">G</span> Continue with Google</button>
+      <button class="provider-btn facebook" id="facebookSignInBtn" type="button"><span class="provider-icon">f</span> Continue with Facebook</button>
+    </div>
+    <div class="auth-divider">or use email</div>
+    <h2 id="authTitle" style="text-align:center;margin:0 0 12px;font-size:1.25rem">Welcome back</h2>
+    <form id="authForm" class="auth-form">
+      <div id="authNameWrap" hidden><label for="authName">Your name</label><input class="field" id="authName" maxlength="30" autocomplete="name" placeholder="Enter your name"></div>
+      <label for="authEmail">Email address</label><input class="field" id="authEmail" type="email" autocomplete="email" required placeholder="you@example.com">
+      <label for="authPassword">Password</label><input class="field" id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters">
+      <button class="auth-submit" id="authSubmit" type="submit">Sign in</button>
+    </form>
+    <button class="auth-switch" id="authModeToggle" type="button">New here? Create an account</button>
+    <button class="guest-btn" id="guestBtn" type="button">🎮 Play as Guest — No Login Required</button>
+    <p class="auth-status" id="authStatus" aria-live="polite"></p>
+    <p class="auth-footnote">You can play as a guest anytime. Account sign-in needs Firebase Authentication setup by the game owner. Guest progress stays on this device in this demo.</p>
+  </div>
+</section>
+
+<div class="app-shell" id="appShell" hidden>
+  <header class="app-topbar">
+    <div class="app-logo"><div class="brand-mark">🍬</div><div><h1>Sweet <span style="color:var(--pink)">Match!</span></h1><p>Match gems. Collect joy.</p></div></div>
+    <div class="topbar-right"><div class="wallet-chip">🪙 <span id="coinsTop">200</span> coins</div><button class="account-pill" id="accountBtn" type="button">Guest · Sign in</button></div>
+  </header>
+  <div class="app-grid">
+    <nav class="nav-rail" aria-label="Main navigation">
+      <div class="nav-caption">Game menu</div>
+      <button class="nav-btn active" data-view="home" type="button"><span class="nav-icon">🏠</span><span>Home</span></button>
+      <button class="nav-btn" data-view="play" type="button"><span class="nav-icon">🎮</span><span>Play</span></button>
+      <button class="nav-btn" data-view="rewards" type="button"><span class="nav-icon">🎁</span><span>Rewards</span></button>
+      <button class="nav-btn" data-view="coins" type="button"><span class="nav-icon">🪙</span><span>Coins</span></button>
+      <button class="nav-btn" data-view="referrals" type="button"><span class="nav-icon">🤝</span><span>Invite</span></button>
+      <button class="nav-btn" data-view="leaderboard" type="button"><span class="nav-icon">🏆</span><span>Ranks</span></button>
+      <button class="nav-btn" data-view="profile" type="button"><span class="nav-icon">👤</span><span>Profile</span></button>
+    </nav>
+
+    <main class="workspace">
+      <section class="page-view active" id="view-home">
+        <div class="hero-card"><span class="demo-badge" style="display:inline-block;margin-bottom:12px">YOUR SWEET ADVENTURE</span><h2>Ready to match your way to the top?</h2><p>Match colourful gems, build your best score, earn demo coins and invite friends. Your game tools now have their own dedicated screens.</p><div class="hero-actions"><button id="startPlayBtn" type="button">▶ Play now</button><button class="secondary" data-go="rewards" type="button">🎁 Daily rewards</button></div></div>
+        <div class="overview-grid">
+          <div class="overview-stat"><span class="ov-icon">🪙</span><small>Coin wallet</small><strong id="homeCoins">200</strong></div>
+          <div class="overview-stat"><span class="ov-icon">⭐</span><small>Best score</small><strong id="homeBest">0</strong></div>
+          <div class="overview-stat"><span class="ov-icon">🗺️</span><small>Levels unlocked</small><strong id="homeLevel">1 / 100 unlocked</strong></div>
+          <div class="overview-stat"><span class="ov-icon">🎁</span><small>Ads today</small><strong id="homeDaily">0 / 30</strong></div>
+        </div>
+        <div class="page-heading"><div><h2>Quick access</h2><p>Everything in one place, without a long scrolling page.</p></div></div>
+        <div class="quick-grid">
+          <article class="quick-card"><div class="quick-icon">🎁</div><h3>Daily rewards</h3><p>Earn 500 coins per test ad. Only AI reward ads have a 3-per-day limit; coin-funded AI play is unlimited.</p><button class="secondary" data-go="rewards" type="button">Open rewards</button></article>
+          <article class="quick-card"><div class="quick-icon">🤝</div><h3>Invite friends</h3><p>Share your unique code. Live referral payouts need verification.</p><button class="secondary" data-go="referrals" type="button">Invite friends</button></article>
+          <article class="quick-card"><div class="quick-icon">🏆</div><h3>Leaderboards</h3><p>Explore weekly, monthly, country and global ranking screens.</p><button class="secondary" data-go="leaderboard" type="button">View rankings</button></article>
+        </div>
+      </section>
+
+      <section class="page-view" id="view-play">
+        <div class="page-heading"><div><h2>🎮 Play Sweet Match</h2><p>Complete the fixed 100-level journey across five magical seasons. No levels beyond Level 100.</p></div><span class="demo-badge" id="seasonBadge">🌳 Candy Forest</span></div>
+        <div class="play-grid">
+          <section class="content-card game-panel">
+            <div class="level-toolbar"><span class="season-badge" id="seasonLabel">Season 1 · Candy Forest</span><button id="levelMapBtn" class="soft" type="button">🗺️ Level Map · 100</button></div>
+            <div class="stats level-stats"><div class="stat"><small>Level</small><strong id="levelNum">1 / 100</strong><span class="substat" id="levelTypeLabel">Score mission</span></div><div class="stat"><small id="scoreMetricLabel">Score / Target</small><strong id="score">0 / 600</strong><div class="level-progress-track"><span id="scoreProgress"></span></div></div><div class="stat"><small>Moves left</small><strong id="moveCount">24</strong><span class="substat" id="bestScore">Best 0</span></div></div>
+            <div class="level-mission" aria-live="polite"><span id="missionText">⭐ Reach the score target</span><span id="jellyCount" class="mission-detail" hidden>🍮 0 jelly left</span><strong id="timerNum" class="timer-chip" hidden>60s</strong></div>
+            <div class="board-wrap"><canvas id="board" width="640" height="640" aria-label="Match three game board"></canvas></div>
+            <div class="game-actions"><button id="restart" type="button">↻ Retry Level</button><button id="hintBtn" class="secondary" type="button">💡 Hint · 50 coins</button><button id="aiClearBtn" class="ai-clear-button" type="button">✨ AI Auto-Play · 5,000 coins</button></div>
+            <p class="help">Tap one gem, then an adjacent gem to swap. Match 3 or more of the same colour. Finish the level objective to unlock the next one.</p><div id="status" class="status" aria-live="polite">Ready to play!</div>
+          </section>
+          <aside class="play-side"><section class="content-card"><h3>✨ How to play</h3><ul><li>Select a gem.</li><li>Swap it with an adjacent gem.</li><li>Match 3 or more of the same colour.</li><li>Use hints when you need help.</li></ul></section><section class="content-card"><h3>🪙 Your wallet</h3><p>Hints cost 50 coins. AI Auto-Play makes real swaps and matches until the objective is complete, then opens the next level. It costs 5,000 coins per level and can be used as often as your wallet allows. Only AI reward ads are limited to 3 per day.</p><div class="ai-usage"><span>AI levels played today</span><strong id="aiUsageInline">0</strong></div><button class="secondary" data-go="coins" type="button" style="width:100%;margin-top:10px">Buy coins</button><button class="soft" data-go="rewards" type="button" style="width:100%;margin-top:9px">Earn demo coins</button></section></aside>
+        </div>
+      </section>
+
+      <section class="page-view" id="view-rewards">
+        <div class="page-heading"><div><h2>🎁 Rewards Centre</h2><p>Check your daily progress and available test rewards.</p></div><span class="demo-badge">DEMO ONLY</span></div>
+        <section class="content-card"><div class="reward-hero"><div><h3>Daily rewarded ads</h3><p>Complete up to 30 simulated ad sessions per UTC day. Each test completion adds 500 demo coins.</p></div><div class="reward-big">🎬</div></div><div class="daily-count" style="margin-top:18px"><span>Today's completed test ads</span><strong id="dailyCount">0 / 30</strong></div><div class="reward-progress"><span id="dailyProgress"></span></div><button class="green reward-button" id="watchAdBtn" type="button">▶ Test rewarded ad · +500 coins</button><div class="notice" style="margin-top:14px"><strong>Important:</strong> This button simulates a test reward only. It does not load a real ad. Production rewards must be triggered by the ad provider's verified completion event and the daily limit must be enforced by a server.</div></section>
+        <section class="content-card"><div class="reward-hero"><div><h3>✨ AI Auto-Play</h3><p>AI visibly plays the board by swapping gems and making matches until the current level objective is complete. It then opens and plays the next level automatically. Each level costs 5,000 coins. Use AI as often as your wallet allows; only AI reward ads are limited to 3 per day, and each test ad adds 500 coins.</p></div><div class="reward-big">🤖</div></div><div class="ai-usage"><span>AI levels played today</span><strong id="aiUsageCount">0</strong></div><div class="ai-usage"><span>AI reward ads used today</span><strong id="aiAdsCount">0 / 3</strong></div><button class="ai-clear-button reward-button" type="button" data-go="play">Open game to use AI Auto-Play</button><p class="tiny-note">Both counters are local demo controls unless the backend and real rewarded-ad verification are configured.</p></section>
+      </section>
+
+      <section class="page-view" id="view-coins">
+        <div class="page-heading"><div><h2>🪙 Coin Shop</h2><p>Choose a coin package and submit your bank transfer, EasyPaisa or JazzCash reference for admin approval.</p></div><span class="demo-badge">PAYMENT REVIEW</span></div>
+        <div class="coin-pack-grid">
+          <article class="coin-pack"><div class="demo-badge">POPULAR</div><div class="pack-coins">20,000 coins</div><div class="pack-price">$3 · approx. PKR 832</div><p>Coins are added only after the payment reference is reviewed and approved.</p><button class="secondary" type="button" data-pack="20000">Choose 20,000</button></article>
+          <article class="coin-pack"><div class="demo-badge">BEST VALUE</div><div class="pack-coins">50,000 coins</div><div class="pack-price">$5 · approx. PKR 1,386</div><p>Coins are added only after the payment reference is reviewed and approved.</p><button type="button" data-pack="50000">Choose 50,000</button></article>
+        </div>
+        <section class="content-card">
+          <h3>Submit a payment request</h3>
+          <p>First transfer the exact amount to the official account shown by the game owner. Enter your transaction reference below. Do not send money to unofficial numbers.</p>
+          <div class="payment-instructions" id="paymentInstructions">Payment details are not configured in this HTML preview. The owner must add verified bank, EasyPaisa and JazzCash details before accepting real payments.</div>
+          <form id="coinPurchaseForm" class="payment-form">
+            <div><label for="coinPack">Coin package</label><select class="field" id="coinPack" required><option value="20000">20,000 coins — $3 / approx. PKR 832</option><option value="50000">50,000 coins — $5 / approx. PKR 1,386</option></select></div>
+            <div><label for="paymentMethod">Payment method</label><select class="field" id="paymentMethod" required><option value="bank_transfer">Bank transfer</option><option value="easypaisa">EasyPaisa</option><option value="jazzcash">JazzCash</option></select></div>
+            <div><label for="payerName">Sender name</label><input class="field" id="payerName" maxlength="60" required placeholder="Name used for payment"></div>
+            <div><label for="payerPhone">Sender phone</label><input class="field" id="payerPhone" maxlength="24" required placeholder="03XX-XXXXXXX"></div>
+            <div class="full"><label for="transactionReference">Transaction ID / reference</label><input class="field" id="transactionReference" maxlength="100" required placeholder="Enter the bank / wallet transaction reference"></div>
+            <div class="full"><label for="paymentAttachment">Attach payment receipt (optional)</label><input class="field" id="paymentAttachment" type="file" accept="image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"><p class="tiny-note">Attach a bank/EasyPaisa/JazzCash receipt screenshot or PDF. Maximum file size: 700 KB.</p><p class="tiny-note" id="paymentAttachmentStatus" aria-live="polite">No receipt attached.</p></div>
+            <div class="full"><label for="paymentNote">Optional note</label><input class="field" id="paymentNote" maxlength="180" placeholder="Any details that help verify your payment"></div>
+            <div class="full"><button type="submit">Submit for admin approval</button></div>
+          </form>
+          <p class="tiny-note" id="coinPurchaseStatus" role="status">Your coins remain unchanged while a request is pending.</p>
+          <p class="tiny-note">PKR amounts are approximate display prices using a reference interbank selling rate of about 1 USD ≈ PKR 277.25 on 29 Oct 2026. The owner should confirm final local prices and any transfer fees.</p>
+        </section>
+        <section class="content-card"><h3>Your payment requests</h3><div id="myPaymentsList" class="order-list"><div class="empty-state">No payment requests yet.</div></div></section>
+      </section>
+
+      <section class="page-view" id="view-referrals">
+        <div class="page-heading"><div><h2>🤝 Invite & Earn</h2><p>Invite friends with your unique referral code.</p></div></div>
+        <div class="section-grid"><section class="content-card"><h3>Your referral code</h3><p>Share your code with a friend. The planned live reward is <strong>3,000 coins</strong> for each valid referral after server verification.</p><div class="code-box"><strong id="referralCode">SWEET1234</strong><button class="secondary" id="copyCodeBtn" type="button">Copy code</button></div><div class="referral-actions"><button id="shareInviteBtn" type="button">↗ Share invite</button><button id="copyInviteBtn" class="soft" type="button">Copy invite text</button></div><div class="referral-meta"><span>Successful invites</span><strong id="referralCount">0 · demo</strong></div></section>
+        <section class="content-card"><h3>Have a friend's code?</h3><p>Enter a code that a friend shared with you. In this preview it is saved locally and does not issue coins.</p><label class="field-label" for="friendCode">Referral code</label><div style="display:flex;gap:7px"><input class="field" id="friendCode" maxlength="20" placeholder="Enter referral code"><button id="applyCodeBtn" class="secondary" type="button">Apply</button></div><p class="tiny-note" id="referralStatus">Referral tracking is a preview until a shared backend is connected.</p></section></div>
+      </section>
+
+      <section class="page-view" id="view-leaderboard">
+        <div class="page-heading"><div><h2>🏆 Leaderboards</h2><p>Choose a ranking view and track your best local score.</p></div></div>
+        <section class="content-card"><div class="tabs" role="tablist" aria-label="Leaderboard type"><button class="tab active" data-board="weekly" role="tab" aria-selected="true" type="button">Weekly</button><button class="tab" data-board="monthly" role="tab" aria-selected="false" type="button">Monthly</button><button class="tab" data-board="country" role="tab" aria-selected="false" type="button">Country</button><button class="tab" data-board="global" role="tab" aria-selected="false" type="button">Global</button></div><div class="leaderboard-view" id="leaderboardView" aria-live="polite"></div><p class="tiny-note">Live rankings across players and devices need a shared database, account IDs, anti-cheat checks and server-validated score submissions.</p></section>
+      </section>
+
+      <section class="page-view" id="view-profile">
+        <div class="page-heading"><div><h2>👤 Player profile</h2><p>Manage your display name, country and sign-in option.</p></div></div>
+        <div class="section-grid"><section class="content-card"><h3>Player details</h3><div class="profile-grid"><div><label class="field-label" for="playerName">Player name</label><input class="field" id="playerName" maxlength="20" value="Guest Player" autocomplete="nickname"></div><div><label class="field-label" for="countryCode">Country</label><select class="field" id="countryCode"><option value="US">United States</option><option value="PK">Pakistan</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="IN">India</option><option value="AE">United Arab Emirates</option><option value="AU">Australia</option><option value="BD">Bangladesh</option><option value="OTHER">Other</option></select></div></div><p class="tiny-note">Profile details in this demo are stored on this device.</p></section>
+        <section class="content-card"><h3>Account & security</h3><p id="accountSummary">You are playing as a guest. No account is required.</p><p class="tiny-note">Google, Facebook and email authentication become active after the owner connects a Firebase project. Guest play remains available.</p><button id="profileAuthBtn" type="button" style="width:100%">Sign in or register</button><button class="secondary" id="adminLoginBtn" type="button" style="width:100%;margin-top:10px">🔐 Admin login / payment approvals</button><button class="soft" id="resetProgress" type="button" style="width:100%;margin-top:10px">Reset demo data</button></section></div>
+        <section class="content-card" style="margin-top:13px"><div class="notice"><strong>Before publishing</strong><br>Authentication is separate from the secure game backend. A production release still needs server-side coin balances, verified rewarded ads, referral validation, live leaderboards, privacy disclosures and abuse prevention.</div></section>
+      </section>
+      <section class="page-view" id="view-admin">
+        <div class="page-heading"><div><h2>🔐 Admin · Coin Approvals</h2><p>Review bank transfer, EasyPaisa and JazzCash requests. Approve only after checking the transaction in your own account.</p></div><button id="exitAdminBtn" class="soft" type="button">Exit admin</button></div>
+        <div class="admin-warning" id="adminModeWarning">Demo admin mode: this queue is stored in this browser only. It is not a secure live admin system. Use the backend starter included with this project for real multi-user approvals.</div>
+        <section class="content-card"><div class="card-head"><h3>Payment requests</h3><button id="refreshAdminPaymentsBtn" class="soft" type="button">Refresh</button></div><div id="adminPaymentsList" class="order-list"><div class="empty-state">No payment requests found.</div></div></section>
+      </section>
+    </main>
+  </div>
+  <p class="footer-note">Demo preview: without a configured backend, coins, progress, payment requests and demo admin approvals are stored in this browser only. Real payment approvals and cross-device coin balances require the included backend to be configured and deployed.</p>
+</div>
+
+<div class="overlay" id="levelMapOverlay" role="dialog" aria-modal="true" aria-labelledby="levelMapTitle"><div class="modal level-map-modal"><h2 id="levelMapTitle">🗺️ Level Map</h2><p>Exactly 100 levels · 5 seasons. Level 100 is the final level; there is no Level 101.</p><div class="season-cards" id="seasonCards"></div><div class="level-map-legend"><span>🟣 Current level</span><span>⭐ Completed</span><span>🔒 Locked</span></div><div class="level-map-grid" id="levelMapGrid"></div><div class="modal-actions"><button class="soft" id="closeLevelMapBtn" type="button">Back to game</button></div></div></div>
+<div class="overlay" id="levelResultOverlay" role="dialog" aria-modal="true" aria-labelledby="levelResultTitle"><div class="modal"><h2 id="levelResultTitle">Level complete!</h2><div id="levelResultBody"></div><div class="modal-actions" id="levelResultActions"></div></div></div>
+<div class="overlay" id="demoAdOverlay" role="dialog" aria-modal="true" aria-labelledby="demoAdTitle"><div class="modal"><h2 id="demoAdTitle">Test Rewarded Ad</h2><p>This is a development preview, not a real ad. If you complete this test, the game simulates a reward of <strong>500 coins</strong>. In production, only a verified ad completion can grant rewards.</p><div class="modal-actions"><button class="soft" id="cancelDemoAd" type="button">Cancel</button><button id="completeDemoAd" type="button">Complete test & earn 500</button></div></div></div>
+<div class="overlay" id="aiAdOverlay" role="dialog" aria-modal="true" aria-labelledby="aiAdTitle"><div class="modal"><h2 id="aiAdTitle">🎬 AI Auto-Play Reward</h2><p>In demo mode, completing this test ad adds <strong>500 coins</strong>, then AI automatically resumes if you have enough coins. Each AI level costs 5,000 coins. AI use is unlimited while you can afford it; only AI reward ads are limited to 3 per day. This is a simulation, not a real ad.</p><p class="tiny-note">Production rewards must be granted only after a rewarded-ad provider verifies completion on the server.</p><div class="modal-actions"><button class="soft" id="cancelAiAd" type="button">Cancel</button><button id="completeAiAdBtn" type="button">Complete test ad · +500</button></div></div></div>
+<div class="overlay" id="adminLoginOverlay" role="dialog" aria-modal="true" aria-labelledby="adminLoginTitle"><div class="modal"><h2 id="adminLoginTitle">🔐 Admin Login</h2><p id="adminLoginDescription">Demo login is only for testing this HTML file. It is not secure enough for a public website.</p><form id="adminLoginForm" class="auth-form"><label for="demoAdminUser">Username</label><input class="field" id="demoAdminUser" autocomplete="username" required placeholder="Admin username"><label for="demoAdminPassword">Password</label><input class="field" id="demoAdminPassword" type="password" autocomplete="current-password" required placeholder="Admin password"><button type="submit">Sign in as admin</button></form><p class="auth-status" id="adminLoginStatus" role="status"></p><p class="tiny-note">Local preview credentials: <strong>admin</strong> / <strong>ChangeMe123!</strong>. Do not deploy these credentials. Production admin access must use server-verified roles.</p><div class="modal-actions"><button class="soft" id="cancelAdminLogin" type="button">Cancel</button></div></div></div>
+<div class="toast" id="globalToast" role="status" aria-live="polite"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+<!-- FUTURE WEB ADS:
+     Do not paste a standard AdSense display ad here and reward users for clicking it.
+     After approval, choose a supported ad product/format and follow its current policies.
+     For web rewarded ads, connect the provider's completion event to a trusted backend.
+-->
+<script>
+(() => {
+"use strict";
+
+const $ = id => document.getElementById(id);
+const canvas = $("board");
+const ctx = canvas.getContext("2d");
+const scoreEl = $("score");
+const statusEl = $("status");
+const restartBtn = $("restart");
+const SIZE = 8;
+const TYPES = [
+  {name:"Strawberry",color:"#ff4f87",light:"#ff9bbb",dark:"#d92663",shape:"circle"},
+  {name:"Blueberry",color:"#4c8dff",light:"#9cc7ff",dark:"#2853d4",shape:"diamond"},
+  {name:"Lemon",color:"#ffd447",light:"#fff1a0",dark:"#e7a900",shape:"star"},
+  {name:"Grape",color:"#a66aff",light:"#d7b5ff",dark:"#7138ca",shape:"hex"},
+  {name:"Mint",color:"#35d6b0",light:"#9af4d9",dark:"#0e9b7c",shape:"bean"}
+];
+const DAILY_AD_LIMIT = 30;
+const COINS_PER_TEST_AD = 500;
+const HINT_COST = 50;
+const LEVEL_COMPLETION_REWARD = 2000;
+const AI_CLEAR_COST = 5000;
+// AI usage is unlimited while the player can afford each level.
+const AI_AD_REWARD = 500;
+const AI_AD_DAILY_LIMIT = 3;
+const PAYMENT_QUEUE_KEY = "sweetMatchCoinPayments_demo_v1";
+const DEMO_ADMIN_USERNAME = "admin";
+const DEMO_ADMIN_PASSWORD = "ChangeMe123!";
+const BACKEND_API_BASE_URL = ""; // Set this to the deployed API URL to enable secure server mode.
+const COIN_PACKAGES = {
+  "20000": {coins:20000, usd:3, pkr:832},
+  "50000": {coins:50000, usd:5, pkr:1386}
+};
+const REFERRAL_REWARD = 3000;
+const DEMO_MODE = true;
+const SAVE_KEY = "sweetMatchAdventure_rewards_demo_v1";
+const LEVEL_COUNT = 100;
+const SEASONS = [
+  {name:"Candy Forest",emoji:"🌳",desc:"Berry trails and sugar trees"},
+  {name:"Sugar Desert",emoji:"🏜️",desc:"Golden dunes and lemon gems"},
+  {name:"Frosting Peaks",emoji:"🏔️",desc:"Icy cliffs and cool combos"},
+  {name:"Gummy Galaxy",emoji:"🪐",desc:"Cosmic sweets and star dust"},
+  {name:"Chocolate Kingdom",emoji:"🏰",desc:"The grand candy finale"}
+];
+
+let grid = [], jellyGrid = [], selected = null, hintCells = [], score = 0, moves = 0, busy = false, animations = [];
+let levelConfig = {type:"score",timeLimit:0,jellyGoal:0};
+let timerEndsAt = 0, levelOver = false, lastTimerSecond = -1, currentLevelStartMoves = 24;
+let cell = canvas.width / SIZE;
+// Rendering caches: draw gradients/shadows once, then reuse cached pixels during animations.
+let gemSprites = [];
+const boardTilesCanvas = document.createElement("canvas");
+boardTilesCanvas.width = canvas.width;
+boardTilesCanvas.height = canvas.height;
+const boardTilesCtx = boardTilesCanvas.getContext("2d");
+const boardCacheCanvas = document.createElement("canvas");
+boardCacheCanvas.width = canvas.width;
+boardCacheCanvas.height = canvas.height;
+const boardCacheCtx = boardCacheCanvas.getContext("2d");
+let save = loadSave();
+let pendingDemoReward = false;
+let pendingAiAdReward = false;
+let aiResumeAfterAd = false;
+let aiAutoRunning = false;
+let aiCompleting = false;
+let isAdminMode = false;
+let pendingCloudProgress = Promise.resolve();
+
+function dateKey() {
+  // UTC is used in both demo and backend mode so daily limits cannot reset differently by timezone.
+  return new Date().toISOString().slice(0,10);
+}
+function randomCode() {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let result = "SM-";
+  for (let i=0;i<6;i++) result += alphabet[Math.floor(Math.random()*alphabet.length)];
+  return result;
+}
+function defaultSave() {
+  return {
+    coins:200, bestScore:0, dailyAdsDate:dateKey(), dailyAdsCount:0,
+    aiUsesDate:dateKey(), aiUsesCount:0, aiAdsDate:dateKey(), aiAdsCount:0,
+    playerName:"Guest Player", countryCode:"US", referralCode:randomCode(),
+    referralCount:0, appliedReferralCode:"", currentLevel:1, maxUnlocked:1,
+    levelStars:{}, completedLevels:{}, lastUpdated:Date.now()
+  };
+}
+function loadSave() {
+  try {
+    let raw = JSON.parse(localStorage.getItem(SAVE_KEY) || "null");
+    // Migrate progress from the original 100-level build if that save still exists.
+    if (!raw) {
+      const legacy = JSON.parse(localStorage.getItem("sweetMatchAdventure_v1") || "null");
+      if (legacy && typeof legacy === "object") {
+        raw = {
+          ...legacy,
+          levelStars: legacy.levelStars || legacy.stars || {},
+          completedLevels: legacy.completedLevels || legacy.completed || {},
+          currentLevel: legacy.currentLevel || 1,
+          maxUnlocked: legacy.maxUnlocked || 1
+        };
+      }
+    }
+    const defaults = defaultSave();
+    if (!raw || typeof raw !== "object") return defaults;
+    return {
+      ...defaults, ...raw,
+      coins:Math.max(0,Math.floor(Number(raw.coins ?? defaults.coins)||0)),
+      bestScore:Math.max(0,Math.floor(Number(raw.bestScore)||0)),
+      dailyAdsCount:Math.max(0,Math.min(DAILY_AD_LIMIT,Math.floor(Number(raw.dailyAdsCount)||0))),
+      aiUsesCount:Math.max(0,Math.floor(Number(raw.aiUsesCount)||0)),
+      aiAdsCount:Math.max(0,Math.min(AI_AD_DAILY_LIMIT,Math.floor(Number(raw.aiAdsCount)||0))),
+      aiUsesDate:typeof raw.aiUsesDate==="string"?raw.aiUsesDate:dateKey(),
+      aiAdsDate:typeof raw.aiAdsDate==="string"?raw.aiAdsDate:dateKey(),
+      referralCount:Math.max(0,Math.floor(Number(raw.referralCount)||0)),
+      currentLevel:Math.max(1,Math.min(LEVEL_COUNT,Math.floor(Number(raw.currentLevel)||1))),
+      maxUnlocked:Math.max(1,Math.min(LEVEL_COUNT,Math.floor(Number(raw.maxUnlocked)||1))),
+      levelStars:raw.levelStars && typeof raw.levelStars === "object" ? raw.levelStars : {},
+      completedLevels:raw.completedLevels && typeof raw.completedLevels === "object" ? raw.completedLevels : {}
+    };
+  } catch (_) { return defaultSave(); }
+}
+function persist() {
+  save.lastUpdated = Date.now();
+  try { localStorage.setItem(SAVE_KEY,JSON.stringify(save)); }
+  catch (_) { setStatus("Browser storage is unavailable. Progress may not persist."); }
+}
+function syncDailyCount() {
+  const today = dateKey();
+  let changed = false;
+  if (save.dailyAdsDate !== today) {
+    save.dailyAdsDate = today;
+    save.dailyAdsCount = 0;
+    changed = true;
+  }
+  if (save.aiUsesDate !== today) {
+    save.aiUsesDate = today;
+    save.aiUsesCount = 0;
+    changed = true;
+  }
+  if (save.aiAdsDate !== today) {
+    save.aiAdsDate = today;
+    save.aiAdsCount = 0;
+    changed = true;
+  }
+  if (changed) persist();
+}
+let toastTimer = null;
+function setStatus(message) {
+  if (statusEl) statusEl.textContent = message;
+  const toast = $("globalToast");
+  if (toast) {
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+  }
+}
+function backendConfigured() {
+  return Boolean(BACKEND_API_BASE_URL && BACKEND_API_BASE_URL.trim());
+}
+async function backendRequest(path, options = {}) {
+  if (!backendConfigured()) return null;
+  if (!currentUser || typeof currentUser.getIdToken !== "function") {
+    throw new Error("Please sign in with your player account first.");
+  }
+  const token = await currentUser.getIdToken();
+  const headers = {"Authorization": `Bearer ${token}`};
+  if (options.body !== undefined) headers["Content-Type"] = "application/json";
+  const response = await fetch(`${BACKEND_API_BASE_URL.replace(/\/+$/, "")}${path}`, {
+    method: options.method || "GET",
+    headers,
+    body: options.body === undefined ? undefined : JSON.stringify(options.body)
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || `Server request failed (${response.status}).`);
+  return data;
+}
+function currentOwnerKey() {
+  if (currentUser && currentUser.uid) return `uid:${currentUser.uid}`;
+  if (currentUser && currentUser.email) return `email:${currentUser.email.toLowerCase()}`;
+  return `guest:${save.referralCode || "this-device"}`;
+}
+function readPaymentQueue() {
+  try {
+    const value = JSON.parse(localStorage.getItem(PAYMENT_QUEUE_KEY) || "[]");
+    return Array.isArray(value) ? value : [];
+  } catch (_) { return []; }
+}
+function writePaymentQueue(queue) {
+  try { localStorage.setItem(PAYMENT_QUEUE_KEY, JSON.stringify(queue)); }
+  catch (_) { setStatus("Could not save the demo payment queue in browser storage."); }
+}
+function applyRemoteState(remoteState, restartLevel = false, preserveCurrentLevel = false) {
+  if (!remoteState || typeof remoteState !== "object") return;
+  const oldLevel = save.currentLevel;
+  save.coins = Math.max(0, Math.floor(Number(remoteState.coins ?? save.coins) || 0));
+  save.currentLevel = preserveCurrentLevel ? oldLevel : Math.max(1, Math.min(LEVEL_COUNT, Math.floor(Number(remoteState.currentLevel ?? save.currentLevel) || 1)));
+  save.maxUnlocked = Math.max(1, Math.min(LEVEL_COUNT, Math.floor(Number(remoteState.maxUnlocked ?? save.maxUnlocked) || 1)));
+  save.levelStars = remoteState.levelStars && typeof remoteState.levelStars === "object" ? remoteState.levelStars : save.levelStars;
+  save.completedLevels = remoteState.completedLevels && typeof remoteState.completedLevels === "object" ? remoteState.completedLevels : save.completedLevels;
+  save.aiUsesDate = remoteState.aiUsesDate || save.aiUsesDate || dateKey();
+  save.aiUsesCount = Math.max(0, Math.floor(Number(remoteState.aiUsesCount ?? save.aiUsesCount) || 0));
+  persist();
+  refreshDashboard();
+  renderLevelMap();
+  if (restartLevel || (!preserveCurrentLevel && oldLevel !== save.currentLevel)) startLevel(save.currentLevel);
+}
+async function syncRemotePlayerState(restartLevel = false) {
+  if (!backendConfigured() || !currentUser) return;
+  const data = await backendRequest("/api/player/state");
+  if (data && data.state) applyRemoteState(data.state, restartLevel, !restartLevel);
+}
+async function publicBackendRequest(path) {
+  if (!backendConfigured()) return null;
+  const response = await fetch(`${BACKEND_API_BASE_URL.replace(/\/+$/, "")}${path}`, {headers:{"Accept":"application/json"}});
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || `Server request failed (${response.status}).`);
+  return data;
+}
+function formatPaymentStatus(status) {
+  const normalized = String(status || "pending").toLowerCase();
+  return `<span class="status-pill ${escapeHtml(normalized)}">${escapeHtml(normalized.replace(/_/g, " "))}</span>`;
+}
+function renderPaymentOrder(order, admin = false) {
+  const packageInfo = COIN_PACKAGES[String(order.coins)] || {coins:Number(order.coins)||0,usd:Number(order.amountUsd)||0,pkr:Number(order.amountPkr)||0};
+  const date = order.createdAt ? new Date(order.createdAt).toLocaleString() : "Just now";
+  const methodName = ({bank_transfer:"Bank transfer",easypaisa:"EasyPaisa",jazzcash:"JazzCash"})[order.paymentMethod] || order.paymentMethod || "Payment";
+  const person = admin ? `<div class="order-meta"><strong>Player:</strong> ${escapeHtml(order.playerName || order.email || order.ownerKey || "Unknown")} · ${escapeHtml(order.email || "")}</div>` : "";
+  const attachmentHref = order.attachmentUrl || order.attachmentDataUrl || "";
+  const attachment = attachmentHref
+    ? `<br><strong>Receipt:</strong> <a href="${escapeHtml(attachmentHref)}" target="_blank" rel="noopener noreferrer">View attached ${escapeHtml(order.attachmentName || "receipt")}</a>`
+    : order.attachmentName ? `<br><strong>Receipt:</strong> ${escapeHtml(order.attachmentName)} (attached)` : "";
+  const actions = admin && order.status === "pending" ? `<div class="order-actions"><button class="green" type="button" data-approve-payment="${escapeHtml(order.id)}">Approve & credit</button><button class="soft" type="button" data-reject-payment="${escapeHtml(order.id)}">Reject</button></div>` : "";
+  return `<article class="order-row"><div class="order-row-head"><strong>${packageInfo.coins.toLocaleString()} coins · $${packageInfo.usd} / approx. PKR ${Number(packageInfo.pkr).toLocaleString()}</strong>${formatPaymentStatus(order.status)}</div>${person}<div class="order-meta"><strong>Request:</strong> ${escapeHtml(order.id || "—")}<br><strong>Method:</strong> ${escapeHtml(methodName)}<br><strong>Sender:</strong> ${escapeHtml(order.payerName || "—")} · ${escapeHtml(order.payerPhone || "—")}<br><strong>Transaction ref:</strong> ${escapeHtml(order.transactionReference || "—")}<br><strong>Submitted:</strong> ${escapeHtml(date)}${order.note ? `<br><strong>Note:</strong> ${escapeHtml(order.note)}` : ""}${attachment}</div>${actions}</article>`;
+}
+function renderMyPayments() {
+  const target = $("myPaymentsList");
+  if (!target) return;
+  if (backendConfigured()) {
+    if (!currentUser) { target.innerHTML = `<div class="empty-state">Sign in with your account to view cloud payment requests.</div>`; return; }
+    target.innerHTML = `<div class="empty-state">Loading your requests…</div>`;
+    backendRequest("/api/coin-orders/mine").then(data => {
+      const orders = Array.isArray(data.orders) ? data.orders : [];
+      target.innerHTML = orders.length ? orders.map(order => renderPaymentOrder(order)).join("") : `<div class="empty-state">No payment requests yet.</div>`;
+    }).catch(error => { target.innerHTML = `<div class="empty-state">${escapeHtml(error.message)}</div>`; });
+    return;
+  }
+  const mine = readPaymentQueue().filter(order => order.ownerKey === currentOwnerKey()).sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+  target.innerHTML = mine.length ? mine.map(order => renderPaymentOrder(order)).join("") : `<div class="empty-state">No payment requests yet.</div>`;
+}
+async function loadPaymentInstructions() {
+  const target = $("paymentInstructions");
+  if (!target) return;
+  const method = $("paymentMethod")?.value || "bank_transfer";
+  const label = ({bank_transfer:"Bank transfer",easypaisa:"EasyPaisa",jazzcash:"JazzCash"})[method] || "Payment";
+  if (!backendConfigured()) {
+    target.textContent = `${label} details are not configured in this HTML preview. The owner must add verified official account details before accepting real payments. Demo requests do not move money.`;
+    return;
+  }
+  try {
+    const data = await publicBackendRequest("/api/payment-instructions");
+    const info = data.instructions || {};
+    target.innerHTML = `<strong>${label}:</strong> ${escapeHtml(info[method] || "Not configured")}<br><span class="tiny-note">Transfer only to an account verified by the game owner. Do not share your PIN or OTP.</span>`;
+  } catch (error) {
+    target.textContent = `Payment instructions could not be loaded: ${error.message}`;
+  }
+}
+function updateCoinPackDisplay(value) {
+  const pack = COIN_PACKAGES[String(value)];
+  if (!pack) return;
+  $("coinPurchaseStatus").textContent = `${pack.coins.toLocaleString()} coins · $${pack.usd} · approx. PKR ${pack.pkr.toLocaleString()}. Coins are credited only after approval.`;
+}
+const MAX_RECEIPT_BYTES = 700 * 1024;
+const ALLOWED_RECEIPT_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
+function getReceiptContentType(file) {
+  if (file.type && ALLOWED_RECEIPT_TYPES.has(file.type)) return file.type;
+  const ext = String(file.name || "").split(".").pop().toLowerCase();
+  return ({jpg:"image/jpeg",jpeg:"image/jpeg",png:"image/png",webp:"image/webp",pdf:"application/pdf"})[ext] || "";
+}
+function readPaymentAttachment(file) {
+  if (!file) return Promise.resolve(null);
+  const contentType = getReceiptContentType(file);
+  if (!contentType) return Promise.reject(new Error("Attach a JPG, PNG, WEBP image or PDF receipt."));
+  if (file.size > MAX_RECEIPT_BYTES) return Promise.reject(new Error("Receipt file must be 700 KB or smaller."));
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const rawDataUrl = String(reader.result || "");
+      const commaAt = rawDataUrl.indexOf(",");
+      if (commaAt < 0) { reject(new Error("Could not prepare the receipt attachment.")); return; }
+      resolve({name:String(file.name || "receipt").slice(0,120), contentType, dataUrl:`data:${contentType};base64,${rawDataUrl.slice(commaAt + 1)}`});
+    };
+    reader.onerror = () => reject(new Error("Could not read the receipt file. Please choose it again."));
+    reader.readAsDataURL(file);
+  });
+}
+async function submitCoinPurchase(event) {
+  event.preventDefault();
+  const pack = COIN_PACKAGES[$("coinPack").value];
+  const paymentMethod = $("paymentMethod").value;
+  const payerName = $("payerName").value.trim();
+  const payerPhone = $("payerPhone").value.trim();
+  const transactionReference = $("transactionReference").value.trim();
+  const note = $("paymentNote").value.trim();
+  let attachment = null;
+  try {
+    attachment = await readPaymentAttachment($("paymentAttachment").files?.[0]);
+  } catch (error) {
+    $("coinPurchaseStatus").textContent = error.message;
+    return;
+  }
+  if (!pack || !payerName || !payerPhone || !transactionReference) {
+    $("coinPurchaseStatus").textContent = "Please complete the required payment details.";
+    return;
+  }
+  const methodName = ({bank_transfer:"bank transfer",easypaisa:"EasyPaisa",jazzcash:"JazzCash"})[paymentMethod] || "payment";
+  if (backendConfigured()) {
+    if (!currentUser) {
+      $("coinPurchaseStatus").textContent = "Please sign in before submitting a real payment request.";
+      showAuth(true);
+      return;
+    }
+    $("coinPurchaseStatus").textContent = "Submitting request securely…";
+    try {
+      const data = await backendRequest("/api/coin-orders", {method:"POST", body:{coins:pack.coins,paymentMethod,payerName,payerPhone,transactionReference,note,attachment}});
+      $("coinPurchaseForm").reset();
+      $("paymentAttachmentStatus").textContent = "No receipt attached.";
+      $("coinPack").value = String(pack.coins);
+      $("coinPurchaseStatus").textContent = `Request ${data.order?.id || ""} submitted. Your ${pack.coins.toLocaleString()} coins will appear after admin approval.`;
+      renderMyPayments();
+    } catch (error) {
+      $("coinPurchaseStatus").textContent = `Could not submit request: ${error.message}`;
+    }
+    return;
+  }
+  const queue = readPaymentQueue();
+  const order = {
+    id:`SM-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,7).toUpperCase()}`,
+    ownerKey:currentOwnerKey(),
+    playerName:save.playerName || "Guest Player",
+    email:currentUser?.email || "",
+    coins:pack.coins,
+    amountUsd:pack.usd,
+    amountPkr:pack.pkr,
+    paymentMethod,
+    payerName,
+    payerPhone,
+    transactionReference,
+    note,
+    attachmentName: attachment?.name || "",
+    attachmentDataUrl: attachment?.dataUrl || "",
+    status:"pending",
+    createdAt:new Date().toISOString()
+  };
+  queue.unshift(order);
+  writePaymentQueue(queue);
+  $("coinPurchaseForm").reset();
+  $("paymentAttachmentStatus").textContent = "No receipt attached.";
+  $("coinPack").value = String(pack.coins);
+  $("coinPurchaseStatus").textContent = `Request ${order.id} saved in demo mode. Your coins have NOT been credited; an admin must approve it.`;
+  setStatus(`Payment request submitted via ${methodName}.`);
+  renderMyPayments();
+}
+async function renderAdminPayments() {
+  const target = $("adminPaymentsList");
+  if (!target) return;
+  if (backendConfigured()) {
+    target.innerHTML = `<div class="empty-state">Loading server payment requests…</div>`;
+    try {
+      const data = await backendRequest("/api/admin/coin-orders");
+      const orders = Array.isArray(data.orders) ? data.orders : [];
+      $("adminModeWarning").textContent = "Secure backend mode: requests are loaded from the server. Verify the transaction in your payment account before approving.";
+      target.innerHTML = orders.length ? orders.map(order => renderPaymentOrder(order,true)).join("") : `<div class="empty-state">No payment requests found.</div>`;
+    } catch (error) {
+      isAdminMode = false;
+      target.innerHTML = `<div class="empty-state">Admin access denied or backend unavailable: ${escapeHtml(error.message)}</div>`;
+    }
+    return;
+  }
+  const queue = readPaymentQueue().sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+  $("adminModeWarning").textContent = "DEMO ONLY: the queue is saved in this browser. Anyone who can inspect or edit this HTML can bypass demo controls. Never use this mode to approve real payments.";
+  target.innerHTML = queue.length ? queue.map(order => renderPaymentOrder(order,true)).join("") : `<div class="empty-state">No payment requests found. Submit a test request from the Coin Shop to see it here.</div>`;
+}
+async function handleAdminPaymentAction(event) {
+  const approveButton = event.target.closest("[data-approve-payment]");
+  const rejectButton = event.target.closest("[data-reject-payment]");
+  if (!approveButton && !rejectButton) return;
+  const id = (approveButton || rejectButton).dataset.approvePayment || (approveButton || rejectButton).dataset.rejectPayment;
+  const approve = Boolean(approveButton);
+  if (backendConfigured()) {
+    try {
+      const data = await backendRequest(`/api/admin/coin-orders/${encodeURIComponent(id)}/${approve ? "approve" : "reject"}`, {method:"POST",body:{}});
+      if (data.state && data.order && currentUser && data.order.uid === currentUser.uid) applyRemoteState(data.state,false,true);
+      setStatus(approve ? "Payment approved on the server. The player's balance will sync on their next refresh." : "Payment request rejected.");
+      await renderAdminPayments();
+      renderMyPayments();
+    } catch (error) {
+      setStatus(`Admin action failed: ${error.message}`);
+    }
+    return;
+  }
+  const queue = readPaymentQueue();
+  const order = queue.find(item => item.id === id);
+  if (!order || order.status !== "pending") { setStatus("This payment request is no longer pending."); return; }
+  if (approve && order.ownerKey !== currentOwnerKey()) {
+    setStatus("Demo mode can only credit the currently active player on this browser. Configure the backend for approvals across different users/devices.");
+    return;
+  }
+  order.status = approve ? "approved" : "rejected";
+  order.reviewedAt = new Date().toISOString();
+  order.reviewedBy = "demo-admin";
+  if (approve) {
+    save.coins += Number(order.coins) || 0;
+    persist();
+    refreshDashboard();
+  }
+  writePaymentQueue(queue);
+  setStatus(approve ? `${Number(order.coins).toLocaleString()} demo coins credited after approval.` : "Payment request rejected.");
+  await renderAdminPayments();
+  renderMyPayments();
+}
+async function openAdminAccess() {
+  if (backendConfigured()) {
+    if (!currentUser) {
+      setStatus("Sign in with the administrator's Firebase account first.");
+      showAuth(true);
+      return;
+    }
+    try {
+      await backendRequest("/api/admin/coin-orders");
+      isAdminMode = true;
+      setActiveView("admin");
+      await renderAdminPayments();
+    } catch (error) {
+      setStatus(`Admin access denied: ${error.message}`);
+    }
+    return;
+  }
+  $("adminLoginOverlay").classList.add("show");
+  $("adminLoginStatus").textContent = "";
+}
+function closeAdminLogin() { $("adminLoginOverlay").classList.remove("show"); }
+function handleDemoAdminLogin(event) {
+  event.preventDefault();
+  if (backendConfigured()) {
+    $("adminLoginStatus").textContent = "Demo admin login is disabled when the backend is configured. Sign in with your Firebase admin account.";
+    return;
+  }
+  const username = $("demoAdminUser").value.trim();
+  const password = $("demoAdminPassword").value;
+  if (username !== DEMO_ADMIN_USERNAME || password !== DEMO_ADMIN_PASSWORD) {
+    $("adminLoginStatus").textContent = "Incorrect demo admin username or password.";
+    return;
+  }
+  isAdminMode = true;
+  closeAdminLogin();
+  $("adminLoginForm").reset();
+  setActiveView("admin");
+  renderAdminPayments();
+}
+async function syncPaymentRequestViews() {
+  renderMyPayments();
+  if (isAdminMode) await renderAdminPayments();
+}
+function setScore(value) {
+  score = value;
+  updateLevelHUD();
+  if (score > save.bestScore) {
+    save.bestScore = score;
+    persist();
+    if ($("bestScore")) $("bestScore").textContent = `Best ${save.bestScore.toLocaleString()}`;
+    $("homeBest").textContent = save.bestScore.toLocaleString();
+    renderLeaderboard();
+  }
+}
+function setCoins(value) {
+  save.coins = Math.max(0,Math.floor(value));
+  persist();
+  refreshDashboard();
+}
+function refreshDashboard() {
+  syncDailyCount();
+  $("coinsTop").textContent = save.coins.toLocaleString();
+  if ($("bestScore")) $("bestScore").textContent = `Best ${save.bestScore.toLocaleString()}`;
+  updateLevelHUD();
+  $("homeCoins").textContent = save.coins.toLocaleString();
+  $("homeBest").textContent = save.bestScore.toLocaleString();
+  if ($("homeLevel")) $("homeLevel").textContent = `${save.maxUnlocked} / ${LEVEL_COUNT} unlocked`;
+  $("homeDaily").textContent = `${save.dailyAdsCount} / ${DAILY_AD_LIMIT}`;
+  $("dailyCount").textContent = `${save.dailyAdsCount} / ${DAILY_AD_LIMIT}`;
+  $("dailyProgress").style.width = `${save.dailyAdsCount / DAILY_AD_LIMIT * 100}%`;
+  $("watchAdBtn").disabled = save.dailyAdsCount >= DAILY_AD_LIMIT;
+  $("watchAdBtn").textContent = save.dailyAdsCount >= DAILY_AD_LIMIT
+    ? "✓ Daily limit reached"
+    : `▶ Test Rewarded Ad · +${COINS_PER_TEST_AD}`;
+  if ($("aiUsageInline")) $("aiUsageInline").textContent = `${save.aiUsesCount || 0}`;
+  if ($("aiUsageCount")) $("aiUsageCount").textContent = `${save.aiUsesCount || 0}`;
+  if ($("aiAdsCount")) $("aiAdsCount").textContent = `${save.aiAdsCount || 0} / ${AI_AD_DAILY_LIMIT}`;
+  if ($("aiClearBtn")) $("aiClearBtn").textContent = aiAutoRunning ? "🤖 AI is playing…" : `✨ AI Auto-Play · ${AI_CLEAR_COST.toLocaleString()} coins`;
+  if ($("aiClearBtn")) $("aiClearBtn").disabled = aiAutoRunning;
+  $("playerName").value = save.playerName || "Guest Player";
+  $("countryCode").value = save.countryCode || "US";
+  $("referralCode").textContent = save.referralCode;
+  $("referralCount").textContent = `${save.referralCount} · demo`;
+  $("referralStatus").textContent = save.appliedReferralCode
+    ? `Code ${save.appliedReferralCode} saved locally; it has not been verified or paid.`
+    : "Referral tracking is a preview until a shared backend is connected.";
+  if (typeof updateAccountDisplay === "function") updateAccountDisplay();
+}
+function renderLeaderboard() {
+  const active = document.querySelector(".tab.active");
+  const type = active ? active.dataset.board : "weekly";
+  const names = {weekly:"Weekly",monthly:"Monthly",country:"Country",global:"Global"};
+  const title = names[type] || "Weekly";
+  const view = $("leaderboardView");
+  const name = (save.playerName || "Guest Player").trim().slice(0,20) || "Guest Player";
+  const country = $("countryCode").selectedOptions[0]?.textContent || "Selected country";
+  view.innerHTML = `
+    <div class="board-empty-icon">🏆</div>
+    <strong>${title} leaderboard</strong>
+    <p>Live rankings will appear here after the shared backend is connected.</p>
+    <div class="local-score-row"><span>Your local best · ${escapeHtml(name)}</span><strong>${save.bestScore.toLocaleString()}</strong></div>
+    <p class="tiny-note">Preview scope: this device only · ${escapeHtml(country)}</p>`;
+}
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+}
+function updateProfile() {
+  save.playerName = $("playerName").value.trim().slice(0,20) || "Guest Player";
+  save.countryCode = $("countryCode").value || "US";
+  persist();
+  renderLeaderboard();
+}
+function targetFor(level) { return 450 + (Math.max(1, Math.min(LEVEL_COUNT, level)) - 1) * 4; }
+function movesFor(level) { return Math.max(20, 24 - Math.floor((level - 1) / 20)); }
+function seasonIndex(level) { return Math.min(4, Math.floor((level - 1) / 20)); }
+function getLevelConfig(level) {
+  if (level % 5 === 0) return {type:"timed",timeLimit:60 + Math.floor((level - 1) / 20) * 15,jellyGoal:0};
+  if (level % 3 === 0) return {type:"jelly",timeLimit:0,jellyGoal:Math.min(30,14 + Math.floor(level / 10) * 2)};
+  return {type:"score",timeLimit:0,jellyGoal:0};
+}
+function countJelly() {
+  let total=0;
+  for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) if(jellyGrid[r]?.[c]) total++;
+  return total;
+}
+function updateLevelHUD() {
+  if (!$('levelNum')) return;
+  const level=save.currentLevel || 1, config=levelConfig || getLevelConfig(level), target=targetFor(level);
+  $('levelNum').textContent=`${level} / ${LEVEL_COUNT}`;
+  if (config.type === 'jelly') {
+    const left = countJelly();
+    $('scoreMetricLabel').textContent = 'Jelly left / Goal';
+    $('score').textContent = `${left} / ${config.jellyGoal}`;
+    $('scoreProgress').style.width = `${Math.min(100, ((config.jellyGoal-left)/Math.max(1,config.jellyGoal))*100)}%`;
+  } else {
+    $('scoreMetricLabel').textContent = 'Score / Target';
+    $('score').textContent = `${score.toLocaleString()} / ${target.toLocaleString()}`;
+    $('scoreProgress').style.width = `${Math.min(100,score/target*100)}%`;
+  }
+  $('moveCount').textContent=config.type==='timed' ? '∞' : String(moves);
+  $('levelTypeLabel').textContent=config.type==='jelly' ? 'Jelly mission' : config.type==='timed' ? 'Timed challenge' : 'Score mission';
+  const season=SEASONS[seasonIndex(level)];
+  $('seasonLabel').textContent=`Season ${seasonIndex(level)+1} · ${season.name}`;
+  $('seasonBadge').textContent=`${season.emoji} ${season.name}`;
+  $('missionText').textContent=config.type==='jelly' ? `🍮 Clear ${config.jellyGoal} jelly tiles to finish this level` : config.type==='timed' ? `⏱ Reach ${target.toLocaleString()} points before time runs out` : `⭐ Reach ${target.toLocaleString()} points to finish this level`;
+  $('jellyCount').hidden=config.type!=='jelly';
+  $('jellyCount').textContent=`🍮 ${countJelly()} / ${config.jellyGoal} jelly tiles left`;
+  const timer=$('timerNum');
+  timer.hidden=config.type!=='timed';
+  if(config.type==='timed') {
+    const seconds=Math.max(0,Math.ceil((timerEndsAt-performance.now())/1000));
+    timer.textContent=`${seconds}s`;timer.classList.toggle('urgent',seconds<=10);
+  } else timer.classList.remove('urgent');
+}
+function evaluateLevelEnd() {
+  if (levelOver) return true;
+  const completed = levelConfig.type==='jelly' ? countJelly()===0 : score>=targetFor(save.currentLevel);
+  if (completed) { completeLevel(); return true; }
+  if (levelConfig.type!=='timed' && moves<=0) { failLevel('No moves left'); return true; }
+  return false;
+}
+function openLevelMap() {
+  renderLevelMap();$('levelMapOverlay').classList.add('show');
+}
+function closeLevelMap() { $('levelMapOverlay').classList.remove('show'); }
+function renderLevelMap() {
+  const unlockedSeason=Math.ceil(save.maxUnlocked/20);
+  $('seasonCards').innerHTML=SEASONS.map((season,i)=>{
+    const start=i*20+1,end=(i+1)*20,completed=Array.from({length:20},(_,j)=>start+j).filter(n=>save.completedLevels[n]).length;
+    const locked=i+1>unlockedSeason;
+    return `<div class="season-card ${locked?'locked':''}"><span style="font-size:1.25rem">${season.emoji}</span><strong>${i+1}. ${season.name}</strong><span>${locked?'🔒 Locked':`Levels ${start}–${end}`}</span><br><small>${completed}/20 complete</small></div>`;
+  }).join('');
+  $('levelMapGrid').innerHTML=Array.from({length:LEVEL_COUNT},(_,i)=>i+1).map(level=>{
+    const locked=level>save.maxUnlocked,stars=Math.max(0,Math.min(3,Number(save.levelStars[level])||0));
+    const icon=getLevelConfig(level).type==='jelly'?'🍮':getLevelConfig(level).type==='timed'?'⏱':'';
+    return `<button class="level-tile ${level===save.currentLevel?'current':''} ${locked?'locked':''}" data-level="${level}" type="button" ${locked?'disabled':''} aria-label="Level ${level}${locked?', locked':''}">${icon?`<small>${icon}</small><br>`:''}${level}<span class="tile-stars">${stars?'★'.repeat(stars)+'☆'.repeat(3-stars):locked?'🔒':'☆☆☆'}</span></button>`;
+  }).join('');
+}
+function showLevelResult(won, reason='', rewardEarned=false) {
+  $('levelResultTitle').textContent=won ? (save.currentLevel===LEVEL_COUNT?'🎉 Adventure Complete!':'⭐ Level Cleared!') : '💪 Try Again!';
+  $('levelResultBody').innerHTML=won
+    ? `<p>You completed Level ${save.currentLevel} of ${LEVEL_COUNT}.</p><div class="level-result-score">${'★'.repeat(Number(save.levelStars[save.currentLevel])||1)}${'☆'.repeat(3-(Number(save.levelStars[save.currentLevel])||1))}</div><p>${rewardEarned?'You earned 2,000 bonus coins for your first clear!':'Level progress saved.'}</p><p>Score: <strong>${score.toLocaleString()}</strong></p>`
+    : `<p>${escapeHtml(reason || 'The objective was not completed this time.')}</p><p>Level ${save.currentLevel} target: <strong>${levelConfig.type==='jelly'?`${levelConfig.jellyGoal} jelly tiles`:`${targetFor(save.currentLevel).toLocaleString()} points`}</strong></p><p>Your score: <strong>${score.toLocaleString()}</strong></p>`;
+  const actions=$('levelResultActions');
+  if(won) {
+    actions.innerHTML=save.currentLevel<LEVEL_COUNT
+      ? `<button data-level-action="next" type="button">Next Level →</button><button class="secondary" data-level-action="map" type="button">Level Map</button>`
+      : `<button data-level-action="replay" type="button">Replay Level 100</button><button class="secondary" data-level-action="map" type="button">Level Map</button>`;
+  } else {
+    actions.innerHTML=`<button data-level-action="retry" type="button">↻ Retry Level</button><button class="secondary" data-level-action="map" type="button">Level Map</button>`;
+  }
+  $('levelResultOverlay').classList.add('show');
+}
+function completeLevel() {
+  if(levelOver)return;
+  levelOver=true;busy=false;
+  const level=save.currentLevel,wasCompleted=Boolean(save.completedLevels[level]);
+  const remaining=levelConfig.type==='timed' ? Math.max(0,Math.ceil((timerEndsAt-performance.now())/1000)) : moves;
+  const total=levelConfig.type==='timed' ? levelConfig.timeLimit : currentLevelStartMoves;
+  let stars=remaining>=total*.5?3:remaining>=total*.25?2:1;
+  if(levelConfig.type==='jelly' && countJelly()===0 && moves>=currentLevelStartMoves*.5) stars=3;
+  save.levelStars[level]=Math.max(Number(save.levelStars[level])||0,stars);
+  save.completedLevels[level]=true;
+  if(level<LEVEL_COUNT) save.maxUnlocked=Math.max(save.maxUnlocked,level+1);
+  if(!wasCompleted && !aiCompleting && !aiAutoRunning && (!backendConfigured() || !currentUser)) save.coins+=LEVEL_COMPLETION_REWARD;
+  persist();refreshDashboard();renderLevelMap();
+  const completingWithAi = aiAutoRunning || aiCompleting;
+  if (!completingWithAi) showLevelResult(true,'',!wasCompleted);
+  setStatus(level===LEVEL_COUNT?'Amazing! You completed all 100 levels! No further levels exist.':`Level ${level} complete! Level ${level+1} is unlocked.`);
+  if (backendConfigured() && currentUser && !completingWithAi) {
+    pendingCloudProgress = backendRequest("/api/player/complete-level", {method:"POST",body:{level,score,jellyCleared:countJelly()===0}})
+      .then(data => {
+        if (data.state) {
+          save.coins = Math.max(0, Math.floor(Number(data.state.coins ?? save.coins) || 0));
+          save.maxUnlocked = Math.max(1, Math.min(LEVEL_COUNT, Math.floor(Number(data.state.maxUnlocked ?? save.maxUnlocked) || 1)));
+          save.levelStars = data.state.levelStars || save.levelStars;
+          save.completedLevels = data.state.completedLevels || save.completedLevels;
+          persist(); refreshDashboard(); renderLevelMap();
+        }
+      })
+      .catch(error => { setStatus(`Cloud progress sync failed: ${error.message}`); });
+  }
+  if (!aiAutoRunning) aiCompleting = false;
+}
+function failLevel(reason='Time is up!') {
+  if(levelOver)return;
+  levelOver=true;busy=false;
+  showLevelResult(false,reason);
+  setStatus(reason);
+}
+function startLevel(level=save.currentLevel) {
+  const chosen=Math.max(1,Math.min(save.maxUnlocked,LEVEL_COUNT,Math.floor(Number(level)||1)));
+  save.currentLevel=chosen;persist();
+  levelConfig=getLevelConfig(chosen);levelOver=false;busy=false;
+  $('levelMapOverlay').classList.remove('show');$('levelResultOverlay').classList.remove('show');
+  makeBoard();setActiveView('play');renderLevelMap();
+  if (backendConfigured() && currentUser) {
+    pendingCloudProgress = pendingCloudProgress
+      .then(() => backendRequest("/api/player/start-level", {method:"POST",body:{level:chosen}}))
+      .catch(error => { setStatus(`Could not sync level selection: ${error.message}`); });
+  }
+}
+const randType = () => Math.floor(Math.random() * TYPES.length);
+const sleep = ms => new Promise(resolve => setTimeout(resolve,ms));
+
+function findMatches(board = grid) {
+  const found = new Set();
+  for (let r=0;r<SIZE;r++) {
+    let start=0;
+    while (start<SIZE) {
+      const type=board[r][start];
+      if (type<0) { start++; continue; }
+      let end=start+1;
+      while (end<SIZE && board[r][end]===type) end++;
+      if (end-start>=3) for(let c=start;c<end;c++) found.add(r*SIZE+c);
+      start=end;
+    }
+  }
+  for (let c=0;c<SIZE;c++) {
+    let start=0;
+    while (start<SIZE) {
+      const type=board[start][c];
+      if(type<0){start++;continue;}
+      let end=start+1;
+      while(end<SIZE&&board[end][c]===type)end++;
+      if(end-start>=3)for(let r=start;r<end;r++)found.add(r*SIZE+c);
+      start=end;
+    }
+  }
+  return found;
+}
+function makeBoard() {
+  grid=Array.from({length:SIZE},()=>Array(SIZE).fill(-1));
+  for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) {
+    let type,tries=0;
+    do {
+      type=randType();tries++;
+    } while(tries<30&&((c>=2&&grid[r][c-1]===type&&grid[r][c-2]===type)||(r>=2&&grid[r-1][c]===type&&grid[r-2][c]===type)));
+    grid[r][c]=type;
+  }
+  jellyGrid=Array.from({length:SIZE},()=>Array(SIZE).fill(false));
+  if(levelConfig.type==='jelly') {
+    const positions=Array.from({length:SIZE*SIZE},(_,i)=>i).sort(()=>Math.random()-.5).slice(0,levelConfig.jellyGoal);
+    for(const index of positions) jellyGrid[Math.floor(index/SIZE)][index%SIZE]=true;
+  }
+  selected=null;hintCells=[];animations=[];busy=false;levelOver=false;
+  currentLevelStartMoves=movesFor(save.currentLevel);
+  moves=levelConfig.type==='timed'?0:currentLevelStartMoves;
+  timerEndsAt=levelConfig.type==='timed'?performance.now()+levelConfig.timeLimit*1000:0;
+  lastTimerSecond=-1;setScore(0);
+  rebuildBoardCache();refreshDashboard();updateLevelHUD();
+  const cfg=levelConfig.type==='jelly'?'Clear every jelly tile.':levelConfig.type==='timed'?`Reach ${targetFor(save.currentLevel)} points in ${levelConfig.timeLimit} seconds.`:`Reach ${targetFor(save.currentLevel)} points in ${moves} moves.`;
+  setStatus(`Level ${save.currentLevel}: ${cfg}`);
+}
+
+function drawGem(type,x,y,size,alpha=1,scale=1,targetCtx=ctx) {
+  if(type<0)return;
+  const gem=TYPES[type],radius=size*.34;
+  targetCtx.save();targetCtx.globalAlpha=alpha;targetCtx.translate(x+size/2,y+size/2);targetCtx.scale(scale,scale);
+  targetCtx.shadowColor=gem.dark;targetCtx.shadowBlur=3;targetCtx.shadowOffsetY=2;
+  const grad=targetCtx.createLinearGradient(-radius,-radius,radius,radius);
+  grad.addColorStop(0,gem.light);grad.addColorStop(.48,gem.color);grad.addColorStop(1,gem.dark);
+  targetCtx.fillStyle=grad;targetCtx.strokeStyle="#ffffffbb";targetCtx.lineWidth=Math.max(1.5,size*.025);targetCtx.beginPath();
+  if(gem.shape==="circle")targetCtx.arc(0,0,radius,0,Math.PI*2);
+  else if(gem.shape==="diamond"){targetCtx.moveTo(0,-radius*1.25);targetCtx.lineTo(radius*.9,0);targetCtx.lineTo(0,radius*1.25);targetCtx.lineTo(-radius*.9,0);}
+  else if(gem.shape==="star"){for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2===0?radius*1.2:radius*.55,px=Math.cos(a)*rr,py=Math.sin(a)*rr;if(i===0)targetCtx.moveTo(px,py);else targetCtx.lineTo(px,py);}}
+  else if(gem.shape==="hex"){for(let i=0;i<6;i++){const a=Math.PI/3*i-Math.PI/6,px=Math.cos(a)*radius,py=Math.sin(a)*radius;if(i===0)targetCtx.moveTo(px,py);else targetCtx.lineTo(px,py);}}
+  else targetCtx.ellipse(0,0,radius*.83,radius*1.12,-.35,0,Math.PI*2);
+  targetCtx.closePath();targetCtx.fill();targetCtx.stroke();targetCtx.shadowBlur=0;targetCtx.shadowOffsetY=0;
+  targetCtx.fillStyle="#ffffff9c";targetCtx.beginPath();targetCtx.ellipse(-radius*.28,-radius*.32,radius*.23,radius*.12,-.5,0,Math.PI*2);targetCtx.fill();targetCtx.restore();
+}
+function buildRenderCaches() {
+  gemSprites = TYPES.map((_,type) => {
+    const sprite = document.createElement("canvas");
+    sprite.width = cell; sprite.height = cell;
+    const spriteCtx = sprite.getContext("2d");
+    drawGem(type,3,3,cell-6,1,1,spriteCtx);
+    return sprite;
+  });
+  const bg = boardTilesCtx.createLinearGradient(0,0,canvas.width,canvas.height);
+  bg.addColorStop(0,"#f7edff");bg.addColorStop(1,"#e9f7ff");
+  boardTilesCtx.fillStyle=bg;boardTilesCtx.fillRect(0,0,canvas.width,canvas.height);
+  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
+    const x=c*cell,y=r*cell;
+    boardTilesCtx.fillStyle=(r+c)%2===0?"#ffffff80":"#d8c8f522";
+    boardTilesCtx.fillRect(x+2,y+2,cell-4,cell-4);
+  }
+  rebuildBoardCache();
+}
+function drawBaseCell(targetCtx,r,c) {
+  const x=c*cell,y=r*cell;
+  targetCtx.drawImage(boardTilesCanvas,x,y,cell,cell,x,y,cell,cell);
+  if(jellyGrid[r]?.[c]) {
+    targetCtx.save();targetCtx.fillStyle='rgba(255,93,158,.28)';targetCtx.fillRect(x+3,y+3,cell-6,cell-6);
+    targetCtx.strokeStyle='rgba(217,38,99,.7)';targetCtx.lineWidth=2;targetCtx.strokeRect(x+4,y+4,cell-8,cell-8);targetCtx.restore();
+  }
+}
+function rebuildBoardCache() {
+  boardCacheCtx.clearRect(0,0,boardCacheCanvas.width,boardCacheCanvas.height);
+  boardCacheCtx.drawImage(boardTilesCanvas,0,0);
+  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
+    if(jellyGrid[r]?.[c]) drawBaseCell(boardCacheCtx,r,c);
+    const type=grid[r]?.[c];
+    if(type>=0 && gemSprites[type]) boardCacheCtx.drawImage(gemSprites[type],c*cell,r*cell,cell,cell);
+  }
+}
+function drawGemSprite(type,x,y,alpha=1,scale=1) {
+  const sprite=gemSprites[type];
+  if(!sprite)return;
+  ctx.save();ctx.globalAlpha=alpha;
+  const centerX=x+(cell-6)/2,centerY=y+(cell-6)/2;
+  ctx.translate(centerX,centerY);ctx.scale(scale,scale);
+  ctx.drawImage(sprite,-cell/2,-cell/2,cell,cell);
+  ctx.restore();
+}
+
+let lastDrawAt = 0;
+const DRAW_INTERVAL = 1000 / 30; // Cap canvas rendering at 30 FPS for smoother mobile performance.
+function draw(now=performance.now()) {
+  if (document.hidden || now - lastDrawAt < DRAW_INTERVAL) { requestAnimationFrame(draw); return; }
+  lastDrawAt = now;
+  animations=animations.filter(a=>now<a.end);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(boardCacheCanvas,0,0);
+  // Hide each animation's destination cell in the cached board to avoid duplicate candies.
+  const hiddenCells=new Set();
+  for(const a of animations) {
+    if(Number.isInteger(a.toR)&&Number.isInteger(a.toC)&&a.toR>=0&&a.toR<SIZE&&a.toC>=0&&a.toC<SIZE) {
+      hiddenCells.add(`${a.toR},${a.toC}`);
+    }
+  }
+  for(const key of hiddenCells) {
+    const [r,c]=key.split(",").map(Number);
+    drawBaseCell(ctx,r,c);
+  }
+  if(selected&&(!busy||aiAutoRunning))drawOutline(selected,`rgba(255,70,145,${.72+.2*Math.sin(now/130)})`,5,"#ff5d9e");
+  if(hintCells.length&&(!busy||aiAutoRunning))for(const pos of hintCells)drawOutline(pos,"rgba(118,80,216,.95)",4,"#7650d8");
+  for(const a of animations){
+    const t=Math.max(0,Math.min(1,(now-a.start)/(a.end-a.start))),eased=1-Math.pow(1-t,3);
+    const x=(a.fromC+(a.toC-a.fromC)*eased)*cell+3,y=(a.fromR+(a.toR-a.fromR)*eased)*cell+3;
+    drawGemSprite(a.type,x,y,a.fade?1-t:1,a.scaleFrom===undefined?1:a.scaleFrom+(1-a.scaleFrom)*eased);
+  }
+  if(!levelOver && levelConfig.type==='timed') {
+    const seconds=Math.max(0,Math.ceil((timerEndsAt-now)/1000));
+    if(seconds!==lastTimerSecond){lastTimerSecond=seconds;updateLevelHUD();}
+    if(seconds<=0 && score < targetFor(save.currentLevel) && !busy) failLevel('Time is up! The score target was not reached.');
+  }
+  requestAnimationFrame(draw);
+}
+
+function drawOutline(pos,color,width,shadow) {
+  ctx.save();ctx.strokeStyle=color;ctx.lineWidth=width;ctx.shadowColor=shadow;ctx.shadowBlur=6;
+  ctx.strokeRect(pos.c*cell+5,pos.r*cell+5,cell-10,cell-10);ctx.restore();
+}
+function cellFromEvent(event) {
+  const rect=canvas.getBoundingClientRect();
+  return {c:Math.floor((event.clientX-rect.left)/rect.width*SIZE),r:Math.floor((event.clientY-rect.top)/rect.height*SIZE)};
+}
+function swapGrid(a,b) {
+  const tmp=grid[a.r][a.c];grid[a.r][a.c]=grid[b.r][b.c];grid[b.r][b.c]=tmp;
+}
+function findHint() {
+  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
+    const a={r,c};
+    for(const b of [{r,c:c+1},{r:r+1,c}]) {
+      if(b.r>=SIZE||b.c>=SIZE)continue;
+      swapGrid(a,b);const match=findMatches().size>0;swapGrid(a,b);
+      if(match)return [a,b];
+    }
+  }
+  return null;
+}
+async function handlePick(pos) {
+  if(aiAutoRunning||busy||levelOver||pos.r<0||pos.r>=SIZE||pos.c<0||pos.c>=SIZE)return;
+  hintCells=[];
+  if(!selected){selected=pos;setStatus("Now choose an adjacent gem.");return;}
+  if(selected.r===pos.r&&selected.c===pos.c){selected=null;setStatus("Selection cleared.");return;}
+  const first=selected;selected=null;
+  if(Math.abs(first.r-pos.r)+Math.abs(first.c-pos.c)!==1){selected=pos;setStatus("Choose a gem next to the selected one.");return;}
+  busy=true;setStatus("Swapping…");
+  const a=grid[first.r][first.c],b=grid[pos.r][pos.c];
+  swapGrid(first,pos);
+  rebuildBoardCache();
+  const start=performance.now();
+  animations=[{type:a,fromR:first.r,fromC:first.c,toR:pos.r,toC:pos.c,start,end:start+180},{type:b,fromR:pos.r,fromC:pos.c,toR:first.r,toC:first.c,start,end:start+180}];
+  await sleep(190);animations=[];
+  if(findMatches().size===0){
+    const back=performance.now();
+    animations=[{type:b,fromR:first.r,fromC:first.c,toR:pos.r,toC:pos.c,start:back,end:back+140},{type:a,fromR:pos.r,fromC:pos.c,toR:first.r,toC:first.c,start:back,end:back+140}];
+    await sleep(150);animations=[];
+    swapGrid(first,pos);rebuildBoardCache();
+    busy=false;setStatus("No match that time — try another swap.");return;
+  }
+  if(levelConfig.type!=='timed') moves=Math.max(0,moves-1);
+  updateLevelHUD();
+  await resolveMatches();busy=false;refreshDashboard();
+  if(evaluateLevelEnd())return;
+  setStatus("Nice match! Keep going!");
+}
+async function resolveMatches() {
+  let combo=0;
+  while(true) {
+    const matches=findMatches();if(matches.size===0)break;combo++;
+    const points=matches.size*10*combo;setScore(score+points);
+    setStatus(`Sweet! +${points} points${combo>1?" · Combo x"+combo:""}`);
+    const now=performance.now();animations=[];
+    for(const index of matches){
+      const r=Math.floor(index/SIZE),c=index%SIZE;
+      animations.push({type:grid[r][c],fromR:r,fromC:c,toR:r,toC:c,start:now,end:now+190,fade:true,scaleFrom:1});
+      if(jellyGrid[r]?.[c]) jellyGrid[r][c]=false;
+      grid[r][c]=-1;
+    }
+    rebuildBoardCache();
+    await sleep(195);animations=[];
+    const next=Array.from({length:SIZE},()=>Array(SIZE).fill(-1));animations=[];
+    const fallStart=performance.now();
+    for(let c=0;c<SIZE;c++){
+      let write=SIZE-1;
+      for(let r=SIZE-1;r>=0;r--)if(grid[r][c]!==-1){
+        const type=grid[r][c];next[write][c]=type;
+        if(write!==r)animations.push({type,fromR:r,fromC:c,toR:write,toC:c,start:fallStart,end:fallStart+120+Math.abs(write-r)*35});
+        write--;
+      }
+      while(write>=0){
+        const type=randType();next[write][c]=type;
+        animations.push({type,fromR:-1-(write+1)*.65,fromC:c,toR:write,toC:c,start:fallStart,end:fallStart+150+(write+1)*30});write--;
+      }
+    }
+    grid=next;rebuildBoardCache();updateLevelHUD();await sleep(310);animations=[];
+  }
+}
+async function useHint() {
+  if(busy)return;
+  if(save.coins<HINT_COST){setStatus(`You need ${HINT_COST} coins for a hint.`);return;}
+  const hint=findHint();
+  if(!hint){setStatus("No valid move found. Restart the board and try again.");return;}
+  if (backendConfigured()) {
+    try {
+      const data = await backendRequest("/api/player/spend-coins", {method:"POST",body:{amount:HINT_COST,reason:"hint"}});
+      if (data && data.state) applyRemoteState(data.state,false,true);
+    } catch (error) { setStatus(`Hint purchase failed: ${error.message}`); return; }
+  } else {
+    save.coins-=HINT_COST;persist();refreshDashboard();
+  }
+  hintCells=hint;selected=null;
+  setStatus(`Hint: swap the two highlighted gems. (${HINT_COST} coins used)`);
+}
+function findBestAiMove() {
+  let best = null;
+  let bestValue = -Infinity;
+  for (let r=0;r<SIZE;r++) for (let c=0;c<SIZE;c++) {
+    const a={r,c};
+    for (const b of [{r,c:c+1},{r:r+1,c}]) {
+      if (b.r>=SIZE || b.c>=SIZE) continue;
+      swapGrid(a,b);
+      const matches=findMatches();
+      if (matches.size) {
+        let jellyHits=0;
+        for (const index of matches) {
+          const mr=Math.floor(index/SIZE), mc=index%SIZE;
+          if (jellyGrid[mr]?.[mc]) jellyHits++;
+        }
+        // Prefer larger matches; jelly missions strongly prioritize clearing jelly tiles.
+        const value=matches.size*10 + (matches.size>=4?(matches.size-3)*12:0)
+          + jellyHits*(levelConfig.type==='jelly'?150:3) + Math.random()*3;
+        if (value>bestValue) { bestValue=value; best={a:{...a},b:{...b},matches:matches.size,jellyHits}; }
+      }
+      swapGrid(a,b);
+    }
+  }
+  return best;
+}
+
+function reshuffleAiBoard() {
+  // Rebuild only the gem arrangement; preserve score, moves, timer and remaining jelly.
+  for (let attempt=0;attempt<100;attempt++) {
+    const candidate=Array.from({length:SIZE},()=>Array(SIZE).fill(-1));
+    for (let r=0;r<SIZE;r++) for (let c=0;c<SIZE;c++) {
+      let type,tries=0;
+      do {
+        type=randType(); tries++;
+      } while (tries<40 && ((c>=2&&candidate[r][c-1]===type&&candidate[r][c-2]===type)
+        || (r>=2&&candidate[r-1][c]===type&&candidate[r-2][c]===type)));
+      candidate[r][c]=type;
+    }
+    grid=candidate;
+    if (findMatches().size===0 && findHint()) {
+      selected=null; hintCells=[]; animations=[]; rebuildBoardCache(); updateLevelHUD();
+      return true;
+    }
+  }
+  return false;
+}
+
+async function aiPerformMove(move) {
+  if (!move || levelOver) return;
+  const a=move.a, b=move.b;
+  selected=a; hintCells=[a,b]; busy=true;
+  setStatus(`🤖 AI is choosing a ${move.matches}-gem match${move.jellyHits?` and clearing ${move.jellyHits} jelly tile(s)`:''}…`);
+  await sleep(240);
+  if (levelOver) { busy=false; return; }
+  const typeA=grid[a.r][a.c], typeB=grid[b.r][b.c];
+  swapGrid(a,b); rebuildBoardCache();
+  const t=performance.now();
+  animations=[
+    {type:typeA,fromR:a.r,fromC:a.c,toR:b.r,toC:b.c,start:t,end:t+210},
+    {type:typeB,fromR:b.r,fromC:b.c,toR:a.r,toC:a.c,start:t,end:t+210}
+  ];
+  await sleep(220); animations=[]; selected=null; hintCells=[];
+  if (findMatches().size===0) {
+    swapGrid(a,b); rebuildBoardCache(); busy=false; return;
+  }
+  if (levelConfig.type!=='timed') moves=Math.max(0,moves-1);
+  updateLevelHUD();
+  await resolveMatches();
+  busy=false; refreshDashboard();
+  evaluateLevelEnd();
+}
+
+async function aiClearCurrentLevel() {
+  syncDailyCount();
+  if (aiAutoRunning) { setStatus("AI is already playing the current level."); return; }
+  if (busy) { setStatus("Wait for the current match animation to finish."); return; }
+
+  // If the current level was already completed manually, start the next unlocked one.
+  if (levelOver) {
+    if (save.completedLevels[save.currentLevel] && save.currentLevel < LEVEL_COUNT && save.maxUnlocked >= save.currentLevel + 1) {
+      startLevel(save.currentLevel + 1);
+    } else if (save.currentLevel === LEVEL_COUNT && save.completedLevels[LEVEL_COUNT]) {
+      setStatus("All 100 levels are complete. There is no next level."); return;
+    } else if (!save.completedLevels[save.currentLevel]) {
+      startLevel(save.currentLevel);
+    }
+  }
+  aiAutoRunning=true; aiCompleting=true; refreshDashboard();
+  let completedThisRun=0;
+  try {
+    while (save.currentLevel <= LEVEL_COUNT) {
+      syncDailyCount();
+      let level=save.currentLevel;
+      if (levelOver && save.completedLevels[level]) {
+        if (level>=LEVEL_COUNT) break;
+        startLevel(level+1);
+        level=save.currentLevel;
+      } else if (levelOver) {
+        startLevel(level);
+        level=save.currentLevel;
+      }
+
+      const wasCompletedBeforeAI = Boolean(save.completedLevels[level]);
+      if (save.coins < AI_CLEAR_COST) {
+        if (backendConfigured()) {
+          setStatus(`AI played ${completedThisRun} level(s). You need 5,000 coins to start Level ${save.currentLevel}; demo ads are disabled in backend mode.`);
+        } else if (save.aiAdsCount < AI_AD_DAILY_LIMIT) {
+          pendingAiAdReward=true; aiResumeAfterAd=true;
+          $("aiAdOverlay").classList.add("show");
+          setStatus(`AI played ${completedThisRun} level(s). Watch a test ad for 500 coins; AI will resume automatically if your wallet reaches 5,000 coins.`);
+        } else {
+          setStatus(`AI paused before Level ${save.currentLevel}: not enough coins and all 3 AI reward ads have been used today.`);
+        }
+        break;
+      }
+
+      // Charge once per level, not once per retry. In backend mode the server enforces the coin cost; there is no AI-use cap.
+      if (backendConfigured()) {
+        await pendingCloudProgress;
+        const data=await backendRequest("/api/ai/start-level",{method:"POST",body:{level}});
+        if (!data || !data.state) throw new Error("The server did not return the AI session state.");
+        applyRemoteState(data.state,false,true);
+      } else {
+        save.coins-=AI_CLEAR_COST;
+        save.aiUsesDate=dateKey();
+        save.aiUsesCount+=1;
+        persist(); refreshDashboard();
+      }
+
+      let won=false;
+      let attempts=0;
+      // Keep trying fresh boards at no additional charge until the actual objective is met.
+      while (!won) {
+        if (levelOver) startLevel(level);
+        let moveGuard=0;
+        while (!levelOver && moveGuard<80) {
+          if (levelConfig.type==='timed' && performance.now()>=timerEndsAt) {
+            failLevel("Time is up. AI is retrying this level with a new board."); break;
+          }
+          let move=findBestAiMove();
+          if (!move) {
+            if (!reshuffleAiBoard()) { failLevel("No valid moves found. AI is reshuffling and retrying."); break; }
+            setStatus("🤖 AI reshuffled the board and is searching for a valid match…");
+            await sleep(120);
+            move=findBestAiMove();
+            if (!move) { failLevel("No valid moves found. AI is retrying this level."); break; }
+          }
+          await aiPerformMove(move);
+          moveGuard++;
+          if (save.completedLevels[level] || (levelOver && save.completedLevels[level])) { won=true; break; }
+        }
+        if (save.completedLevels[level]) { won=true; break; }
+        if (!won) {
+          attempts++;
+          setStatus(`AI did not finish Level ${level} on attempt ${attempts}. Rebuilding the board and continuing without another charge…`);
+          startLevel(level);
+          await sleep(220);
+        }
+      }
+
+      if (!won) break;
+      if (backendConfigured()) {
+        const data=await backendRequest("/api/ai/finish-level",{
+          method:"POST",
+          body:{level,score,jellyCleared:countJelly()===0}
+        });
+        if (!data || !data.state) throw new Error("The server did not confirm the completed AI-played level.");
+        applyRemoteState(data.state,false,true);
+        save.currentLevel=level;
+        save.completedLevels[level]=true;
+        save.levelStars[level]=Math.max(3,Number(save.levelStars[level])||0);
+        save.maxUnlocked=Math.max(save.maxUnlocked,Math.min(LEVEL_COUNT,level+1));
+        persist(); refreshDashboard(); renderLevelMap();
+      }
+      if (!backendConfigured() && !wasCompletedBeforeAI) {
+        save.coins += LEVEL_COMPLETION_REWARD;
+        persist(); refreshDashboard();
+      }
+      completedThisRun++;
+      setStatus(`🤖 AI actually played and completed Level ${level}. +${LEVEL_COMPLETION_REWARD.toLocaleString()} coins for first completion.`);
+      if (level>=LEVEL_COUNT) {
+        save.currentLevel=LEVEL_COUNT; persist(); refreshDashboard(); renderLevelMap();
+        setStatus("🎉 AI played and completed Level 100. All levels are finished; no Level 101 exists.");
+        break;
+      }
+      startLevel(level+1);
+      await sleep(260);
+    }
+
+    if (!pendingAiAdReward && save.currentLevel===LEVEL_COUNT && save.completedLevels[LEVEL_COUNT]) {
+      setStatus("AI completed the final level. Adventure complete!");
+    } else if (!pendingAiAdReward && completedThisRun>0) {
+      setStatus(`AI finished ${completedThisRun} level(s) by playing actual matches. Level ${save.currentLevel} is ready if your wallet can cover the next level.`);
+    }
+  } catch (error) {
+    setStatus(`AI Auto-Play failed: ${error.message}`);
+  } finally {
+    aiCompleting=false;
+    aiAutoRunning=false;
+    refreshDashboard();
+  }
+}
+function closeAiAdReward() {
+  $("aiAdOverlay").classList.remove("show");
+  pendingAiAdReward = false;
+  aiResumeAfterAd = false;
+}
+async function completeAiAdReward() {
+  if (!pendingAiAdReward) return;
+  syncDailyCount();
+  if (save.aiAdsCount >= AI_AD_DAILY_LIMIT) {
+    closeAiAdReward();
+    setStatus("You have used all 3 AI reward ads today.");
+    return;
+  }
+  if (backendConfigured()) {
+    closeAiAdReward();
+    setStatus("Demo ad rewards are disabled in backend mode. Connect server-side rewarded-ad verification first.");
+    return;
+  }
+  save.aiAdsDate = dateKey();
+  save.aiAdsCount += 1;
+  save.coins += AI_AD_REWARD;
+  const shouldResume = aiResumeAfterAd;
+  aiResumeAfterAd = false;
+  persist(); refreshDashboard(); closeAiAdReward();
+  setStatus(`Demo reward added: +${AI_AD_REWARD.toLocaleString()} coins. ${AI_AD_DAILY_LIMIT-save.aiAdsCount} AI reward ads left today.`);
+  if (shouldResume) await aiClearCurrentLevel();
+}
+function openDemoAd() {
+  syncDailyCount();
+  if (backendConfigured()) { setStatus("Demo ad rewards are disabled in backend mode. Connect a real rewarded-ad provider with server-side verification."); return; }
+  if(save.dailyAdsCount>=DAILY_AD_LIMIT){setStatus("You've reached the 30-ad daily limit. Try again tomorrow.");refreshDashboard();return;}
+  if(!DEMO_MODE){setStatus("Connect your approved rewarded-ad provider and server verification first.");return;}
+  $("demoAdOverlay").classList.add("show");pendingDemoReward=true;
+}
+function closeDemoAd() {
+  $("demoAdOverlay").classList.remove("show");pendingDemoReward=false;
+}
+function completeDemoAd() {
+  if(!pendingDemoReward)return;
+  if (backendConfigured()) { closeDemoAd(); setStatus("Demo ad rewards are disabled in backend mode."); return; }
+  syncDailyCount();
+  if(save.dailyAdsCount>=DAILY_AD_LIMIT){closeDemoAd();refreshDashboard();setStatus("Daily test-ad limit reached.");return;}
+  save.dailyAdsCount++;
+  save.coins+=COINS_PER_TEST_AD;
+  persist();refreshDashboard();closeDemoAd();
+  setStatus(`Demo reward added: +${COINS_PER_TEST_AD} coins. ${DAILY_AD_LIMIT-save.dailyAdsCount} test ads left today.`);
+}
+async function copyText(value) {
+  try {
+    await navigator.clipboard.writeText(value);
+    setStatus("Copied to clipboard.");
+  } catch (_) {
+    const temp=document.createElement("textarea");temp.value=value;temp.style.position="fixed";temp.style.opacity="0";
+    document.body.appendChild(temp);temp.select();
+    const ok=document.execCommand("copy");temp.remove();
+    setStatus(ok?"Copied to clipboard.":"Copy failed. Please copy the text manually.");
+  }
+}
+function inviteUrl() {
+  if(location.protocol!=="http:"&&location.protocol!=="https:")return "";
+  const url=new URL(location.href);url.searchParams.set("ref",save.referralCode);return url.toString();
+}
+function inviteText() {
+  const url=inviteUrl();
+  return url
+    ? `Join me in Sweet Match! Use my referral code ${save.referralCode}: ${url} In the live version, valid referrals earn 3,000 coins after verification.`
+    : `Join me in Sweet Match! My referral code is ${save.referralCode}. (Publish the game online to make this invite link clickable.)`;
+}
+async function shareInvite() {
+  const text=inviteText();
+  if(navigator.share) {
+    try { await navigator.share({title:"Sweet Match",text,url:inviteUrl()||undefined});setStatus("Invite share sheet opened.");return; }
+    catch (_) {}
+  }
+  await copyText(text);
+}
+function handleIncomingReferral() {
+  const code=new URLSearchParams(location.search).get("ref");
+  if(!code)return;
+  const normalized=code.trim().toUpperCase();
+  if(normalized===save.referralCode.toUpperCase()) {
+    $("referralStatus").textContent="That is your own referral code.";
+    return;
+  }
+  if(!save.appliedReferralCode) {
+    save.appliedReferralCode=normalized.slice(0,20);persist();refreshDashboard();
+    $("referralStatus").textContent=`Invite code ${normalized} detected and saved locally. It will need backend verification before any reward is paid.`;
+  }
+}
+function applyFriendCode() {
+  const code=$("friendCode").value.trim().toUpperCase();
+  if(!code){setStatus("Enter a friend's referral code first.");return;}
+  if(code===save.referralCode.toUpperCase()){setStatus("You cannot apply your own referral code.");return;}
+  if(save.appliedReferralCode){setStatus("A referral code has already been saved on this device.");return;}
+  save.appliedReferralCode=code.slice(0,20);persist();refreshDashboard();$("friendCode").value="";
+  $("referralStatus").textContent=`Code ${save.appliedReferralCode} saved in demo mode only. No referral coins have been issued.`;
+  setStatus("Referral code saved locally; live verification is not connected.");
+}
+function resetDemoData() {
+  if (backendConfigured()) { setStatus("This button only resets local demo data. Cloud progress must be managed through a secure admin operation."); return; }
+  if(!confirm("Reset this browser's demo coins, profile, referral data and best score?"))return;
+  localStorage.removeItem(SAVE_KEY);save=defaultSave();levelConfig=getLevelConfig(1);startLevel(1);refreshDashboard();renderLeaderboard();
+  setStatus("Demo data reset. Your game is ready at Level 1!");
+}
+
+const SESSION_KEY = "sweetMatchSessionMode_v1";
+const FIREBASE_CONFIG = {
+  apiKey: "PASTE_FIREBASE_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  appId: "PASTE_FIREBASE_APP_ID"
+};
+let auth = null;
+let currentUser = null;
+let sessionMode = localStorage.getItem(SESSION_KEY) || "";
+let authMode = "login";
+function firebaseConfigured() {
+  return Boolean(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.appId &&
+    !FIREBASE_CONFIG.apiKey.startsWith("PASTE_") &&
+    !FIREBASE_CONFIG.projectId.startsWith("YOUR_") &&
+    !FIREBASE_CONFIG.appId.startsWith("PASTE_"));
+}
+function setAuthStatus(message, error = true) {
+  const el = $("authStatus");
+  el.textContent = message;
+  el.style.color = error ? "#a12e58" : "#087d65";
+}
+function setAuthMode(mode) {
+  authMode = mode;
+  const registering = mode === "register";
+  $("authTitle").textContent = registering ? "Create your account" : "Welcome back";
+  $("authSubmit").textContent = registering ? "Create account" : "Sign in";
+  $("authModeToggle").textContent = registering ? "Already have an account? Sign in" : "New here? Create an account";
+  $("authNameWrap").hidden = !registering;
+  $("authName").required = registering;
+  $("authPassword").autocomplete = registering ? "new-password" : "current-password";
+  setAuthStatus("");
+}
+function showAuth(clearSession = true) {
+  if (clearSession) {
+    localStorage.removeItem(SESSION_KEY);
+    sessionMode = "";
+  }
+  $("authScreen").hidden = false;
+  $("appShell").hidden = true;
+  setAuthMode("login");
+}
+function showApp(mode = "guest") {
+  sessionMode = mode;
+  if (mode === "guest") localStorage.setItem(SESSION_KEY, "guest");
+  if (mode === "account") localStorage.setItem(SESSION_KEY, "account");
+  $("authScreen").hidden = true;
+  $("appShell").hidden = false;
+  // After guest entry or successful sign-in, open the actual game immediately.
+  setActiveView("play");
+  refreshDashboard();
+  renderLeaderboard();
+  if (mode === "account" && backendConfigured() && currentUser) {
+    syncRemotePlayerState(true).catch(error => setStatus(`Cloud sync unavailable: ${error.message}`));
+  }
+}
+function setActiveView(name) {
+  // Keep the actual game board centered whenever the Play screen is selected.
+  $("appShell").classList.toggle("game-focus", name === "play");
+  const targetId = `view-${name}`;
+  document.querySelectorAll(".page-view").forEach(view => {
+    const isActive = view.id === targetId;
+    view.classList.toggle("active", isActive);
+    // Inline display makes screen switching resilient to mobile browser CSS quirks.
+    view.style.display = isActive ? "block" : "none";
+    view.setAttribute("aria-hidden", String(!isActive));
+  });
+  document.querySelectorAll(".nav-btn[data-view]").forEach(button => button.classList.toggle("active", button.dataset.view === name));
+  if (name === "leaderboard") renderLeaderboard();
+  if (name === "rewards") { syncDailyCount(); refreshDashboard(); }
+  if (name === "coins") {
+    renderMyPayments(); loadPaymentInstructions();
+    if (backendConfigured() && currentUser) syncRemotePlayerState(false).catch(error => setStatus(`Balance refresh failed: ${error.message}`));
+  }
+  if (name === "admin" && isAdminMode) renderAdminPayments();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function updateAccountDisplay() {
+  const isAccount = sessionMode === "account" && currentUser;
+  const label = isAccount ? (currentUser.displayName || currentUser.email || "Player account") : "Guest · Sign in";
+  $("accountBtn").textContent = label;
+  $("accountSummary").textContent = isAccount
+    ? `Signed in as ${currentUser.email || currentUser.displayName || "your account"}. ${backendConfigured() ? "Cloud player data is enabled." : "This preview stores coins locally; cloud sync is not connected."}`
+    : "You are playing as a guest. No account is required, and guest mode keeps demo progress on this device.";
+  $("profileAuthBtn").textContent = isAccount ? "Sign out" : "Sign in or register";
+}
+function firebaseSetupMessage() {
+  setAuthStatus("Sign-in is not connected yet. The game owner must add Firebase config and enable Email/Password, Google and Facebook providers. You can still play as a guest.");
+}
+function initAuthFlow() {
+  if (firebaseConfigured() && window.firebase && firebase.apps) {
+    try {
+      if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+      auth = firebase.auth();
+      auth.onAuthStateChanged(user => {
+        currentUser = user || null;
+        if (user) {
+          sessionMode = "account";
+          localStorage.setItem(SESSION_KEY, "account");
+          if (user.displayName && (!save.playerName || save.playerName === "Guest Player")) {
+            save.playerName = user.displayName.slice(0,20);
+            persist();
+          }
+          refreshDashboard();
+          showApp("account");
+        } else if (localStorage.getItem(SESSION_KEY) === "guest") {
+          showApp("guest");
+        } else {
+          localStorage.removeItem(SESSION_KEY);
+          showAuth(false);
+        }
+      });
+    } catch (error) {
+      console.error("Firebase initialization failed:", error);
+      showAuth(false);
+    }
+  } else if (sessionMode === "guest") {
+    showApp("guest");
+  } else {
+    showAuth(false);
+  }
+}
+async function signInWithProvider(providerName) {
+  if (!firebaseConfigured() || !auth) { firebaseSetupMessage(); return; }
+  try {
+    setAuthStatus(`Opening ${providerName} sign-in…`, false);
+    let provider;
+    if (providerName === "Google") provider = new firebase.auth.GoogleAuthProvider();
+    else {
+      provider = new firebase.auth.FacebookAuthProvider();
+      provider.addScope("email");
+    }
+    await auth.signInWithPopup(provider);
+  } catch (error) {
+    console.error(`${providerName} sign-in failed:`, error);
+    const messages = {
+      "auth/popup-closed-by-user":"The sign-in window was closed before finishing.",
+      "auth/account-exists-with-different-credential":"This email is already linked to another sign-in method.",
+      "auth/unauthorized-domain":"Add this website domain to Firebase Authentication's authorized domains."
+    };
+    setAuthStatus(messages[error.code] || error.message || `${providerName} sign-in could not be completed.`);
+  }
+}
+async function handleEmailAuth(event) {
+  event.preventDefault();
+  if (!firebaseConfigured() || !auth) { firebaseSetupMessage(); return; }
+  const email = $("authEmail").value.trim();
+  const password = $("authPassword").value;
+  try {
+    setAuthStatus(authMode === "register" ? "Creating your account…" : "Signing in…", false);
+    if (authMode === "register") {
+      const credential = await auth.createUserWithEmailAndPassword(email, password);
+      const displayName = $("authName").value.trim();
+      if (displayName) await credential.user.updateProfile({displayName});
+    } else {
+      await auth.signInWithEmailAndPassword(email, password);
+    }
+  } catch (error) {
+    const messages = {
+      "auth/email-already-in-use":"An account already exists with this email. Try signing in.",
+      "auth/invalid-email":"Enter a valid email address.",
+      "auth/weak-password":"Choose a stronger password with at least 6 characters.",
+      "auth/user-not-found":"No account found for this email. Create an account first.",
+      "auth/wrong-password":"That password is incorrect.",
+      "auth/invalid-credential":"Email or password is incorrect."
+    };
+    setAuthStatus(messages[error.code] || error.message || "Authentication failed.");
+  }
+}
+async function continueAsGuest() {
+  if (auth && currentUser) {
+    try { await auth.signOut(); } catch (_) {}
+  }
+  currentUser = null;
+  if (!save.playerName || save.playerName.trim() === "") save.playerName = "Guest Player";
+  showApp("guest");
+}
+async function handleAccountAction() {
+  if (sessionMode === "account" && auth && currentUser) {
+    try { await auth.signOut(); } catch (error) { setStatus("Sign out failed: " + (error.message || "please try again")); return; }
+    currentUser = null;
+    localStorage.removeItem(SESSION_KEY);
+    sessionMode = "";
+    showAuth(false);
+  } else {
+    showAuth(true);
+  }
+}
+document.querySelectorAll(".nav-btn[data-view]").forEach(button => button.addEventListener("click", () => setActiveView(button.dataset.view)));
+document.querySelectorAll("[data-go]").forEach(button => button.addEventListener("click", () => setActiveView(button.dataset.go)));
+$("startPlayBtn").addEventListener("click", () => {setActiveView("play");updateLevelHUD();});
+$("googleSignInBtn").addEventListener("click", () => signInWithProvider("Google"));
+$("facebookSignInBtn").addEventListener("click", () => signInWithProvider("Facebook"));
+$("authForm").addEventListener("submit", handleEmailAuth);
+$("authModeToggle").addEventListener("click", () => setAuthMode(authMode === "login" ? "register" : "login"));
+$("guestBtn").addEventListener("click", continueAsGuest);
+$("accountBtn").addEventListener("click", handleAccountAction);
+$("profileAuthBtn").addEventListener("click", handleAccountAction);
+
+canvas.addEventListener("pointerdown",event=>{event.preventDefault();handlePick(cellFromEvent(event));});
+restartBtn.addEventListener("click",()=>startLevel(save.currentLevel));
+$("levelMapBtn").addEventListener("click",openLevelMap);
+$("closeLevelMapBtn").addEventListener("click",closeLevelMap);
+$("levelMapOverlay").addEventListener("click",event=>{if(event.target===$("levelMapOverlay"))closeLevelMap();});
+$("levelMapGrid").addEventListener("click",event=>{const button=event.target.closest("[data-level]");if(button&&!button.disabled)startLevel(Number(button.dataset.level));});
+$("levelResultActions").addEventListener("click",event=>{
+  const button=event.target.closest("[data-level-action]");if(!button)return;
+  const action=button.dataset.levelAction;
+  if(action==='next')startLevel(Math.min(LEVEL_COUNT,save.currentLevel+1));
+  else if(action==='retry')startLevel(save.currentLevel);
+  else if(action==='replay')startLevel(LEVEL_COUNT);
+  else if(action==='map'){$("levelResultOverlay").classList.remove("show");openLevelMap();}
+});
+$("levelResultOverlay").addEventListener("click",event=>{if(event.target===$("levelResultOverlay")){$("levelResultOverlay").classList.remove("show");}});
+$("hintBtn").addEventListener("click",useHint);
+$("aiClearBtn").addEventListener("click",aiClearCurrentLevel);
+$("cancelAiAd").addEventListener("click",closeAiAdReward);
+$("completeAiAdBtn").addEventListener("click",completeAiAdReward);
+$("aiAdOverlay").addEventListener("click",event=>{if(event.target===$("aiAdOverlay"))closeAiAdReward();});
+$("watchAdBtn").addEventListener("click",openDemoAd);
+$("coinPack").addEventListener("change",event=>updateCoinPackDisplay(event.target.value));
+document.querySelectorAll("[data-pack]").forEach(button=>button.addEventListener("click",()=>{$("coinPack").value=button.dataset.pack;updateCoinPackDisplay(button.dataset.pack);setActiveView("coins");}));
+$("coinPurchaseForm").addEventListener("submit",submitCoinPurchase);
+$("paymentMethod").addEventListener("change",loadPaymentInstructions);
+$("paymentAttachment").addEventListener("change", () => {
+  const file = $("paymentAttachment").files?.[0];
+  $("paymentAttachmentStatus").textContent = file ? `Selected: ${file.name} (${Math.ceil(file.size / 1024)} KB)` : "No receipt attached.";
+});
+$("adminLoginBtn").addEventListener("click",openAdminAccess);
+$("adminLoginForm").addEventListener("submit",handleDemoAdminLogin);
+$("cancelAdminLogin").addEventListener("click",closeAdminLogin);
+$("adminLoginOverlay").addEventListener("click",event=>{if(event.target===$("adminLoginOverlay"))closeAdminLogin();});
+$("exitAdminBtn").addEventListener("click",()=>{isAdminMode=false;setActiveView("profile");});
+$("refreshAdminPaymentsBtn").addEventListener("click",renderAdminPayments);
+$("adminPaymentsList").addEventListener("click",handleAdminPaymentAction);
+$("cancelDemoAd").addEventListener("click",closeDemoAd);
+$("completeDemoAd").addEventListener("click",completeDemoAd);
+$("demoAdOverlay").addEventListener("click",event=>{if(event.target===$("demoAdOverlay"))closeDemoAd();});
+$("copyCodeBtn").addEventListener("click",()=>copyText(save.referralCode));
+$("copyInviteBtn").addEventListener("click",()=>copyText(inviteText()));
+$("shareInviteBtn").addEventListener("click",shareInvite);
+$("applyCodeBtn").addEventListener("click",applyFriendCode);
+$("playerName").addEventListener("change",updateProfile);
+$("countryCode").addEventListener("change",updateProfile);
+$("playerName").addEventListener("keydown",event=>{if(event.key==="Enter"){$("playerName").blur();updateProfile();}});
+$("resetProgress").addEventListener("click",resetDemoData);
+document.querySelectorAll(".tab").forEach(button=>button.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(tab=>{tab.classList.toggle("active",tab===button);tab.setAttribute("aria-selected",String(tab===button));});
+  renderLeaderboard();
+}));
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){syncDailyCount();refreshDashboard();}});
+window.addEventListener("storage",event=>{if(event.key===SAVE_KEY){save=loadSave();refreshDashboard();renderLeaderboard();}});
+
+refreshDashboard();
+renderLeaderboard();
+handleIncomingReferral();
+buildRenderCaches();
+levelConfig=getLevelConfig(save.currentLevel || 1);
+startLevel(save.currentLevel || 1);
+initAuthFlow();
+requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>
