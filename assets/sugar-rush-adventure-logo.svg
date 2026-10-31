@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="150" viewBox="0 0 560 150" role="img" aria-labelledby="title desc">
+  <title id="title">Sugar Rush Adventure</title>
+  <desc id="desc">A colorful candy lollipop emblem and the Sugar Rush Adventure game wordmark.</desc>
+  <defs>
+    <linearGradient id="badge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe76a"/><stop offset=".48" stop-color="#ff9a47"/><stop offset="1" stop-color="#ff5d9e"/></linearGradient>
+    <linearGradient id="pink" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff1ff"/><stop offset=".48" stop-color="#ff8cce"/><stop offset="1" stop-color="#e73e9d"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff49b"/><stop offset=".5" stop-color="#ffc53d"/><stop offset="1" stop-color="#f18a20"/></linearGradient>
+    <linearGradient id="ribbon" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffbd4d"/><stop offset="1" stop-color="#e66b22"/></linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur in="SourceAlpha" stdDeviation="3"/><feOffset dy="4"/><feComponentTransfer><feFuncA type="linear" slope=".35"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <circle cx="75" cy="72" r="61" fill="#54208f" stroke="#fff" stroke-width="5"/>
+    <circle cx="75" cy="72" r="52" fill="url(#badge)" stroke="#ffe7a2" stroke-width="3"/>
+    <path d="M66 106 L85 106 L98 145 L83 145 Z" fill="#fff2dc" stroke="#b96a39" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="75" cy="66" r="36" fill="#fff8ef" stroke="#d94b9b" stroke-width="5"/>
+    <circle cx="75" cy="66" r="27" fill="url(#pink)" stroke="#fff" stroke-width="2"/>
+    <path d="M58 54 C66 42 88 45 92 59 C96 72 81 79 70 73 C59 67 64 55 76 55 C88 55 88 70 77 73" fill="none" stroke="#fff8ee" stroke-width="7" stroke-linecap="round"/>
+    <path d="M75 8 L81 20 L95 22 L85 32 L87 46 L75 39 L63 46 L65 32 L55 22 L69 20 Z" fill="url(#gold)" stroke="#fff4c1" stroke-width="2"/>
+    <path d="M21 42 L27 48 L35 49 L29 56 L30 64 L21 60 L13 64 L14 55 L8 49 L17 48 Z" fill="#fff" opacity=".95"/>
+    <path d="M121 79 L126 85 L135 86 L128 92 L130 101 L121 97 L113 101 L114 92 L108 86 L117 85 Z" fill="#fff" opacity=".95"/>
+  </g>
+  <g filter="url(#shadow)" font-family="Trebuchet MS, Arial, sans-serif" font-weight="1000" text-anchor="middle">
+    <text x="344" y="78" font-size="64" fill="#fff" stroke="#55218e" stroke-width="12" stroke-linejoin="round" paint-order="stroke fill" letter-spacing="-2">Sugar Rush</text>
+    <text x="344" y="78" font-size="64" fill="url(#gold)" stroke="#fff" stroke-width="1.5" stroke-linejoin="round" paint-order="fill">Sugar Rush</text>
+    <path d="M190 92 Q344 110 498 92 L482 139 Q344 151 206 139 Z" fill="url(#ribbon)" stroke="#fff0b0" stroke-width="3"/>
+    <path d="M190 92 L164 108 L208 120 Z M498 92 L524 108 L480 120 Z" fill="#c94c29" stroke="#ffe8a0" stroke-width="2"/>
+    <text x="344" y="130" font-size="29" fill="#fff8db" stroke="#a54a28" stroke-width="4" paint-order="stroke fill" letter-spacing="4">ADVENTURE</text>
+  </g>
+  <g fill="#fff8a9"><path d="M500 19 l5 11 12 2 -9 8 2 12 -10 -6 -10 6 2 -12 -9 -8 12 -2z"/><circle cx="165" cy="70" r="4"/><circle cx="535" cy="67" r="4"/></g>
+</svg>

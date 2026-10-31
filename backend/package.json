@@ -1,14 +1,16 @@
 {
-  "name": "sweet-match-admin-backend",
+  "name": "sugar-rush-adventure-admin-backend",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Secure API backend for Sweet Match game administration and player analytics",
-  "engines": { "node": ">=20" },
+  "description": "Secure API backend for Sugar Rush Adventure administration and player analytics",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "check": "node --check server.js && node --check admin-tools.js"
+    "check": "node --check server.js && node --check ../admin-tools.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

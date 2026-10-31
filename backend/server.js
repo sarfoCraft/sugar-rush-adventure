@@ -52,7 +52,7 @@ const AI_CLEAR_COST = 5000;
 const LEVEL_COMPLETION_REWARD = 2000;
 
 function makeReferralCode() {
-  return `SM-${randomBytes(4).toString("hex").toUpperCase()}`;
+  return `SRA-${randomBytes(4).toString("hex").toUpperCase()}`;
 }
 function seasonForLevel(level) {
   const index = Math.floor((level - 1) / 20);
@@ -326,7 +326,7 @@ async function ensureSchema() {
   }
 }
 
-app.get("/health", (_req, res) => res.json({ ok: true, service: "sweet-match-api" }));
+app.get("/health", (_req, res) => res.json({ ok: true, service: "sugar-rush-adventure-api" }));
 app.get("/api/levels", wrap(async (_req, res) => res.json({ levels: await getLevels(true) })));
 app.get("/api/payment-instructions", (_req, res) => {
   let instructions = {};
@@ -615,18 +615,29 @@ app.post("/api/admin/referrals/:id/:action", requireAdmin, wrap(async (req, res)
 
 app.get("/api/admin/levels", requireAdmin, wrap(async (_req, res) => res.json({ levels: await getLevels(true) })));
 app.post("/api/admin/levels", requireAdmin, wrap(async (req, res) => {
-  const currentCount = await levelCount();
-  const defaults = defaultLevel(currentCount + 1);
-  let item;
-  try { item = normalizeLevelInput(req.body || {}, defaults); } catch (error) { return res.status(400).json({ error: error.message }); }
-  const positionResult = await pool.query("SELECT COALESCE(MAX(position),0)::int + 1 AS position FROM game_levels WHERE active = TRUE");
-  const position = Number(positionResult.rows[0].position) || currentCount + 1;
-  const result = await pool.query(
-    `INSERT INTO game_levels (id,position,name,season,type,target_score,moves,time_limit,jelly_goal)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-    [randomUUID(), position, item.name, item.season || seasonForLevel(position), item.type, item.targetScore, item.moves, item.timeLimit, item.jellyGoal]
-  );
-  res.status(201).json({ level: result.rows[0], levels: await getLevels(true) });
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("LOCK TABLE game_levels IN SHARE ROW EXCLUSIVE MODE");
+    const countResult = await client.query("SELECT COUNT(*)::int AS count FROM game_levels WHERE active = TRUE");
+    const currentCount = Number(countResult.rows[0]?.count) || 0;
+    const defaults = defaultLevel(currentCount + 1);
+    let item;
+    try { item = normalizeLevelInput(req.body || {}, defaults); }
+    catch (error) { await client.query("ROLLBACK"); return res.status(400).json({ error: error.message }); }
+    const positionResult = await client.query("SELECT COALESCE(MAX(position),0)::int + 1 AS position FROM game_levels WHERE active = TRUE");
+    const position = Number(positionResult.rows[0].position) || currentCount + 1;
+    const result = await client.query(
+      `INSERT INTO game_levels (id,position,name,season,type,target_score,moves,time_limit,jelly_goal)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+      [randomUUID(), position, item.name, item.season || seasonForLevel(position), item.type, item.targetScore, item.moves, item.timeLimit, item.jellyGoal]
+    );
+    await client.query("COMMIT");
+    res.status(201).json({ level: result.rows[0] });
+  } catch (error) {
+    try { await client.query("ROLLBACK"); } catch (_) {}
+    throw error;
+  } finally { client.release(); }
 }));
 app.put("/api/admin/levels/:id", requireAdmin, wrap(async (req, res) => {
   const found = await pool.query("SELECT * FROM game_levels WHERE id = $1 AND active = TRUE", [req.params.id]);
@@ -640,23 +651,83 @@ app.put("/api/admin/levels/:id", requireAdmin, wrap(async (req, res) => {
   res.json({ levels: await getLevels(true) });
 }));
 app.post("/api/admin/levels/:id/clone", requireAdmin, wrap(async (req, res) => {
-  const found = await pool.query("SELECT * FROM game_levels WHERE id = $1 AND active = TRUE", [req.params.id]);
-  if (!found.rows.length) return res.status(404).json({ error: "Active level not found." });
-  const source = found.rows[0];
-  const posResult = await pool.query("SELECT COALESCE(MAX(position),0)::int + 1 AS position FROM game_levels WHERE active = TRUE");
-  const position = Number(posResult.rows[0].position) || 1;
-  const result = await pool.query(
-    `INSERT INTO game_levels (id,position,name,season,type,target_score,moves,time_limit,jelly_goal)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-    [randomUUID(),position,`${source.name} (Copy)`.slice(0,60),source.season||seasonForLevel(position),source.type,source.target_score,source.moves,source.time_limit,source.jelly_goal]
-  );
-  res.status(201).json({ level: result.rows[0], levels: await getLevels(true) });
-}));
-app.delete("/api/admin/levels/:id", requireAdmin, wrap(async (req, res) => {
-  if (await levelCount() <= 1) return res.status(400).json({ error: "Keep at least one active level." });
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
+    await client.query("LOCK TABLE game_levels IN SHARE ROW EXCLUSIVE MODE");
+    const found = await client.query("SELECT * FROM game_levels WHERE id = $1 AND active = TRUE FOR UPDATE", [req.params.id]);
+    if (!found.rows.length) { await client.query("ROLLBACK"); return res.status(404).json({ error: "Active level not found." }); }
+    const source = found.rows[0];
+    const posResult = await client.query("SELECT COALESCE(MAX(position),0)::int + 1 AS position FROM game_levels WHERE active = TRUE");
+    const position = Number(posResult.rows[0].position) || 1;
+    const result = await client.query(
+      `INSERT INTO game_levels (id,position,name,season,type,target_score,moves,time_limit,jelly_goal)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+      [randomUUID(),position,`${source.name} (Copy)`.slice(0,60),source.season||seasonForLevel(position),source.type,source.target_score,source.moves,source.time_limit,source.jelly_goal]
+    );
+    await client.query("COMMIT");
+    res.status(201).json({ level: result.rows[0] });
+  } catch (error) {
+    try { await client.query("ROLLBACK"); } catch (_) {}
+    throw error;
+  } finally { client.release(); }
+}));
+app.post("/api/admin/levels/:id/clone-bulk", requireAdmin, wrap(async (req, res) => {
+  const count = Number(req.body?.count);
+  if (!Number.isInteger(count) || count < 1 || count > 500) {
+    return res.status(400).json({ error: "Number of clones must be a whole number between 1 and 500." });
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    // Serialize level creation so concurrent admin actions cannot assign overlapping positions.
+    await client.query("LOCK TABLE game_levels IN SHARE ROW EXCLUSIVE MODE");
+    const found = await client.query("SELECT * FROM game_levels WHERE id = $1 AND active = TRUE FOR UPDATE", [req.params.id]);
+    if (!found.rows.length) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "Active source level not found." });
+    }
+    const source = found.rows[0];
+    const posResult = await client.query("SELECT COALESCE(MAX(position),0)::int AS last_position FROM game_levels WHERE active = TRUE");
+    const startLevel = (Number(posResult.rows[0]?.last_position) || 0) + 1;
+    const values = [];
+    const tuples = [];
+    for (let i = 0; i < count; i++) {
+      const position = startLevel + i;
+      const offset = values.length;
+      tuples.push(`($${offset + 1},$${offset + 2},$${offset + 3},$${offset + 4},$${offset + 5},$${offset + 6},$${offset + 7},$${offset + 8},$${offset + 9})`);
+      values.push(
+        randomUUID(), position, `Level ${position}`.slice(0, 60),
+        source.season || seasonForLevel(position), source.type,
+        source.target_score, source.moves, source.time_limit, source.jelly_goal
+      );
+    }
+    await client.query(
+      `INSERT INTO game_levels (id,position,name,season,type,target_score,moves,time_limit,jelly_goal) VALUES ${tuples.join(",")}`,
+      values
+    );
+    await client.query("COMMIT");
+    const endLevel = startLevel + count - 1;
+    res.status(201).json({ clonedCount: count, startLevel, endLevel, sourceLevel: Number(source.position) || null });
+  } catch (error) {
+    try { await client.query("ROLLBACK"); } catch (_) {}
+    throw error;
+  } finally {
+    client.release();
+  }
+}));
+
+app.delete("/api/admin/levels/:id", requireAdmin, wrap(async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("LOCK TABLE game_levels IN SHARE ROW EXCLUSIVE MODE");
+    const countResult = await client.query("SELECT COUNT(*)::int AS count FROM game_levels WHERE active = TRUE");
+    if ((Number(countResult.rows[0]?.count) || 0) <= 1) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({ error: "Keep at least one active level." });
+    }
     const found = await client.query("SELECT id, position FROM game_levels WHERE id = $1 AND active = TRUE FOR UPDATE", [req.params.id]);
     if (!found.rows.length) { await client.query("ROLLBACK"); return res.status(404).json({ error: "Active level not found." }); }
     const position = Number(found.rows[0].position);
@@ -678,6 +749,6 @@ app.use((error, _req, res, _next) => {
 
 await ensureSchema();
 app.listen(PORT, () => {
-  console.log(`Sweet Match API listening on port ${PORT}`);
+  console.log(`Sugar Rush Adventure API listening on port ${PORT}`);
   if (!ADMIN_UIDS.size) console.warn("ADMIN_UIDS is empty. No account will have administrator access until you configure it.");
 });

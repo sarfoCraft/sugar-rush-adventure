@@ -17,3 +17,7 @@ Play the game directly in your browser:
 ## 🛠️ Built With
 - HTML5 Canvas & Vanilla JavaScript
 - CSS3 (Custom variables, responsive grid & flexbox layouts)
+
+## 🧰 Admin tools
+- **Advanced bulk level cloning:** choose a source level and create 1–500 sequential copies in one action (for example 5, 10, or 100). Copies retain the source mission settings and are appended to the level list.
+- **Sugar Rush Adventure branding:** the game uses a custom SVG wordmark and favicon in `assets/`.

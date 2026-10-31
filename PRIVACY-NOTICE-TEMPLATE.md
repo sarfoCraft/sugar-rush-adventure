@@ -1,10 +1,10 @@
-# Privacy Notice — Sweet Match (Template)
+# Privacy Notice — Sugar Rush Adventure (Template)
 
 **Replace every bracketed item with your real information and review this notice for the laws that apply to your players before publishing.**
 
 ## Information collected
 
-Sweet Match may collect a randomly generated player ID, Firebase account identifier, display name, email address where provided by the sign-in provider, country selection, profile picture, level progress, referral activity, coin/payment request details, last-seen time, approximate account activity duration, and the latest IP address observed by the game server.
+Sugar Rush Adventure may collect a randomly generated player ID, Firebase account identifier, display name, email address where provided by the sign-in provider, country selection, profile picture, level progress, referral activity, coin/payment request details, last-seen time, approximate account activity duration, and the latest IP address observed by the game server.
 
 ## Why it is collected
 
@@ -20,7 +20,7 @@ Authorized game administrators can access player records needed to manage the ga
 
 ## Service providers
 
-Sweet Match uses Firebase Authentication, a hosted API service, and a PostgreSQL database provider. [List the providers actually used and link to their privacy notices.]
+Sugar Rush Adventure uses Firebase Authentication, a hosted API service, and a PostgreSQL database provider. [List the providers actually used and link to their privacy notices.]
 
 ## Contact
 

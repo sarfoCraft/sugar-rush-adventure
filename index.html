@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#7650d8">
-<title>Sweet Match — Play, Rewards & Leaderboards</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<title>Sugar Rush Adventure — Match 3 Puzzle Game</title>
 <style>
 :root{--ink:#35234d;--pink:#ff5d9e;--purple:#7650d8;--cream:#fff8ef;--muted:#806d91;--line:#eadcf5;--green:#0e9b7c}
 *{box-sizing:border-box}
@@ -140,7 +141,7 @@ button.provider-btn{background:#fff;color:#3c3150;border:1px solid #e8deef;box-s
 .toast{position:fixed;right:18px;bottom:18px;z-index:60;max-width:min(420px,calc(100vw - 36px));padding:12px 16px;border-radius:13px;background:#35234d;color:white;font-size:.83rem;font-weight:750;box-shadow:0 12px 35px #21133135;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .18s,transform .18s}.toast.show{opacity:1;transform:translateY(0)}
 .account-pill{background:#fff;border:1px solid var(--line);color:#6d557f;box-shadow:0 3px 0 #e4d5ef;padding:9px 12px;font-size:.78rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:900px){.app-grid{grid-template-columns:1fr}.nav-rail{position:static;display:flex;overflow:auto;gap:5px;padding:7px;order:2}.nav-caption{display:none}.nav-btn{flex:1;justify-content:center;min-width:86px;text-align:center;flex-direction:column;gap:4px;padding:9px 8px;font-size:.7rem}.nav-btn .nav-icon{width:auto;font-size:1.15rem}.workspace{order:1}.play-grid{grid-template-columns:minmax(0,1fr) 210px}}
-@media(max-width:650px){body{padding:10px 10px 86px}.auth-screen{min-height:calc(100vh - 20px);padding:0}.auth-card{padding:22px 18px;border-radius:23px}.auth-social{grid-template-columns:1fr}.auth-brand h1{font-size:1.6rem}.app-topbar{padding:4px 0 13px;align-items:center}.app-logo p{display:none}.app-logo .brand-mark{width:38px;height:38px}.app-logo h1{font-size:1.1rem}.topbar-right{gap:6px}.wallet-chip{padding:8px 10px;font-size:.78rem}.account-pill{padding:8px 9px;max-width:105px;font-size:.7rem}.app-grid{display:block}.nav-rail{position:fixed;z-index:30;left:8px;right:8px;bottom:8px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;padding:6px;border-radius:17px;background:#fffF;border:1px solid #fff;box-shadow:0 8px 30px #3b1d4b25;backdrop-filter:blur(16px)}.nav-btn{min-width:0;padding:7px 1px;font-size:.58rem;border-radius:10px;gap:3px}.nav-btn .nav-icon{font-size:1.03rem}.workspace{min-height:0}.overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.overview-stat{padding:10px 8px;border-radius:13px}.overview-stat small{font-size:.58rem}.overview-stat strong{font-size:1.15rem}.hero-card{padding:20px 17px;border-radius:19px}.hero-card:after{right:2%;top:5%;font-size:3.4rem}.hero-card h2{font-size:1.7rem;max-width:80%}.hero-card p{font-size:.83rem;max-width:90%}.hero-actions button{min-width:0;flex:1}.quick-grid{grid-template-columns:1fr}.quick-card{display:grid;grid-template-columns:38px minmax(0,1fr);column-gap:8px;padding:12px}.quick-card .quick-icon{grid-row:span 3}.quick-card h3{margin:0 0 3px}.quick-card p{margin:0 0 8px}.quick-card button{grid-column:2}.play-grid{grid-template-columns:1fr}.play-side{grid-template-columns:1fr}.section-grid{grid-template-columns:1fr}.page-heading{align-items:flex-start}.page-heading h2{font-size:1.45rem}.reward-hero{padding:15px}.reward-big{font-size:1.9rem}.tabs{grid-template-columns:repeat(4,minmax(0,1fr))}.tab{font-size:.67rem;padding:8px 2px}.toast{bottom:86px;right:10px;max-width:calc(100vw - 20px)}}
+@media(max-width:650px){body{padding:10px 10px 86px}.auth-screen{min-height:calc(100vh - 20px);padding:0}.auth-card{padding:22px 18px;border-radius:23px}.auth-social{grid-template-columns:1fr}.auth-brand h1{font-size:1.6rem}.app-topbar{padding:4px 0 13px;align-items:center}.app-logo p{display:none}.brand-logo-image{width:168px;max-height:43px}.topbar-right{gap:6px}.wallet-chip{padding:8px 10px;font-size:.78rem}.account-pill{padding:8px 9px;max-width:105px;font-size:.7rem}.app-grid{display:block}.nav-rail{position:fixed;z-index:30;left:8px;right:8px;bottom:8px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;padding:6px;border-radius:17px;background:#fffF;border:1px solid #fff;box-shadow:0 8px 30px #3b1d4b25;backdrop-filter:blur(16px)}.nav-btn{min-width:0;padding:7px 1px;font-size:.58rem;border-radius:10px;gap:3px}.nav-btn .nav-icon{font-size:1.03rem}.workspace{min-height:0}.overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.overview-stat{padding:10px 8px;border-radius:13px}.overview-stat small{font-size:.58rem}.overview-stat strong{font-size:1.15rem}.hero-card{padding:20px 17px;border-radius:19px}.hero-card:after{right:2%;top:5%;font-size:3.4rem}.hero-card h2{font-size:1.7rem;max-width:80%}.hero-card p{font-size:.83rem;max-width:90%}.hero-actions button{min-width:0;flex:1}.quick-grid{grid-template-columns:1fr}.quick-card{display:grid;grid-template-columns:38px minmax(0,1fr);column-gap:8px;padding:12px}.quick-card .quick-icon{grid-row:span 3}.quick-card h3{margin:0 0 3px}.quick-card p{margin:0 0 8px}.quick-card button{grid-column:2}.play-grid{grid-template-columns:1fr}.play-side{grid-template-columns:1fr}.section-grid{grid-template-columns:1fr}.page-heading{align-items:flex-start}.page-heading h2{font-size:1.45rem}.reward-hero{padding:15px}.reward-big{font-size:1.9rem}.tabs{grid-template-columns:repeat(4,minmax(0,1fr))}.tab{font-size:.67rem;padding:8px 2px}.toast{bottom:86px;right:10px;max-width:calc(100vw - 20px)}}
 @media(min-width:901px){.nav-rail{min-height:calc(100vh - 125px)}}
 
 /* Responsive layout hotfix: keep the active screen visible and the mobile navigation anchored. */
@@ -267,7 +268,7 @@ body{display:block!important;}
 
 
 /* -------------------------------------------------------------
-   SWEET MATCH REDESIGN — playful, game-first visual system
+   SUGAR RUSH ADVENTURE REDESIGN — playful, game-first visual system
    Existing game IDs, navigation, admin tools and backend remain.
 -------------------------------------------------------------- */
 :root{
@@ -292,11 +293,12 @@ button:focus-visible{outline:3px solid #ffca4d;outline-offset:3px}
   background:linear-gradient(105deg,#7132c8 0%,#8738d7 55%,#a34ce0 100%);
   border:0;border-radius:0 0 24px 24px;box-shadow:0 7px 0 #55239c55,0 13px 26px #38216c24;color:#fff;
 }
-.app-logo{gap:11px}
-.app-logo .brand-mark{width:48px;height:48px;border-radius:17px;background:linear-gradient(145deg,#ffe36c,#ff9d47);border:2px solid #fff;box-shadow:0 4px 0 #b66b34;font-size:1.55rem}
-.app-logo h1{color:#fff;font-size:1.42rem;font-weight:1000;text-shadow:0 2px 0 #4e278e;letter-spacing:-.6px}
-.app-logo h1 span{color:#ffe66d}
-.app-logo p{margin:3px 0 0;color:#f6eaff;font-size:.73rem;font-weight:750;letter-spacing:.35px}
+.app-logo{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:0;min-width:0}
+.brand-logo-image{display:block;width:248px;height:auto;max-height:62px;object-fit:contain;filter:drop-shadow(0 3px 2px #3c176b55)}
+.app-logo p{margin:-1px 0 0 12px;color:#f6eaff;font-size:.68rem;font-weight:850;letter-spacing:.55px;text-shadow:0 1px 2px #4e278e}
+.auth-brand{display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.auth-logo-image{width:min(100%,350px);max-height:110px;margin:0 auto}
+
 .topbar-right{gap:8px}
 .wallet-chip{display:flex;align-items:center;gap:7px;padding:7px 9px 7px 12px;border-radius:999px;background:#55249f;border:2px solid #c59bff;color:#fff;box-shadow:inset 0 2px 5px #32145a55,0 3px 0 #451b83;font-size:.85rem}
 .wallet-coin{font-size:1.15rem}
@@ -428,9 +430,8 @@ button.green{background:linear-gradient(135deg,#22c98c,#0b9b6c);box-shadow:0 4px
   body{padding:0 0 calc(88px + env(safe-area-inset-bottom))!important}
   .app-shell{padding:0 10px 10px;width:100%}
   .app-topbar{margin:0 -10px 12px;padding:10px 13px;min-height:65px;border-radius:0 0 20px 20px}
-  .app-logo .brand-mark{width:41px;height:41px;font-size:1.3rem}
-  .app-logo h1{font-size:1.16rem}
-  .app-logo p{font-size:.63rem}
+  .brand-logo-image{width:190px;max-height:48px}
+  .app-logo p{font-size:.57rem;margin-left:8px}
   .topbar-right{gap:5px}
   .wallet-chip{gap:5px;padding:6px 7px 6px 9px;font-size:.75rem}
   .wallet-chip strong{font-size:.86rem}
@@ -532,12 +533,12 @@ button.green{background:linear-gradient(135deg,#22c98c,#0b9b6c);box-shadow:0 4px
 </style>
 </head>
 <body>
-<section class="auth-screen" id="authScreen" aria-label="Sign in to Sweet Match" hidden>
+<section class="auth-screen" id="authScreen" aria-label="Sign in to Sugar Rush Adventure" hidden>
   <div class="auth-card">
 <div style="text-align: left; margin-bottom: 10px;">
   <button type="button" id="backToGameBtn" class="soft" style="padding: 6px 12px; font-size: 0.75rem;">← Back to Game</button>
 </div>
-    <div class="auth-brand"><div class="brand-mark">🍬</div><div><h1>Sweet <span>Match!</span></h1><div class="demo-badge" style="display:inline-block;margin-top:5px">MATCH · PLAY · REWARD</div></div></div>
+    <div class="auth-brand"><img class="brand-logo-image auth-logo-image" src="assets/sugar-rush-adventure-logo.svg" alt="Sugar Rush Adventure"></div>
     <p class="auth-lead">A little match, a lot of magic. Play puzzles, collect coins and climb the leaderboard.</p>
     <div class="auth-visual" aria-hidden="true"><span>🍓</span><span>💎</span><span>🍋</span><span>🍇</span><span>🌿</span></div>
     <div class="auth-social">
@@ -561,7 +562,7 @@ button.green{background:linear-gradient(135deg,#22c98c,#0b9b6c);box-shadow:0 4px
 
 <div class="app-shell" id="appShell">
   <header class="app-topbar">
-    <div class="app-logo"><div class="brand-mark">🍬</div><div><h1>Sweet <span>Match!</span></h1><p>Match 3 Puzzle Adventure</p></div></div>
+    <div class="app-logo"><img class="brand-logo-image" src="assets/sugar-rush-adventure-logo.svg" alt="Sugar Rush Adventure"><p>Match 3 Puzzle Adventure</p></div>
     <div class="topbar-right"><div class="wallet-chip"><span class="wallet-coin">🪙</span><strong id="coinsTop">200</strong><span class="wallet-label">coins</span><button class="wallet-plus" data-go="coins" type="button" aria-label="Open coin shop">+</button></div><button class="account-pill" id="accountBtn" type="button">👤 Guest · Sign in</button></div>
   </header>
   <div class="app-grid">
@@ -716,7 +717,7 @@ button.green{background:linear-gradient(135deg,#22c98c,#0b9b6c);box-shadow:0 4px
 
       <section class="page-view" id="view-referrals">
         <div class="page-heading"><div><h2>🤝 Invite & Earn</h2><p>Invite friends with your unique referral code.</p></div></div>
-        <div class="section-grid"><section class="content-card"><h3>Your referral code</h3><p>Share your code with a friend. The planned live reward is <strong>3,000 coins</strong> for each valid referral after server verification.</p><div class="code-box"><strong id="referralCode">SWEET1234</strong><button class="secondary" id="copyCodeBtn" type="button">Copy code</button></div><div class="referral-actions"><button id="shareInviteBtn" type="button">↗ Share invite</button><button id="copyInviteBtn" class="soft" type="button">Copy invite text</button></div><div class="referral-meta"><span>Successful invites</span><strong id="referralCount">0 · demo</strong></div></section>
+        <div class="section-grid"><section class="content-card"><h3>Your referral code</h3><p>Share your code with a friend. The planned live reward is <strong>3,000 coins</strong> for each valid referral after server verification.</p><div class="code-box"><strong id="referralCode">SRA1234</strong><button class="secondary" id="copyCodeBtn" type="button">Copy code</button></div><div class="referral-actions"><button id="shareInviteBtn" type="button">↗ Share invite</button><button id="copyInviteBtn" class="soft" type="button">Copy invite text</button></div><div class="referral-meta"><span>Successful invites</span><strong id="referralCount">0 · demo</strong></div></section>
         <section class="content-card"><h3>Have a friend's code?</h3><p>Enter a code that a friend shared with you. In this preview it is saved locally and does not issue coins.</p><label class="field-label" for="friendCode">Referral code</label><div style="display:flex;gap:7px"><input class="field" id="friendCode" maxlength="20" placeholder="Enter referral code"><button id="applyCodeBtn" class="secondary" type="button">Apply</button></div><p class="tiny-note" id="referralStatus">Referral tracking is a preview until a shared backend is connected.</p></section></div>
       </section>
 
@@ -748,7 +749,7 @@ button.green{background:linear-gradient(135deg,#22c98c,#0b9b6c);box-shadow:0 4px
 <div class="overlay" id="adminLoginOverlay" role="dialog" aria-modal="true" aria-labelledby="adminLoginTitle"><div class="modal"><h2 id="adminLoginTitle">🔐 Admin Login</h2><p id="adminLoginDescription">Demo login is only for testing this HTML file. It is not secure enough for a public website.</p><form id="adminLoginForm" class="auth-form"><label for="demoAdminUser">Username</label><input class="field" id="demoAdminUser" autocomplete="username" required placeholder="Admin username"><label for="demoAdminPassword">Password</label><input class="field" id="demoAdminPassword" type="password" autocomplete="current-password" required placeholder="Admin password"><button type="submit">Sign in as admin</button></form><p class="auth-status" id="adminLoginStatus" role="status"></p><p class="tiny-note">Admin access is verified by the backend using your Firebase account role. There is no shared demo password.</p><div class="modal-actions"><button class="soft" id="cancelAdminLogin" type="button">Cancel</button></div></div></div>
 <div class="toast" id="globalToast" role="status" aria-live="polite"></div>
 
-<script>window.SWEET_MATCH_API_BASE_URL = ""; // Paste your deployed backend URL here, e.g. https://sweet-match-api.onrender.com</script>
+<script>window.SUGAR_RUSH_API_BASE_URL = ""; // Paste your deployed Sugar Rush Adventure API URL here. The legacy SWEET_MATCH_API_BASE_URL is still supported.</script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 
@@ -769,11 +770,11 @@ const statusEl = $("status");
 const restartBtn = $("restart");
 const SIZE = 8;
 const TYPES = [
-  {name:"Strawberry",color:"#ff4f87",light:"#ff9bbb",dark:"#d92663",shape:"circle"},
-  {name:"Blueberry",color:"#4c8dff",light:"#9cc7ff",dark:"#2853d4",shape:"diamond"},
-  {name:"Lemon",color:"#ffd447",light:"#fff1a0",dark:"#e7a900",shape:"star"},
-  {name:"Grape",color:"#a66aff",light:"#d7b5ff",dark:"#7138ca",shape:"hex"},
-  {name:"Mint",color:"#35d6b0",light:"#9af4d9",dark:"#0e9b7c",shape:"bean"}
+  {name:"Strawberry",color:"#ff3f70",light:"#ffc0d0",dark:"#c9154d",shape:"circle"},
+  {name:"Blueberry",color:"#258cff",light:"#c2efff",dark:"#1744bd",shape:"diamond"},
+  {name:"Lemon",color:"#ffc928",light:"#fff7b2",dark:"#d98200",shape:"star"},
+  {name:"Grape",color:"#a33dff",light:"#f0c7ff",dark:"#5420b5",shape:"hex"},
+  {name:"Mint",color:"#24d99b",light:"#c1ffe1",dark:"#087d5b",shape:"bean"}
 ];
 const DAILY_AD_LIMIT = 30;
 const COINS_PER_TEST_AD = 500;
@@ -784,7 +785,7 @@ const AI_CLEAR_COST = 5000;
 const AI_AD_REWARD = 500;
 const AI_AD_DAILY_LIMIT = 3;
 const PAYMENT_QUEUE_KEY = "sweetMatchCoinPayments_demo_v1";
-const BACKEND_API_BASE_URL = window.SWEET_MATCH_API_BASE_URL || ""; // Set this to the deployed secure API URL.
+const BACKEND_API_BASE_URL = window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || ""; // Legacy API variable remains supported.
 const COIN_PACKAGES = {
   "20000": {coins:20000, usd:3, pkr:832},
   "50000": {coins:50000, usd:5, pkr:1386}
@@ -936,7 +937,7 @@ function setStatus(message) {
   }
 }
 function backendConfigured() {
-  return Boolean((window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL) && String(window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).trim() && !String(window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).includes("YOUR-BACKEND-URL"));
+  return Boolean((window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL) && String(window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).trim() && !String(window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).includes("YOUR-BACKEND-URL"));
 }
 async function backendRequest(path, options = {}) {
   if (!backendConfigured()) return null;
@@ -946,7 +947,7 @@ async function backendRequest(path, options = {}) {
   const token = await currentUser.getIdToken();
   const headers = {"Authorization": `Bearer ${token}`};
   if (options.body !== undefined) headers["Content-Type"] = "application/json";
-  const response = await fetch(`${String(window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).replace(/\/+$/, "")}${path}`, {
+  const response = await fetch(`${String(window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).replace(/\/+$/, "")}${path}`, {
     method: options.method || "GET",
     headers,
     body: options.body === undefined ? undefined : JSON.stringify(options.body)
@@ -993,7 +994,7 @@ async function syncRemotePlayerState(restartLevel = false) {
 }
 async function publicBackendRequest(path) {
   if (!backendConfigured()) return null;
-  const response = await fetch(`${String(window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).replace(/\/+$/, "")}${path}`, {headers:{"Accept":"application/json"}});
+  const response = await fetch(`${String(window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).replace(/\/+$/, "")}${path}`, {headers:{"Accept":"application/json"}});
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error || `Server request failed (${response.status}).`);
   return data;
@@ -1324,7 +1325,8 @@ async function loadRemoteLevels() {
     }
   } catch(error) { console.warn("Could not load remote levels:",error.message); }
 }
-window.sweetMatchRefreshLevels=loadRemoteLevels;
+window.sugarRushRefreshLevels=loadRemoteLevels;
+window.sweetMatchRefreshLevels=loadRemoteLevels; // Backward-compatible alias for older admin scripts.
 async function loadPlayerProfile() {
   if(!backendConfigured() || !currentUser) return;
   try {
@@ -1567,21 +1569,130 @@ function makeBoard() {
   setStatus(`Level ${save.currentLevel}: ${cfg}`);
 }
 
+function traceGemShape(targetCtx, shape, radius) {
+  targetCtx.beginPath();
+  if(shape==="circle") {
+    targetCtx.arc(0,0,radius*.98,0,Math.PI*2);
+  } else if(shape==="diamond") {
+    targetCtx.moveTo(0,-radius*1.22);targetCtx.lineTo(radius*.88,-radius*.08);
+    targetCtx.lineTo(0,radius*1.22);targetCtx.lineTo(-radius*.88,-radius*.08);
+  } else if(shape==="star") {
+    for(let i=0;i<10;i++){
+      const a=-Math.PI/2+i*Math.PI/5,rr=i%2===0?radius*1.19:radius*.55;
+      const px=Math.cos(a)*rr,py=Math.sin(a)*rr;
+      if(i===0)targetCtx.moveTo(px,py);else targetCtx.lineTo(px,py);
+    }
+  } else if(shape==="hex") {
+    for(let i=0;i<6;i++){
+      const a=Math.PI/3*i-Math.PI/6,px=Math.cos(a)*radius,py=Math.sin(a)*radius;
+      if(i===0)targetCtx.moveTo(px,py);else targetCtx.lineTo(px,py);
+    }
+  } else {
+    targetCtx.moveTo(-radius*.65,-radius*.72);
+    targetCtx.bezierCurveTo(-radius*1.05,-radius*.15,-radius*.55,radius*.92,0,radius*1.02);
+    targetCtx.bezierCurveTo(radius*.72,radius*.95,radius*1.02,radius*.08,radius*.58,-radius*.72);
+    targetCtx.bezierCurveTo(radius*.28,-radius*1.04,-radius*.28,-radius*1.04,-radius*.65,-radius*.72);
+  }
+  targetCtx.closePath();
+}
 function drawGem(type,x,y,size,alpha=1,scale=1,targetCtx=ctx) {
   if(type<0)return;
   const gem=TYPES[type],radius=size*.34;
-  targetCtx.save();targetCtx.globalAlpha=alpha;targetCtx.translate(x+size/2,y+size/2);targetCtx.scale(scale,scale);
-  targetCtx.shadowColor=gem.dark;targetCtx.shadowBlur=3;targetCtx.shadowOffsetY=2;
-  const grad=targetCtx.createLinearGradient(-radius,-radius,radius,radius);
-  grad.addColorStop(0,gem.light);grad.addColorStop(.48,gem.color);grad.addColorStop(1,gem.dark);
-  targetCtx.fillStyle=grad;targetCtx.strokeStyle="#ffffffbb";targetCtx.lineWidth=Math.max(1.5,size*.025);targetCtx.beginPath();
-  if(gem.shape==="circle")targetCtx.arc(0,0,radius,0,Math.PI*2);
-  else if(gem.shape==="diamond"){targetCtx.moveTo(0,-radius*1.25);targetCtx.lineTo(radius*.9,0);targetCtx.lineTo(0,radius*1.25);targetCtx.lineTo(-radius*.9,0);}
-  else if(gem.shape==="star"){for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2===0?radius*1.2:radius*.55,px=Math.cos(a)*rr,py=Math.sin(a)*rr;if(i===0)targetCtx.moveTo(px,py);else targetCtx.lineTo(px,py);}}
-  else if(gem.shape==="hex"){for(let i=0;i<6;i++){const a=Math.PI/3*i-Math.PI/6,px=Math.cos(a)*radius,py=Math.sin(a)*radius;if(i===0)targetCtx.moveTo(px,py);else targetCtx.lineTo(px,py);}}
-  else targetCtx.ellipse(0,0,radius*.83,radius*1.12,-.35,0,Math.PI*2);
-  targetCtx.closePath();targetCtx.fill();targetCtx.stroke();targetCtx.shadowBlur=0;targetCtx.shadowOffsetY=0;
-  targetCtx.fillStyle="#ffffff9c";targetCtx.beginPath();targetCtx.ellipse(-radius*.28,-radius*.32,radius*.23,radius*.12,-.5,0,Math.PI*2);targetCtx.fill();targetCtx.restore();
+  targetCtx.save();
+  targetCtx.globalAlpha=alpha;
+  targetCtx.translate(x+size/2,y+size/2);
+  targetCtx.scale(scale,scale);
+
+  // Soft coloured glow and deep lower bevel make each candy feel raised.
+  targetCtx.shadowColor=gem.dark;
+  targetCtx.shadowBlur=Math.max(5,size*.095);
+  targetCtx.shadowOffsetY=Math.max(2,size*.035);
+  const outer=targetCtx.createLinearGradient(-radius*1.1,-radius*1.2,radius,radius*1.25);
+  outer.addColorStop(0,gem.light);
+  outer.addColorStop(.24,gem.color);
+  outer.addColorStop(.72,gem.dark);
+  outer.addColorStop(1,"#24104f");
+  traceGemShape(targetCtx,gem.shape,radius*1.08);
+  targetCtx.fillStyle=outer;
+  targetCtx.fill();
+  targetCtx.shadowBlur=0;
+  targetCtx.shadowOffsetY=0;
+  targetCtx.lineWidth=Math.max(2,size*.035);
+  targetCtx.strokeStyle="#fff9";
+  targetCtx.stroke();
+
+  // Inner glass face and bevel ring.
+  targetCtx.save();
+  targetCtx.scale(.82,.82);
+  const face=targetCtx.createLinearGradient(-radius,-radius,radius,radius);
+  face.addColorStop(0,"#ffffffd9");
+  face.addColorStop(.16,gem.light);
+  face.addColorStop(.52,gem.color);
+  face.addColorStop(1,gem.dark);
+  traceGemShape(targetCtx,gem.shape,radius);
+  targetCtx.fillStyle=face;
+  targetCtx.fill();
+  targetCtx.lineWidth=Math.max(1.2,size*.018);
+  targetCtx.strokeStyle="#ffffffb8";
+  targetCtx.stroke();
+  targetCtx.restore();
+
+  // Faceted crystal planes on the diamond and hexagon pieces.
+  if(gem.shape==="diamond"||gem.shape==="hex") {
+    targetCtx.save();
+    targetCtx.globalAlpha*=.42;
+    targetCtx.fillStyle="#ffffff";
+    targetCtx.beginPath();
+    if(gem.shape==="diamond") {
+      targetCtx.moveTo(0,-radius*1.08);targetCtx.lineTo(radius*.7,-radius*.08);
+      targetCtx.lineTo(0,radius*.08);targetCtx.lineTo(-radius*.7,-radius*.08);
+    } else {
+      targetCtx.moveTo(-radius*.78,-radius*.38);targetCtx.lineTo(0,-radius*.92);
+      targetCtx.lineTo(radius*.78,-radius*.38);targetCtx.lineTo(0,radius*.02);
+    }
+    targetCtx.closePath();targetCtx.fill();
+    targetCtx.strokeStyle="#ffffff9c";targetCtx.lineWidth=Math.max(1,size*.014);
+    targetCtx.beginPath();
+    if(gem.shape==="diamond") {
+      targetCtx.moveTo(-radius*.7,-radius*.08);targetCtx.lineTo(0,radius*1.02);targetCtx.lineTo(radius*.7,-radius*.08);
+      targetCtx.moveTo(0,-radius*1.08);targetCtx.lineTo(0,radius*1.02);
+    } else {
+      targetCtx.moveTo(-radius*.78,-radius*.38);targetCtx.lineTo(-radius*.52,radius*.58);
+      targetCtx.lineTo(0,radius*.92);targetCtx.lineTo(radius*.52,radius*.58);targetCtx.lineTo(radius*.78,-radius*.38);
+    }
+    targetCtx.stroke();
+    targetCtx.restore();
+  }
+
+  // Glossy candy reflection, small sparkle and a lower rim highlight.
+  targetCtx.save();
+  targetCtx.globalAlpha*=.78;
+  const shine=targetCtx.createLinearGradient(-radius*.65,-radius*.8,radius*.2,-radius*.05);
+  shine.addColorStop(0,"#ffffff");
+  shine.addColorStop(1,"#ffffff00");
+  targetCtx.fillStyle=shine;
+  targetCtx.beginPath();
+  targetCtx.ellipse(-radius*.28,-radius*.38,radius*.3,radius*.13,-.58,0,Math.PI*2);
+  targetCtx.fill();
+  targetCtx.globalAlpha*=.62;
+  targetCtx.fillStyle="#ffffff";
+  targetCtx.beginPath();
+  targetCtx.ellipse(radius*.28,radius*.52,radius*.23,radius*.055,-.25,0,Math.PI*2);
+  targetCtx.fill();
+  targetCtx.restore();
+
+  // Tiny four-point glint, kept subtle so the pieces remain readable at small sizes.
+  targetCtx.save();
+  targetCtx.globalAlpha*=.7;
+  targetCtx.fillStyle="#ffffff";
+  targetCtx.beginPath();
+  targetCtx.moveTo(radius*.52,-radius*.62);targetCtx.lineTo(radius*.59,-radius*.43);
+  targetCtx.lineTo(radius*.78,-radius*.36);targetCtx.lineTo(radius*.59,-radius*.29);
+  targetCtx.lineTo(radius*.52,-radius*.1);targetCtx.lineTo(radius*.45,-radius*.29);
+  targetCtx.lineTo(radius*.26,-radius*.36);targetCtx.lineTo(radius*.45,-radius*.43);
+  targetCtx.closePath();targetCtx.fill();
+  targetCtx.restore();
+  targetCtx.restore();
 }
 function buildRenderCaches() {
   gemSprites = TYPES.map((_,type) => {
@@ -1591,24 +1702,53 @@ function buildRenderCaches() {
     drawGem(type,3,3,cell-6,1,1,spriteCtx);
     return sprite;
   });
+
+  // Sapphire-to-violet board base, replacing the flat blue wash with a candy-world glass tray.
   const bg = boardTilesCtx.createLinearGradient(0,0,canvas.width,canvas.height);
-  bg.addColorStop(0,"#344f9e");bg.addColorStop(.55,"#5267bb");bg.addColorStop(1,"#7452c8");
-  boardTilesCtx.fillStyle=bg;boardTilesCtx.fillRect(0,0,canvas.width,canvas.height);
+  bg.addColorStop(0,"#1e347e");
+  bg.addColorStop(.42,"#334b9e");
+  bg.addColorStop(.76,"#4b429f");
+  bg.addColorStop(1,"#6d43ae");
+  boardTilesCtx.fillStyle=bg;
+  boardTilesCtx.fillRect(0,0,canvas.width,canvas.height);
+
   for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
-    const x=c*cell,y=r*cell;
+    const x=c*cell,y=r*cell,alt=(r+c)%2===0;
     const tile=boardTilesCtx.createLinearGradient(x,y,x+cell,y+cell);
-    tile.addColorStop(0,(r+c)%2===0?"#8299ed":"#7189df");
-    tile.addColorStop(1,(r+c)%2===0?"#536fc4":"#4e65b6");
+    tile.addColorStop(0,alt?"#628fe0":"#587fd0");
+    tile.addColorStop(.48,alt?"#4169ba":"#3d61b1");
+    tile.addColorStop(1,alt?"#2c478f":"#293f85");
     boardTilesCtx.save();
-    boardTilesCtx.shadowColor="#263d8a88";boardTilesCtx.shadowBlur=5;boardTilesCtx.shadowOffsetY=2;
+    boardTilesCtx.shadowColor="#111b5c99";
+    boardTilesCtx.shadowBlur=7;
+    boardTilesCtx.shadowOffsetY=3;
     boardTilesCtx.fillStyle=tile;
-    const rx=x+3,ry=y+3,rw=cell-6,rh=cell-6,rr=10;
+    const rx=x+3,ry=y+3,rw=cell-6,rh=cell-6,rr=11;
     boardTilesCtx.beginPath();
     if(boardTilesCtx.roundRect) boardTilesCtx.roundRect(rx,ry,rw,rh,rr);
     else boardTilesCtx.rect(rx,ry,rw,rh);
     boardTilesCtx.fill();
-    boardTilesCtx.shadowBlur=0;boardTilesCtx.shadowOffsetY=0;
-    boardTilesCtx.strokeStyle="#dce6ff55";boardTilesCtx.lineWidth=1.5;boardTilesCtx.stroke();
+    boardTilesCtx.shadowBlur=0;
+    boardTilesCtx.shadowOffsetY=0;
+    boardTilesCtx.lineWidth=1.8;
+    boardTilesCtx.strokeStyle="#d9eaff88";
+    boardTilesCtx.stroke();
+
+    // Soft glass sheen along the upper edge of every slot.
+    boardTilesCtx.beginPath();
+    boardTilesCtx.moveTo(rx+9,ry+5);
+    boardTilesCtx.lineTo(rx+rw-9,ry+5);
+    boardTilesCtx.strokeStyle="#ffffff55";
+    boardTilesCtx.lineWidth=1.5;
+    boardTilesCtx.stroke();
+
+    // A subtle violet lower rim gives each square a recessed, polished look.
+    boardTilesCtx.beginPath();
+    boardTilesCtx.moveTo(rx+10,ry+rh-4);
+    boardTilesCtx.lineTo(rx+rw-10,ry+rh-4);
+    boardTilesCtx.strokeStyle="#182c7188";
+    boardTilesCtx.lineWidth=2;
+    boardTilesCtx.stroke();
     boardTilesCtx.restore();
   }
   rebuildBoardCache();
@@ -2038,13 +2178,13 @@ function inviteUrl() {
 function inviteText() {
   const url=inviteUrl();
   return url
-    ? `Join me in Sweet Match! Use my referral code ${save.referralCode}: ${url} In the live version, valid referrals earn 3,000 coins after verification.`
-    : `Join me in Sweet Match! My referral code is ${save.referralCode}. (Publish the game online to make this invite link clickable.)`;
+    ? `Join me in Sugar Rush Adventure! Use my referral code ${save.referralCode}: ${url} In the live version, valid referrals earn 3,000 coins after verification.`
+    : `Join me in Sugar Rush Adventure! My referral code is ${save.referralCode}. (Publish the game online to make this invite link clickable.)`;
 }
 async function shareInvite() {
   const text=inviteText();
   if(navigator.share) {
-    try { await navigator.share({title:"Sweet Match",text,url:inviteUrl()||undefined});setStatus("Invite share sheet opened.");return; }
+    try { await navigator.share({title:"Sugar Rush Adventure",text,url:inviteUrl()||undefined});setStatus("Invite share sheet opened.");return; }
     catch (_) {}
   }
   await copyText(text);

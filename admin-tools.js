@@ -1,7 +1,7 @@
 (() => {
   "use strict";
   const $ = id => document.getElementById(id);
-  const API_BASE = () => String(window.SWEET_MATCH_API_BASE_URL || "").replace(/\/+$/, "");
+  const API_BASE = () => String(window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || "").replace(/\/+$/, "");
   let loadedOnce = false;
   let activePane = "players";
   let cachedReferrals = [];
@@ -35,6 +35,19 @@
   #adminOpsPanel .sma-banned{display:inline-block;border-radius:99px;background:#ffe8ef;color:#a12e58;padding:3px 7px;font-size:.68rem;font-weight:900}
   #adminOpsPanel .sma-pending{display:inline-block;border-radius:99px;background:#fff0c4;color:#81520b;padding:3px 7px;font-size:.68rem;font-weight:900}
   #adminOpsPanel .sma-active{display:inline-block;border-radius:99px;background:#dff8ee;color:#087d65;padding:3px 7px;font-size:.68rem;font-weight:900}
+  #adminOpsPanel .sma-clone-card{margin:13px 0 16px;padding:15px;border:1px solid #d9c2ff;border-radius:16px;background:linear-gradient(135deg,#fbf7ff 0%,#fff7fb 100%);box-shadow:inset 0 1px 0 #fff,0 5px 14px #6031a00d}
+  #adminOpsPanel .sma-clone-head{display:flex;align-items:center;gap:9px;margin-bottom:5px}
+  #adminOpsPanel .sma-clone-head strong{font-size:.98rem;color:#4e267f}
+  #adminOpsPanel .sma-new-tag{font-size:.62rem;font-weight:950;letter-spacing:.5px;padding:4px 7px;border-radius:99px;background:#fff0b8;color:#86520a}
+  #adminOpsPanel .sma-clone-grid{display:grid;grid-template-columns:minmax(180px,1.2fr) minmax(140px,.7fr) minmax(210px,1fr);gap:10px;align-items:end;margin-top:12px}
+  #adminOpsPanel .sma-clone-grid label{display:block;font-size:.68rem;font-weight:900;color:#755d8d;text-transform:uppercase;margin-bottom:5px}
+  #adminOpsPanel .sma-clone-preview{padding:10px 12px;border-radius:12px;background:#eaf8f0;color:#176b4d;font-size:.76rem;font-weight:850;line-height:1.4;min-height:42px;display:flex;align-items:center}
+  #adminOpsPanel .sma-clone-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:11px}
+  #adminOpsPanel .sma-clone-presets{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  #adminOpsPanel .sma-clone-presets button{padding:7px 11px;border:1px solid #d9c7f1;background:#fff;color:#6b43a0;box-shadow:none;font-size:.72rem}
+  #adminOpsPanel .sma-clone-presets button:hover{background:#f0e7ff}
+  #adminOpsPanel #smaBulkCloneBtn{background:linear-gradient(135deg,#9b43e8,#6e2cc0);box-shadow:0 4px 0 #4d1e91}
+  @media(max-width:760px){#adminOpsPanel .sma-clone-grid{grid-template-columns:1fr 1fr}#adminOpsPanel .sma-clone-preview{grid-column:1/-1}}
   @media(max-width:650px){#adminOpsPanel .sma-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#adminOpsPanel .sma-form{grid-template-columns:1fr}#adminOpsPanel .sma-form .sma-full{grid-column:auto}}
   `;
   const style = document.createElement("style");
@@ -54,7 +67,7 @@
     return `${Math.floor(total / 3600)}h ${Math.floor((total % 3600) / 60)}m`;
   }
   async function api(path, options = {}) {
-    if (!API_BASE()) throw new Error("Set SWEET_MATCH_API_BASE_URL in index.html first.");
+    if (!API_BASE()) throw new Error("Set SUGAR_RUSH_API_BASE_URL in index.html first (the old SWEET_MATCH_API_BASE_URL is also supported).");
     if (!window.firebase?.auth) throw new Error("Firebase Authentication is not configured.");
     const user = window.firebase.auth().currentUser;
     if (!user) throw new Error("Sign in first, then reopen Admin.");
@@ -84,7 +97,7 @@
     panel.id = "adminOpsPanel";
     panel.className = "content-card";
     panel.innerHTML = `
-      <div class="card-head"><div><h3>🛠️ Game Administration</h3><p class="sma-note">Live server data · access is checked on the backend for every admin request.</p></div><button class="soft" id="smaRefreshAll" type="button">Refresh data</button></div>
+      <div class="card-head"><div><h3>🛠️ Sugar Rush Adventure · Admin</h3><p class="sma-note">Live game data · access is checked on the backend for every admin request.</p></div><button class="soft" id="smaRefreshAll" type="button">Refresh data</button></div>
       <div class="sma-stats" id="smaStats">
         <div class="sma-stat"><small>Total players</small><strong>—</strong></div>
         <div class="sma-stat"><small>Active in 24h</small><strong>—</strong></div>
@@ -116,6 +129,20 @@
           <div><label for="smaJellyGoal">Jelly goal</label><input class="field" id="smaJellyGoal" type="number" min="0" max="64" value="0"></div>
           <div class="sma-full sma-buttons"><button id="smaSaveLevel" type="submit">➕ Add level</button><button class="soft" id="smaCancelLevelEdit" type="button">Clear form</button><button class="secondary" id="smaAutoDefaults" type="button">Use auto defaults</button></div>
         </form>
+        <section class="sma-clone-card" aria-labelledby="smaCloneTitle">
+          <div class="sma-clone-head"><span aria-hidden="true">🧬</span><strong id="smaCloneTitle">Advanced Level Clone</strong><span class="sma-new-tag">NEW</span></div>
+          <p class="sma-note">Choose any existing level, enter how many copies you want, and create them all in one action. Each copy is added sequentially with the selected level’s mission settings.</p>
+          <div class="sma-clone-grid">
+            <div><label for="smaCloneSource">Source level</label><select class="field" id="smaCloneSource"><option value="">Load levels first…</option></select></div>
+            <div><label for="smaCloneCount">Number of clones</label><input class="field" id="smaCloneCount" type="number" min="1" max="500" step="1" value="5" inputmode="numeric"></div>
+            <div class="sma-clone-preview" id="smaClonePreview" aria-live="polite">Select a source level to preview the new level range.</div>
+          </div>
+          <div class="sma-clone-bottom">
+            <div class="sma-clone-presets"><span class="sma-note">Quick set:</span><button type="button" data-clone-count="5">5</button><button type="button" data-clone-count="10">10</button><button type="button" data-clone-count="100">100</button></div>
+            <button id="smaBulkCloneBtn" type="button">🧬 Clone levels</button>
+          </div>
+          <p class="sma-note" style="margin:9px 0 0">Safety limit: 500 clones per action. Existing levels and player progress are not deleted.</p>
+        </section>
         <div class="sma-scroll"><table><thead><tr><th>#</th><th>Name / season</th><th>Mission</th><th>Target</th><th>Moves</th><th>Time</th><th>Jelly</th><th>Auto difficulty</th><th>Actions</th></tr></thead><tbody id="smaLevelsRows"><tr><td colspan="9">Loading levels…</td></tr></tbody></table></div>
       </div>`;
     root.appendChild(panel);
@@ -130,6 +157,13 @@
     $("smaPlayersRows").addEventListener("click", handlePlayerAction);
     $("smaLevelsRows").addEventListener("click", handleLevelAction);
     $("smaReferralsRows").addEventListener("click", handleReferralAction);
+    $("smaCloneSource").addEventListener("change", updateClonePreview);
+    $("smaCloneCount").addEventListener("input", updateClonePreview);
+    $("smaBulkCloneBtn").addEventListener("click", bulkCloneLevels);
+    panel.querySelectorAll("[data-clone-count]").forEach(button => button.addEventListener("click", () => {
+      $("smaCloneCount").value = button.dataset.cloneCount;
+      updateClonePreview();
+    }));
     setAutoDefaults();
   }
   function setPane(name) {
@@ -261,6 +295,7 @@
     try {
       const data = await api("/api/admin/levels");
       cachedLevels = Array.isArray(data.levels) ? data.levels : [];
+      populateCloneSources();
       target.innerHTML = cachedLevels.length ? cachedLevels.map(level => `
         <tr><td>${Number(level.number)||0}</td><td><strong>${escapeHtml(level.name)}</strong><br><span class="sma-note">${escapeHtml(level.season)}</span></td>
         <td>${escapeHtml(level.type)}</td><td>${Number(level.targetScore)||0}</td><td>${Number(level.moves)||0}</td><td>${Number(level.timeLimit)||0}s</td><td>${Number(level.jellyGoal)||0}</td><td><strong>${escapeHtml(level.difficulty||"—")}</strong></td>
@@ -269,6 +304,74 @@
     } catch (error) {
       target.innerHTML = `<tr><td colspan="9">${escapeHtml(error.message)}</td></tr>`;
       setStatus(error.message, true);
+    }
+  }
+  function populateCloneSources() {
+    const select = $("smaCloneSource");
+    if (!select) return;
+    const previous = select.value;
+    select.innerHTML = cachedLevels.length
+      ? cachedLevels.map(level => `<option value="${escapeHtml(level.id)}">Level ${Number(level.number) || 0} · ${escapeHtml(level.name || level.season || "Untitled")}</option>`).join("")
+      : `<option value="">No active levels available</option>`;
+    if (cachedLevels.some(level => String(level.id) === previous)) select.value = previous;
+    else if (cachedLevels.length) select.value = String(cachedLevels[0].id);
+    updateClonePreview();
+  }
+  function updateClonePreview() {
+    const preview = $("smaClonePreview");
+    const countInput = $("smaCloneCount");
+    const sourceSelect = $("smaCloneSource");
+    if (!preview || !countInput || !sourceSelect) return;
+    const source = cachedLevels.find(level => String(level.id) === sourceSelect.value);
+    const count = Number(countInput.value);
+    if (!source) { preview.textContent = "Select a source level to preview the new level range."; return; }
+    if (!Number.isInteger(count) || count < 1 || count > 500) {
+      preview.textContent = "Enter a whole number from 1 to 500.";
+      return;
+    }
+    const first = cachedLevels.length + 1;
+    const last = first + count - 1;
+    preview.textContent = `This will create ${count} new level${count === 1 ? "" : "s"}: Level ${first}–${last}, using the settings from Level ${Number(source.number) || "?"}.`;
+  }
+  async function bulkCloneLevels() {
+    const sourceId = $("smaCloneSource").value;
+    const count = Number($("smaCloneCount").value);
+    const source = cachedLevels.find(level => String(level.id) === sourceId);
+    if (!source) { setStatus("Choose an active source level first.", true); return; }
+    if (!Number.isInteger(count) || count < 1 || count > 500) {
+      setStatus("Enter a whole number from 1 to 500.", true);
+      $("smaCloneCount").focus();
+      return;
+    }
+    const first = cachedLevels.length + 1;
+    const last = first + count - 1;
+    const sourceNumber = Number(source.number) || 0;
+    const confirmed = window.confirm(`Create ${count} new level${count === 1 ? "" : "s"} from Level ${sourceNumber}?
+
+New range: Level ${first} to Level ${last}.
+The source level will stay unchanged.`);
+    if (!confirmed) return;
+    const button = $("smaBulkCloneBtn");
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = `Creating ${count} levels…`;
+    setStatus(`Creating ${count} new levels from Level ${sourceNumber}. Please keep this page open…`);
+    try {
+      const result = await api(`/api/admin/levels/${encodeURIComponent(sourceId)}/clone-bulk`, { method: "POST", body: { count } });
+      await loadLevels();
+      await loadAnalytics();
+      if (typeof window.sugarRushRefreshLevels === "function") await window.sugarRushRefreshLevels();
+      else if (typeof window.sweetMatchRefreshLevels === "function") await window.sweetMatchRefreshLevels();
+      const created = Number(result.clonedCount) || count;
+      const start = Number(result.startLevel) || first;
+      const end = Number(result.endLevel) || last;
+      setStatus(`Success! ${created} level${created === 1 ? "" : "s"} cloned from Level ${sourceNumber}. New levels: ${start}–${end}.`);
+      updateClonePreview();
+    } catch (error) {
+      setStatus(error.message, true);
+    } finally {
+      button.disabled = false;
+      button.textContent = originalText;
     }
   }
   async function saveLevel(event) {
@@ -290,7 +393,8 @@
       await loadLevels();
       resetLevelForm();
       await loadAnalytics();
-      if (typeof window.sweetMatchRefreshLevels === "function") await window.sweetMatchRefreshLevels();
+      if (typeof window.sugarRushRefreshLevels === "function") await window.sugarRushRefreshLevels();
+      else if (typeof window.sweetMatchRefreshLevels === "function") await window.sweetMatchRefreshLevels();
     } catch (error) { setStatus(error.message, true); }
   }
   async function handleLevelAction(event) {
@@ -317,7 +421,8 @@
       await loadLevels();
       resetLevelForm();
       await loadAnalytics();
-      if (typeof window.sweetMatchRefreshLevels === "function") await window.sweetMatchRefreshLevels();
+      if (typeof window.sugarRushRefreshLevels === "function") await window.sugarRushRefreshLevels();
+      else if (typeof window.sweetMatchRefreshLevels === "function") await window.sweetMatchRefreshLevels();
     } catch (error) { setStatus(error.message, true); }
   }
   async function loadAll(showMessage = false) {
