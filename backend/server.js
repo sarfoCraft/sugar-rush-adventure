@@ -39,7 +39,7 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"],
   maxAge: 86400
 }));
-app.use(express.json({ limit: "2mb" }));
+app.use(express.json({ limit: "8mb" }));
 app.use("/api", rateLimit({ windowMs: 60_000, limit: 180, standardHeaders: "draft-7", legacyHeaders: false }));
 
 const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
@@ -81,6 +81,110 @@ function defaultLevel(level) {
 function asJsonObject(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
   return value;
+}
+
+const DEFAULT_SITE_CONFIG = {
+  brand: { name: "Sugar Rush Adventure", tagline: "Match 3 Puzzle Adventure", logoAssetId: "", faviconAssetId: "" },
+  theme: { primary: "#7650d8", accent: "#ff5d9e", pageBackground: "#fff7e8", panelBackground: "#ffffff", textColor: "#35234d", fontFamily: "system" , backgroundAssetId: "" },
+  ads: { enabled: false, adsenseCode: "", placements: ["home"], customAdHtml: "", customAdEmbedCode: "", customAdPlacement: "home", customAdImageAssetId: "", customAdTargetUrl: "", customAdLabel: "Sponsored" },
+  customCode: { html: "", htmlPlacement: "home-bottom", css: "", js: "", jsEnabled: false }
+};
+const ASSET_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "audio/mpeg", "audio/ogg", "audio/wav", "video/mp4", "video/webm"]);
+const ASSET_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+function cleanText(value, max, fallback = "") { return String(value ?? fallback).replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, max); }
+function cleanHex(value, fallback) { const v = String(value || "").trim(); return /^#[0-9a-f]{6}$/i.test(v) ? v : fallback; }
+function cleanAssetId(value) { const v = String(value || "").trim(); return ASSET_ID_RE.test(v) ? v : ""; }
+function sanitizeStaticHtml(value, max = 12000) {
+  let html = String(value || "").slice(0, max);
+  html = html.replace(/<!--([\s\S]*?)-->/g, "");
+  html = html.replace(/<(script|style|iframe|object|embed|form|input|button|textarea|select|option|svg|math|video|audio|link|meta|base)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, "");
+  html = html.replace(/<(script|style|iframe|object|embed|form|input|button|textarea|select|option|svg|math|video|audio|link|meta|base)\b[^>]*\/?\s*>/gi, "");
+  const allowed = new Set(["a", "img", "div", "p", "span", "strong", "em", "small", "br", "ul", "ol", "li"]);
+  return html.replace(/<\/?([a-z0-9-]+)\b([^>]*)>/gi, (whole, rawTag, rawAttrs) => {
+    const tag = rawTag.toLowerCase();
+    if (!allowed.has(tag)) return "";
+    if (whole.startsWith("</")) return ["img", "br"].includes(tag) ? "" : `</${tag}>`;
+    if (tag === "br") return "<br>";
+    const attrs = [];
+    const attrRe = /([a-zA-Z-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/g;
+    let m;
+    while ((m = attrRe.exec(rawAttrs))) {
+      const key = m[1].toLowerCase();
+      const val = String(m[2] ?? m[3] ?? m[4] ?? "").trim();
+      if (["href", "src"].includes(key)) {
+        if (!/^https:\/\//i.test(val)) continue;
+        attrs.push(`${key}="${val.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}"`);
+      } else if (["alt", "title"].includes(key)) {
+        attrs.push(`${key}="${val.replace(/&/g, "&amp;").replace(/"/g, "&quot;").slice(0, 180)}"`);
+      } else if (key === "class" && /^[a-z0-9 _-]{1,80}$/i.test(val)) {
+        attrs.push(`class="${val}"`);
+      } else if (["width", "height"].includes(key) && /^\d{1,4}$/.test(val)) {
+        attrs.push(`${key}="${val}"`);
+      } else if (key === "target" && val === "_blank" && tag === "a") {
+        attrs.push('target="_blank"'); attrs.push('rel="noopener noreferrer"');
+      }
+    }
+    if (tag === "img" && !attrs.some(x => x.startsWith("src="))) return "";
+    return `<${tag}${attrs.length ? " " + [...new Set(attrs)].join(" ") : ""}>`;
+  }).slice(0, max);
+}
+function normalizeSiteConfig(input) {
+  const source = asJsonObject(input);
+  const brand = asJsonObject(source.brand), theme = asJsonObject(source.theme), ads = asJsonObject(source.ads), code = asJsonObject(source.customCode);
+  const allowedPlacements = new Set(["home", "play", "rewards", "coins", "leaderboard", "profile"]);
+  const placements = Array.isArray(ads.placements) ? [...new Set(ads.placements.map(x => String(x)).filter(x => allowedPlacements.has(x)))].slice(0, 6) : ["home"];
+  const adsenseCode = cleanText(ads.adsenseCode, 12000);
+  const clientMatch = adsenseCode.match(/ca-pub-[0-9]{8,24}/i);
+  const slotMatch = adsenseCode.match(/data-ad-slot\s*=\s*["']?([0-9]{5,24})/i);
+  const publisherId = clientMatch ? clientMatch[0] : "";
+  const slotId = slotMatch ? slotMatch[1] : "";
+  const customAdTargetUrl = cleanText(ads.customAdTargetUrl, 1000);
+  const customAdEmbedCode = cleanText(ads.customAdEmbedCode, 5000);
+  const embedMatch = customAdEmbedCode.match(/<iframe\b[^>]*\bsrc\s*=\s*["'](https:\/\/[^"']+)["'][^>]*>/i);
+  const customAdEmbedUrl = embedMatch && /^https:\/\//i.test(embedMatch[1]) ? embedMatch[1].slice(0, 1800) : "";
+  return {
+    brand: {
+      name: cleanText(brand.name, 60, DEFAULT_SITE_CONFIG.brand.name) || DEFAULT_SITE_CONFIG.brand.name,
+      tagline: cleanText(brand.tagline, 120, DEFAULT_SITE_CONFIG.brand.tagline),
+      logoAssetId: cleanAssetId(brand.logoAssetId),
+      faviconAssetId: cleanAssetId(brand.faviconAssetId)
+    },
+    theme: {
+      primary: cleanHex(theme.primary, DEFAULT_SITE_CONFIG.theme.primary),
+      accent: cleanHex(theme.accent, DEFAULT_SITE_CONFIG.theme.accent),
+      pageBackground: cleanHex(theme.pageBackground, DEFAULT_SITE_CONFIG.theme.pageBackground),
+      panelBackground: cleanHex(theme.panelBackground, DEFAULT_SITE_CONFIG.theme.panelBackground),
+      textColor: cleanHex(theme.textColor, DEFAULT_SITE_CONFIG.theme.textColor),
+      fontFamily: ["system", "rounded", "serif"].includes(theme.fontFamily) ? theme.fontFamily : "system",
+      backgroundAssetId: cleanAssetId(theme.backgroundAssetId)
+    },
+    ads: {
+      enabled: Boolean(ads.enabled), adsenseCode,
+      publisherId, slotId, autoAds: Boolean(publisherId && !slotId), placements,
+      customAdHtml: sanitizeStaticHtml(ads.customAdHtml, 12000),
+      customAdEmbedCode,
+      customAdEmbedUrl,
+      customAdPlacement: allowedPlacements.has(String(ads.customAdPlacement)) ? String(ads.customAdPlacement) : "home",
+      customAdImageAssetId: cleanAssetId(ads.customAdImageAssetId),
+      customAdTargetUrl: /^https:\/\//i.test(customAdTargetUrl) ? customAdTargetUrl : "",
+      customAdLabel: cleanText(ads.customAdLabel, 40, "Sponsored") || "Sponsored"
+    },
+    customCode: {
+      html: sanitizeStaticHtml(code.html, 12000),
+      htmlPlacement: ["home-top", "home-bottom", "play-top", "footer"].includes(code.htmlPlacement) ? code.htmlPlacement : "home-bottom",
+      css: String(code.css || "").slice(0, 24000),
+      js: String(code.js || "").slice(0, 12000),
+      jsEnabled: Boolean(code.jsEnabled)
+    }
+  };
+}
+async function readMetaJson(key, fallback) {
+  const result = await pool.query("SELECT value FROM app_meta WHERE key = $1", [key]);
+  if (!result.rows.length) return fallback;
+  try { return JSON.parse(result.rows[0].value); } catch { return fallback; }
+}
+async function writeMetaJson(key, value) {
+  await pool.query("INSERT INTO app_meta (key,value) VALUES ($1,$2) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value", [key, JSON.stringify(value)]);
 }
 function playerState(row) {
   const aiDate = row.ai_uses_date instanceof Date ? row.ai_uses_date.toISOString().slice(0, 10) : String(row.ai_uses_date || new Date().toISOString()).slice(0, 10);
@@ -308,6 +412,21 @@ async function ensureSchema() {
       status TEXT NOT NULL DEFAULT 'pending',
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+    CREATE TABLE IF NOT EXISTS site_assets (
+      id UUID PRIMARY KEY,
+      filename TEXT NOT NULL,
+      mime_type TEXT NOT NULL,
+      size_bytes INTEGER NOT NULL,
+      data BYTEA NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS site_config_versions (
+      revision BIGSERIAL PRIMARY KEY,
+      config JSONB NOT NULL,
+      created_by TEXT,
+      note TEXT NOT NULL DEFAULT '',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
   `);
   const seeded = await pool.query("SELECT value FROM app_meta WHERE key = 'levels_seeded'");
   if (!seeded.rows.length) {
@@ -333,6 +452,45 @@ app.get("/api/payment-instructions", (_req, res) => {
   try { instructions = JSON.parse(process.env.PAYMENT_INSTRUCTIONS_JSON || "{}"); } catch { instructions = {}; }
   res.json({ instructions });
 });
+
+// Public, read-only game customization. Drafts and admin-only asset metadata are never exposed here.
+app.get("/api/public/site-config", wrap(async (_req, res) => {
+  const published = normalizeSiteConfig(await readMetaJson("site_config_published", DEFAULT_SITE_CONFIG));
+  const revisionResult = await pool.query("SELECT COALESCE(MAX(revision),0)::int AS revision FROM site_config_versions");
+  const publicConfig = {
+    brand: published.brand,
+    theme: published.theme,
+    ads: {
+      enabled: published.ads.enabled,
+      publisherId: published.ads.publisherId,
+      slotId: published.ads.slotId,
+      autoAds: published.ads.autoAds,
+      placements: published.ads.placements,
+      customAdHtml: published.ads.customAdHtml,
+      customAdEmbedUrl: published.ads.customAdEmbedUrl,
+      customAdPlacement: published.ads.customAdPlacement,
+      customAdImageAssetId: published.ads.customAdImageAssetId,
+      customAdTargetUrl: published.ads.customAdTargetUrl,
+      customAdLabel: published.ads.customAdLabel
+    },
+    customCode: {
+      html: published.customCode.html,
+      htmlPlacement: published.customCode.htmlPlacement,
+      css: published.customCode.css,
+      js: published.customCode.jsEnabled ? published.customCode.js : "",
+      jsEnabled: published.customCode.jsEnabled
+    }
+  };
+  res.set("Cache-Control", "no-store").json({ config: publicConfig, revision: Number(revisionResult.rows[0]?.revision) || 0 });
+}));
+app.get("/api/public/assets/:id", wrap(async (req, res) => {
+  if (!ASSET_ID_RE.test(String(req.params.id || ""))) return res.status(400).json({ error: "Invalid asset ID." });
+  const result = await pool.query("SELECT filename,mime_type,size_bytes,data FROM site_assets WHERE id=$1", [req.params.id]);
+  if (!result.rows.length) return res.status(404).json({ error: "Asset not found." });
+  const asset = result.rows[0];
+  res.set({ "Content-Type": asset.mime_type, "Content-Length": String(asset.size_bytes), "X-Content-Type-Options": "nosniff", "Cache-Control": "public, max-age=31536000, immutable", "Content-Disposition": `inline; filename="${String(asset.filename).replace(/[\"\r\n]/g, "_")}"` });
+  res.send(asset.data);
+}));
 
 app.use("/api", authenticate);
 
@@ -534,6 +692,76 @@ app.post("/api/admin/coin-orders/:id/:action", requireAdmin, wrap(async (req, re
   finally { client.release(); }
   const state = order.uid === req.user.uid ? await stateResponse(req.user.uid) : null;
   res.json({ order: orderShape(order), state });
+}));
+
+// No-code website and game customization controls.
+app.get("/api/admin/site-config", requireAdmin, wrap(async (_req, res) => {
+  const published = normalizeSiteConfig(await readMetaJson("site_config_published", DEFAULT_SITE_CONFIG));
+  const draft = normalizeSiteConfig(await readMetaJson("site_config_draft", published));
+  const history = await pool.query("SELECT revision,note,created_at,created_by FROM site_config_versions ORDER BY revision DESC LIMIT 20");
+  res.json({ draft, published, history: history.rows.map(row => ({ revision: Number(row.revision), note: row.note, createdAt: row.created_at, createdBy: row.created_by })) });
+}));
+app.put("/api/admin/site-config/draft", requireAdmin, wrap(async (req, res) => {
+  const config = normalizeSiteConfig(req.body?.config);
+  await writeMetaJson("site_config_draft", config);
+  res.json({ ok: true, draft: config, message: "Draft saved. It is not live until you publish it." });
+}));
+app.post("/api/admin/site-config/publish", requireAdmin, wrap(async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const draftResult = await client.query("SELECT value FROM app_meta WHERE key='site_config_draft' FOR UPDATE");
+    const config = normalizeSiteConfig(draftResult.rows.length ? JSON.parse(draftResult.rows[0].value) : DEFAULT_SITE_CONFIG);
+    await client.query("INSERT INTO app_meta (key,value) VALUES ('site_config_published',$1) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value", [JSON.stringify(config)]);
+    await client.query("INSERT INTO app_meta (key,value) VALUES ('site_config_draft',$1) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value", [JSON.stringify(config)]);
+    const version = await client.query("INSERT INTO site_config_versions (config,created_by,note) VALUES ($1::jsonb,$2,$3) RETURNING revision,created_at", [JSON.stringify(config), req.user.uid, cleanText(req.body?.note, 160, "Published from Admin Dashboard")]);
+    await client.query("COMMIT");
+    res.json({ ok: true, revision: Number(version.rows[0].revision), publishedAt: version.rows[0].created_at, message: "Published. Players will receive the new settings automatically." });
+  } catch (error) { try { await client.query("ROLLBACK"); } catch (_) {} throw error; }
+  finally { client.release(); }
+}));
+app.post("/api/admin/site-config/rollback/:revision", requireAdmin, wrap(async (req, res) => {
+  const revision = Number(req.params.revision);
+  if (!Number.isInteger(revision) || revision < 1) return res.status(400).json({ error: "Choose a valid version." });
+  const found = await pool.query("SELECT config FROM site_config_versions WHERE revision=$1", [revision]);
+  if (!found.rows.length) return res.status(404).json({ error: "Version not found." });
+  const config = normalizeSiteConfig(found.rows[0].config);
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("INSERT INTO app_meta (key,value) VALUES ('site_config_published',$1) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value", [JSON.stringify(config)]);
+    await client.query("INSERT INTO app_meta (key,value) VALUES ('site_config_draft',$1) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value", [JSON.stringify(config)]);
+    const version = await client.query("INSERT INTO site_config_versions (config,created_by,note) VALUES ($1::jsonb,$2,$3) RETURNING revision", [JSON.stringify(config), req.user.uid, `Rollback to revision ${revision}`]);
+    await client.query("COMMIT");
+    res.json({ ok: true, revision: Number(version.rows[0].revision), rolledBackTo: revision });
+  } catch (error) { try { await client.query("ROLLBACK"); } catch (_) {} throw error; }
+  finally { client.release(); }
+}));
+app.get("/api/admin/assets", requireAdmin, wrap(async (_req, res) => {
+  const result = await pool.query("SELECT id,filename,mime_type,size_bytes,created_at FROM site_assets ORDER BY created_at DESC LIMIT 100");
+  res.json({ assets: result.rows.map(row => ({ id: row.id, filename: row.filename, mimeType: row.mime_type, sizeBytes: Number(row.size_bytes), createdAt: row.created_at, url: `/api/public/assets/${row.id}` })) });
+}));
+app.post("/api/admin/assets", requireAdmin, wrap(async (req, res) => {
+  const filename = cleanText(req.body?.filename, 140, "upload").replace(/[\/\\]/g, "_") || "upload";
+  const mimeType = String(req.body?.mimeType || "").toLowerCase();
+  const dataUrl = String(req.body?.dataUrl || "");
+  if (!ASSET_MIME_TYPES.has(mimeType)) return res.status(400).json({ error: "Supported files: JPG, PNG, WEBP, GIF, MP3, OGG, WAV, MP4 and WEBM. SVG/HTML files are not accepted." });
+  const match = dataUrl.match(/^data:([a-z0-9.+-]+\/[a-z0-9.+-]+);base64,([a-z0-9+/=]+)$/i);
+  if (!match || match[1].toLowerCase() !== mimeType) return res.status(400).json({ error: "The uploaded file data is invalid." });
+  const buffer = Buffer.from(match[2], "base64");
+  if (!buffer.length || buffer.length > 5 * 1024 * 1024) return res.status(413).json({ error: "Each uploaded file must be smaller than 5 MB." });
+  const id = randomUUID();
+  await pool.query("INSERT INTO site_assets (id,filename,mime_type,size_bytes,data) VALUES ($1,$2,$3,$4,$5)", [id, filename, mimeType, buffer.length, buffer]);
+  res.status(201).json({ asset: { id, filename, mimeType, sizeBytes: buffer.length, url: `/api/public/assets/${id}` } });
+}));
+app.delete("/api/admin/assets/:id", requireAdmin, wrap(async (req, res) => {
+  if (!ASSET_ID_RE.test(String(req.params.id || ""))) return res.status(400).json({ error: "Invalid asset ID." });
+  const [draft, published] = await Promise.all([readMetaJson("site_config_draft", DEFAULT_SITE_CONFIG), readMetaJson("site_config_published", DEFAULT_SITE_CONFIG)]);
+  const historicalUse = await pool.query("SELECT 1 FROM site_config_versions WHERE config::text LIKE $1 LIMIT 1", [`%${req.params.id}%`]);
+  if (JSON.stringify(draft).includes(req.params.id) || JSON.stringify(published).includes(req.params.id) || historicalUse.rows.length) return res.status(409).json({ error: "This asset is used by a draft, published design or saved version. Replace it in those settings before deleting it." });
+  const result = await pool.query("DELETE FROM site_assets WHERE id=$1 RETURNING id", [req.params.id]);
+  if (!result.rows.length) return res.status(404).json({ error: "Asset not found." });
+  res.json({ ok: true });
 }));
 
 app.get("/api/admin/analytics", requireAdmin, wrap(async (_req, res) => {

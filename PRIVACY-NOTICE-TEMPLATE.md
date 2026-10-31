@@ -16,11 +16,11 @@ Authorized game administrators can access player records needed to manage the ga
 
 ## Retention and deletion
 
-[Explain how long account records, IP addresses, session history, referrals, and payment records are retained. Explain how players can request deletion or correction, and any records you must retain for security or legal reasons.]
+[Explain how long account records, IP addresses, session history, referrals, payment records, uploaded media and published game settings are retained. Explain how players can request deletion or correction, and any records you must retain for security or legal reasons. If advertising is enabled, explain applicable advertising cookies/consent controls.]
 
 ## Service providers
 
-Sugar Rush Adventure uses Firebase Authentication, a hosted API service, and a PostgreSQL database provider. [List the providers actually used and link to their privacy notices.]
+Sugar Rush Adventure uses Firebase Authentication, a hosted API service, and a PostgreSQL database provider. If the owner enables Google AdSense or another advertising provider, those providers may use cookies, device identifiers, IP address and browsing/activity signals to serve, measure or personalize advertisements, subject to the provider's settings and applicable law. [List the providers actually used and link to their privacy notices.]
 
 ## Contact
 

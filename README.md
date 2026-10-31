@@ -1,6 +1,6 @@
 # 🍬 Sugar Rush Adventure
 
-**Sugar Rush Adventure** is a feature-rich, single-file HTML5 match-3 puzzle game built with clean HTML, CSS, and modern JavaScript Canvas. Dive into 100 challenging levels across 5 magical seasons (from Candy Forest to the Chocolate Kingdom), complete jelly and timed missions, unlock special combos, and enjoy custom local audio tracks!
+**Sugar Rush Adventure** is a feature-rich HTML5 match-3 puzzle game built with HTML, CSS, JavaScript Canvas, and an optional secure Node.js/PostgreSQL admin backend. Dive into 100 challenging levels across 5 magical seasons (from Candy Forest to the Chocolate Kingdom), complete jelly and timed missions, unlock special combos, and enjoy custom local audio tracks!
 
 ## ✨ Features
 - **100 Levels & 5 Seasons:** Progressive difficulty spanning magical worlds.
@@ -21,3 +21,8 @@ Play the game directly in your browser:
 ## 🧰 Admin tools
 - **Advanced bulk level cloning:** choose a source level and create 1–500 sequential copies in one action (for example 5, 10, or 100). Copies retain the source mission settings and are appended to the level list.
 - **Sugar Rush Adventure branding:** the game uses a custom SVG wordmark and favicon in `assets/`.
+- **No-code Customization Center:** change the game name, tagline, logo, favicon, page background, theme colours, panel colour and font from the admin dashboard.
+- **Advertisement Manager:** paste an approved Google AdSense display-unit snippet, choose screens where it may appear, or upload a custom banner / add safe static HTML ads.
+- **Custom Code Editor:** save HTML, CSS and trusted JavaScript as a draft, preview it, then publish without editing the repository. Custom JavaScript can use the small `window.SugarRush` API exposed by the game.
+- **Media Library:** upload and manage game images, audio and video (5 MB per file). Assets are stored in PostgreSQL and served through the backend.
+- **Publish history:** every publish creates a version that can be restored from the dashboard. Published visual settings are fetched by the game automatically; custom-JS changes trigger a clean page reload.

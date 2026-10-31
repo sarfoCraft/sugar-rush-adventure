@@ -2507,9 +2507,19 @@ buildRenderCaches();
 levelConfig=getLevelConfig(save.currentLevel || 1);
 startLevel(save.currentLevel || 1);
 initAuthFlow();
+// Small, documented hooks for owner-published custom code from the Admin Dashboard.
+window.SugarRush = Object.assign(window.SugarRush || {}, {
+  version: "1.0",
+  navigate: name => setActiveView(String(name || "home")),
+  startLevel: level => startLevel(Math.max(1, Math.floor(Number(level) || 1))),
+  refreshLevels: () => loadRemoteLevels(),
+  showMessage: message => setStatus(String(message || "")),
+  getState: () => ({ coins: Number(save.coins) || 0, currentLevel: Number(save.currentLevel) || 1, maxUnlocked: Number(save.maxUnlocked) || 1, bestScore: Number(save.bestScore) || 0 })
+});
 requestAnimationFrame(draw);
 })();
 </script>
+<script src="site-customizer.js?v=1"></script>
 <script src="admin-tools.js"></script>
 <!-- Single audio controller: starts after the first user interaction (browser autoplay policy). -->
 <script>

@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "check": "node --check server.js && node --check ../admin-tools.js"
+    "check": "node --check server.js && node --check ../admin-tools.js && node --check ../site-customizer.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

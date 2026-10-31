@@ -10,8 +10,9 @@ https://sarfocraft.github.io/sugar-rush-adventure/
 
 - `index.html` — replace the repository's existing `index.html` with this updated version.
 - `admin-tools.js` — add this file to the repository root, beside `index.html`.
+- `site-customizer.js` — public runtime that loads published branding, theme, ad placements and custom code.
 - `assets/` — Sugar Rush Adventure logo and browser favicon used by the game.
-- `backend/` — separate Node.js API for the live admin controls, including the new bulk-clone endpoint.
+- `backend/` — separate Node.js API for the live admin controls, bulk-level cloning, media uploads and persistent customization settings.
 - `PRIVACY-NOTICE-TEMPLATE.md` — complete this before collecting IP addresses and activity data.
 
 **Keep the existing `Audio/` folder unchanged.** The game still references its audio files by their current paths.
@@ -118,3 +119,47 @@ This starter has server-side admin controls and database persistence, but a comp
 ## Advanced bulk level cloning
 
 The Level manager includes an Advanced Level Clone tool. Select an active source level, enter a whole number from 1 to 500, and confirm the previewed new level range. The API creates all copies in one database transaction, keeps the source level unchanged, and assigns new sequential level positions. Mission type, target score, moves, time limit, jelly goal, and season settings are copied from the selected source.
+
+
+## 8. No-code Ads, Branding and Customization Center
+
+After deploying the updated frontend and backend, sign in with the Firebase administrator account and open **Profile → Admin login / payment approvals → Ads & Customization**.
+
+### Branding and theme
+
+- Edit the public game name and tagline.
+- Upload a PNG, JPG, WEBP or GIF logo and favicon.
+- Upload a background image, choose the theme colours and font, or select a preset.
+- Use **Preview draft**, then **Save draft** and **Publish changes**.
+
+### Google AdSense and custom advertisements
+
+- In Google AdSense, create a display ad unit and copy its complete code snippet.
+- Paste that snippet in **Advertisement Manager**. The backend extracts the `ca-pub-...` publisher ID and `data-ad-slot` value and the runtime builds the display unit.
+- Select the pages where ads may appear: Home, Play, Rewards, Coins, Leaderboard or Profile.
+- Alternatively upload a custom banner and add its HTTPS destination URL, paste safe static custom HTML, or paste an HTTPS iframe embed snippet from another ad provider. The iframe is sandboxed away from the game.
+- Google must approve the site/account and ad unit before real ads can fill. Ad serving is not guaranteed just because code was added.
+- Do not ask players to click ads or provide coins, progress or other rewards for ad clicks. Keep ads outside the active puzzle board and clearly distinguish sponsored content.
+- The custom-ad HTML field is intentionally restricted to safe static markup. Script tags, iframe embeds, forms, event handlers and unsafe URLs are stripped.
+
+### Custom code editor
+
+- HTML is inserted at the selected display location and sanitized before it is published.
+- CSS is applied to the public game after publish.
+- JavaScript is disabled by default. If enabled, it executes on the public game page for every visitor. Only publish code you wrote or fully trust; never paste secrets, private API keys, Firebase service-account data or passwords.
+- The game exposes a small `window.SugarRush` helper for custom scripts:
+  - `SugarRush.navigate("home" | "play" | "rewards" | "coins" | "leaderboard" | "profile")`
+  - `SugarRush.startLevel(7)`
+  - `SugarRush.refreshLevels()`
+  - `SugarRush.showMessage("Hello")`
+  - `SugarRush.getState()` returns coins, current level, max unlocked level and best score.
+- Published visual and ad settings are polled by open game pages about every 45 seconds. When published JavaScript changes, the game reloads once to apply the new code cleanly.
+
+### Media Library and version history
+
+- Upload images, audio and video from the dashboard. Each file can be up to 5 MB; SVG and HTML uploads are blocked.
+- Assets are stored in the PostgreSQL `site_assets` table and delivered from the API. They are not written into GitHub Pages files.
+- Draft/published configuration is stored in `app_meta`; each publish is saved in `site_config_versions`.
+- Use **Publish History & Restore** to roll back to an earlier published version. Assets referenced by a current draft or published design cannot be deleted until replaced.
+
+The new tables are created automatically by `backend/server.js` at startup. No additional environment variables are required beyond the backend setup above. The media library increases PostgreSQL storage usage, so remove unused assets from the dashboard periodically.
