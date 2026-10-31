@@ -264,10 +264,275 @@ body{display:block!important;}
   #appShell.game-focus .level-mission{margin-bottom:6px;padding:7px 9px}
 }
 
+
+
+/* -------------------------------------------------------------
+   SWEET MATCH REDESIGN — playful, game-first visual system
+   Existing game IDs, navigation, admin tools and backend remain.
+-------------------------------------------------------------- */
+:root{
+  --ink:#332052;--pink:#ff4f9a;--purple:#7436d2;--cream:#fff8ed;
+  --muted:#78658f;--line:#eadcf5;--green:#12a879;
+}
+html{min-height:100%;background:#bcecff}
+body{
+  min-height:100vh;padding:0!important;margin:0;color:var(--ink);
+  background:
+    radial-gradient(ellipse at 8% 5%,#ffffffaa 0 5%,transparent 20%),
+    radial-gradient(ellipse at 92% 20%,#ffffff88 0 4%,transparent 18%),
+    linear-gradient(180deg,#77d5ff 0%,#c9f0ff 44%,#e4f5c5 100%);
+  font-family:ui-rounded,"Trebuchet MS",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+button{border-radius:15px;font-weight:900;letter-spacing:.1px}
+button:focus-visible{outline:3px solid #ffca4d;outline-offset:3px}
+.app-shell{width:min(100%,1240px);min-height:100vh;margin:0 auto;padding:0 16px 20px}
+.app-topbar{
+  position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin:0 -16px 16px;padding:12px 20px;min-height:74px;
+  background:linear-gradient(105deg,#7132c8 0%,#8738d7 55%,#a34ce0 100%);
+  border:0;border-radius:0 0 24px 24px;box-shadow:0 7px 0 #55239c55,0 13px 26px #38216c24;color:#fff;
+}
+.app-logo{gap:11px}
+.app-logo .brand-mark{width:48px;height:48px;border-radius:17px;background:linear-gradient(145deg,#ffe36c,#ff9d47);border:2px solid #fff;box-shadow:0 4px 0 #b66b34;font-size:1.55rem}
+.app-logo h1{color:#fff;font-size:1.42rem;font-weight:1000;text-shadow:0 2px 0 #4e278e;letter-spacing:-.6px}
+.app-logo h1 span{color:#ffe66d}
+.app-logo p{margin:3px 0 0;color:#f6eaff;font-size:.73rem;font-weight:750;letter-spacing:.35px}
+.topbar-right{gap:8px}
+.wallet-chip{display:flex;align-items:center;gap:7px;padding:7px 9px 7px 12px;border-radius:999px;background:#55249f;border:2px solid #c59bff;color:#fff;box-shadow:inset 0 2px 5px #32145a55,0 3px 0 #451b83;font-size:.85rem}
+.wallet-coin{font-size:1.15rem}
+.wallet-chip strong{font-size:1rem;color:#fff;font-variant-numeric:tabular-nums}
+.wallet-label{font-size:.68rem;color:#eadbff}
+.wallet-plus,.home-plus{width:27px;height:27px;padding:0;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,#60e85d,#20b846);box-shadow:0 2px 0 #12832f;border:2px solid #caffbf;color:#fff;font-size:1.25rem;line-height:1}
+.account-pill{background:#5724a2;color:#fff;border:1px solid #c69cff;box-shadow:0 3px 0 #451c82;padding:9px 12px;font-size:.76rem}
+.app-grid{grid-template-columns:172px minmax(0,1fr);gap:15px}
+.nav-rail{padding:9px;background:#fff8ed;border:2px solid #fff;border-radius:20px;box-shadow:0 7px 0 #d7c5a7,0 12px 25px #47633a18}
+.nav-caption{color:#a08c6c}
+.nav-btn{color:#6d5786;border-radius:13px;padding:11px 10px;font-size:.82rem}
+.nav-btn.active{background:linear-gradient(110deg,#ff69b0,#8b49df);color:#fff;border-color:#fff;box-shadow:0 3px 0 #6933b2;text-shadow:0 1px 1px #63318f}
+.nav-btn .nav-icon{font-size:1.15rem}
+.workspace{min-height:0}
+.page-view{animation:pageIn .2s ease-out}
+.page-heading h2{font-weight:1000;color:#3b225e}
+.page-heading p{color:#76648a}
+
+/* Home screen */
+#view-home{width:100%}
+.home-world{
+  position:relative;isolation:isolate;overflow:hidden;padding:17px;border-radius:28px;
+  background:linear-gradient(180deg,#82d9ff 0%,#c5f0ff 46%,#e2f7bd 46%,#9bdb78 100%);
+  border:3px solid #fff;box-shadow:0 10px 0 #6d9d55,0 18px 34px #315e4a24;
+}
+.home-world:before,.home-world:after{content:"";position:absolute;z-index:-1;pointer-events:none}
+.home-world:before{
+  width:240px;height:90px;top:108px;left:-65px;border-radius:50%;
+  background:#fff9;filter:blur(15px);box-shadow:380px 30px 0 16px #fff7,700px -50px 0 4px #fff7;
+}
+.home-world:after{
+  left:-5%;right:-5%;bottom:-42px;height:180px;border-radius:50% 50% 0 0/28% 28% 0 0;
+  background:linear-gradient(180deg,#a7e47c,#63bd58);box-shadow:0 -10px 25px #67b85a33;
+}
+.home-player-strip{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.home-player-card{display:flex;align-items:center;gap:10px;min-width:0;padding:8px 14px 8px 8px;border-radius:18px;background:#fff9;border:2px solid #fff;box-shadow:0 4px 0 #b4d9e9}
+.home-avatar{width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(145deg,#ffe28a,#ff9a56);border:3px solid #fff;box-shadow:0 2px 0 #d27c4a;font-size:1.8rem}
+.home-player-copy{min-width:0;display:grid;gap:2px}
+.home-player-copy strong{font-size:.92rem;color:#3e255e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+.home-player-copy>span{font-size:.68rem;color:#725b88;font-weight:800}
+.home-xp-track{width:100%;height:7px;margin-top:3px;border-radius:99px;background:#61418c33;overflow:hidden}
+.home-xp-track span{display:block;width:2%;height:100%;border-radius:99px;background:linear-gradient(90deg,#ffe34d,#ff9c3d);transition:width .25s}
+.home-wallet{display:flex;align-items:center;gap:7px;padding:7px 9px 7px 12px;border:2px solid #fff;border-radius:99px;background:#fff9;box-shadow:0 4px 0 #b4d9e9;color:#59378b;font-weight:1000;font-variant-numeric:tabular-nums}
+.home-coin-icon{font-size:1.15rem}
+.home-wallet strong{font-size:.9rem}
+.home-scene{
+  position:relative;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(230px,.95fr);align-items:center;gap:8px;
+  min-height:350px;margin-top:15px;padding:25px 24px 18px;border-radius:25px;overflow:hidden;
+  background:linear-gradient(120deg,#e3f9ffbb 0%,#d7f4ff77 48%,#b9e7ff55 100%);
+  border:2px solid #ffffffa8;box-shadow:inset 0 0 28px #fff7;
+}
+.home-scene:before{content:"";position:absolute;z-index:0;width:160px;height:52px;left:44%;top:30px;border-radius:50%;background:#fff9;filter:blur(12px);box-shadow:-250px 55px 0 10px #fff8,270px 5px 0 7px #fff8}
+.home-scene:after{content:"";position:absolute;z-index:0;left:-5%;right:-5%;bottom:-70px;height:160px;border-radius:50% 50% 0 0;background:linear-gradient(180deg,#9cdb73,#67bb5a)}
+.home-scene-copy{position:relative;z-index:3;max-width:440px;padding:8px 0}
+.home-kicker{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:99px;background:#fff;color:#7840b5;border:1px solid #eadbff;font-size:.67rem;font-weight:1000;letter-spacing:.7px;box-shadow:0 3px 0 #dfd0ef}
+.home-scene-copy h2{margin:14px 0 9px;color:#4c287c;font-size:clamp(2.1rem,5vw,3.65rem);line-height:.98;letter-spacing:-1.8px;font-weight:1000;text-shadow:0 2px 0 #fff}
+.home-scene-copy h2 span{color:#f05b9e}
+.home-scene-copy p{max-width:365px;margin:0 0 17px;color:#5d5078;font-size:.94rem;line-height:1.5;font-weight:750}
+.home-play-btn{display:flex;align-items:center;justify-content:center;gap:17px;min-width:225px;padding:13px 25px;border:4px solid #ffdc8d;border-radius:999px;background:linear-gradient(180deg,#8ff12c 0%,#51d30b 48%,#32b90b 100%);box-shadow:0 7px 0 #9b5725,0 11px 18px #356e3d44,inset 0 3px 0 #ffffffa8;color:#fff;font-size:2rem;font-weight:1000;text-shadow:0 3px 0 #328a14;letter-spacing:.2px}
+.home-play-btn:hover{filter:brightness(1.06);transform:translateY(-2px)}
+.home-play-btn:active{transform:translateY(3px);box-shadow:0 3px 0 #9b5725}
+.home-play-arrow{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#fff;color:#56c819;text-shadow:none;font-size:1.05rem;box-shadow:0 2px 0 #c3e6a9}
+.home-play-note{margin-top:12px;color:#705c88;font-size:.72rem;font-weight:850}
+.home-mascot-area{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;min-height:300px}
+.home-mascot-area:before{content:"";position:absolute;width:270px;height:270px;border-radius:50%;background:radial-gradient(circle,#fff9 0%,#fff4 58%,transparent 72%);}
+.home-cat{position:relative;z-index:2;width:min(100%,350px);max-height:350px;filter:drop-shadow(0 14px 10px #4d6d4b44);animation:catFloat 3.5s ease-in-out infinite}
+@keyframes catFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(1deg)}}
+.home-castle{position:absolute;right:2%;top:3%;z-index:1;font-size:clamp(2.6rem,6vw,4.8rem);filter:drop-shadow(0 4px 3px #7650a344);opacity:.82}
+.home-sparkle{position:absolute;z-index:3;color:#fff;font-size:2rem;text-shadow:0 2px 8px #f9a6d8}
+.sparkle-one{top:20%;left:10%}.sparkle-two{top:49%;right:5%;font-size:1.5rem}
+.home-candy{position:absolute;z-index:3;font-size:2rem;filter:drop-shadow(0 4px 3px #5b478633)}
+.candy-one{bottom:12%;left:5%}.candy-two{top:15%;right:20%}
+.home-scene-ground{position:absolute;z-index:1;bottom:0;left:0;right:0;height:35px;background:linear-gradient(180deg,#e6bf81,#c98a51);border-radius:50% 50% 0 0;opacity:.75}
+.home-feature-grid{position:relative;z-index:3;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-top:14px}
+.home-feature-card{display:grid;grid-template-columns:48px minmax(0,1fr) 30px;align-items:center;gap:9px;min-width:0;padding:12px;border:2px solid #fff;border-radius:19px;background:#fff9;box-shadow:0 5px 0 #b2d7a0,0 8px 18px #456d3d1c;backdrop-filter:blur(5px)}
+.home-feature-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(145deg,#fff,#fce7ff);font-size:1.65rem;box-shadow:inset 0 0 0 1px #fff,0 3px 0 #e5d6ed}
+.progress-feature .home-feature-icon{background:linear-gradient(145deg,#fff4bf,#ffe18b)}
+.coins-feature .home-feature-icon{background:linear-gradient(145deg,#fff4bb,#ffd85e)}
+.home-feature-card>div:nth-child(2){display:grid;gap:3px;min-width:0}
+.home-feature-card strong{font-size:.84rem;color:#48276f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-feature-card span{font-size:.68rem;color:#77638d;line-height:1.25}
+.home-feature-card small{font-size:.65rem;color:#8b6a35;font-weight:850}
+.home-feature-card small b{color:#5b328a}
+.home-feature-card button{width:29px;height:29px;padding:0;display:grid;place-items:center;border-radius:50%;background:linear-gradient(145deg,#8e4cdb,#6e32bd);box-shadow:0 2px 0 #4d218e;color:#fff;font-size:1.35rem}
+.home-hidden-data{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+
+/* Match-3 gameplay screen */
+#appShell.game-focus .app-grid{min-height:calc(100dvh - 105px);}
+#appShell.game-focus .workspace{min-height:0!important;width:100%;margin:0 auto}
+#appShell.game-focus #view-play{display:flex!important;align-items:center;justify-content:flex-start;min-height:0!important;width:100%;padding:0}
+#appShell.game-focus #view-play>.page-heading{display:none!important}
+#appShell.game-focus .play-grid{display:block!important;width:100%;max-width:790px;margin:0 auto}
+#appShell.game-focus .play-side{display:none!important}
+#appShell.game-focus .game-panel{width:100%;max-width:790px;margin:0 auto;padding:13px;border:3px solid #fff;border-radius:25px;background:linear-gradient(145deg,#fff9f0,#f4eaff);box-shadow:0 8px 0 #c9b3ed,0 15px 30px #48316b22}
+#appShell.game-focus .level-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;padding:9px 12px;border-radius:14px;background:linear-gradient(100deg,#6c2db8,#9a42dd);box-shadow:0 4px 0 #55218f;color:#fff}
+#appShell.game-focus .season-badge{display:inline-flex;align-items:center;color:#fff;font-size:.82rem;font-weight:950}
+#appShell.game-focus #levelMapBtn{padding:8px 11px;border:1px solid #e4d2ff;background:#fff;color:#6634a7;box-shadow:0 3px 0 #d6c0f0;font-size:.74rem}
+#appShell.game-focus .stats{gap:8px;margin-bottom:9px}
+#appShell.game-focus .stat{padding:9px 11px;border:1px solid #eadcf5;border-radius:14px;background:linear-gradient(180deg,#fff,#fff8f0);box-shadow:0 3px 0 #e6d7ed}
+#appShell.game-focus .stat small{color:#8c6a9c;font-size:.63rem;letter-spacing:.7px}
+#appShell.game-focus .stat strong{color:#42245e;font-size:clamp(1.12rem,2.8vw,1.55rem);font-weight:1000}
+#appShell.game-focus .stat .substat{color:#876c91;font-weight:750}
+#appShell.game-focus .level-mission{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;padding:10px 13px;border:0;border-radius:13px;background:linear-gradient(100deg,#8a38dc,#c42dd4);box-shadow:0 4px 0 #7125a7;color:#fff;font-size:.82rem;font-weight:950}
+#appShell.game-focus .level-mission .mission-detail{color:#fff4a8}
+#appShell.game-focus .timer-chip{background:#fff;color:#8c35b8;border:1px solid #f2d8ff}
+#appShell.game-focus .board-wrap{display:grid;place-items:center;padding:7px;border:3px solid #d7b8ff;border-radius:19px;background:linear-gradient(145deg,#a66bf0,#6841c5);box-shadow:0 5px 0 #5730a3,inset 0 2px 7px #fff7}
+#appShell.game-focus canvas{display:block;width:min(100%,640px,calc(100dvh - 370px));height:auto;max-width:100%;aspect-ratio:1;object-fit:contain;margin:0 auto;border-radius:12px;box-shadow:0 3px 12px #24145b55;touch-action:manipulation}
+#appShell.game-focus .game-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;max-width:640px;margin:11px auto 0}
+#appShell.game-focus .game-actions button{padding:10px 7px;border-radius:13px;font-size:.78rem;white-space:normal;line-height:1.2}
+#appShell.game-focus .game-actions #restart{background:linear-gradient(135deg,#ff5d9f,#ec347e);box-shadow:0 4px 0 #b92362}
+#appShell.game-focus .game-actions #hintBtn{background:linear-gradient(135deg,#8e54e8,#6930c6);box-shadow:0 4px 0 #4b2295}
+#appShell.game-focus .game-actions #aiClearBtn{background:linear-gradient(135deg,#338cf0,#4e59d7);box-shadow:0 4px 0 #3542a9}
+#appShell.game-focus .help{display:none!important}
+#appShell.game-focus .status{min-height:1.25em;margin:5px 0 0;color:#7642a5;font-size:.78rem;font-weight:900}
+#appShell.game-focus .footer-note{display:none!important}
+#appShell.game-focus .app-topbar{margin-bottom:11px}
+
+/* Other screens inherit the same bright, rounded game identity. */
+.content-card,.panel,.card{border:2px solid #fff;background:#fffaf3f2;box-shadow:0 7px 0 #e5d8c6,0 12px 24px #4a315f14;border-radius:20px}
+.content-card h3{color:#4b2b70;font-weight:1000}
+.quick-card,.overview-stat{border:2px solid #fff;background:#fffaf3}
+button.secondary{background:linear-gradient(135deg,#8c4cdd,#6d32c4);box-shadow:0 4px 0 #4e238f}
+button.green{background:linear-gradient(135deg,#22c98c,#0b9b6c);box-shadow:0 4px 0 #08724f}
+.tabs .tab.active{background:linear-gradient(135deg,#8c4cdd,#6d32c4);border-color:#6d32c4}
+.overlay{backdrop-filter:blur(5px)}
+.modal{border-radius:24px;border:3px solid #fff;background:linear-gradient(180deg,#fffaf1,#f6edff)}
+
+@media(max-width:900px){
+  body{padding:0 0 calc(88px + env(safe-area-inset-bottom))!important}
+  .app-shell{padding:0 10px 10px;width:100%}
+  .app-topbar{margin:0 -10px 12px;padding:10px 13px;min-height:65px;border-radius:0 0 20px 20px}
+  .app-logo .brand-mark{width:41px;height:41px;font-size:1.3rem}
+  .app-logo h1{font-size:1.16rem}
+  .app-logo p{font-size:.63rem}
+  .topbar-right{gap:5px}
+  .wallet-chip{gap:5px;padding:6px 7px 6px 9px;font-size:.75rem}
+  .wallet-chip strong{font-size:.86rem}
+  .wallet-label{display:none}
+  .wallet-plus{width:24px;height:24px;font-size:1.1rem}
+  .account-pill{padding:7px 8px;font-size:.65rem;max-width:116px}
+  .app-grid{display:block!important}
+  .nav-rail{position:fixed!important;left:8px!important;right:8px!important;bottom:calc(7px + env(safe-area-inset-bottom))!important;top:auto!important;width:auto!important;height:auto!important;min-height:0!important;display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:2px!important;padding:6px!important;z-index:100!important;order:1!important;background:#fffaf1f5!important;border:2px solid #fff!important;border-radius:18px!important;box-shadow:0 6px 0 #d4c2a4,0 10px 28px #38224d30!important;backdrop-filter:blur(14px)}
+  .nav-caption{display:none!important}
+  .nav-btn{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;min-width:0!important;width:100%!important;padding:7px 1px!important;border-radius:12px!important;font-size:.59rem!important;white-space:normal!important;color:#765f8b!important}
+  .nav-btn .nav-icon{width:auto!important;font-size:1.05rem!important;line-height:1.1}
+  .nav-btn.active{background:linear-gradient(145deg,#ff70b7,#8c4bdc)!important;color:#fff!important;box-shadow:0 2px 0 #5d2a9e!important}
+  .workspace{margin:0 0 8px;min-height:0}
+  .home-world{padding:11px;border-radius:22px}
+  .home-player-card{padding:6px 10px 6px 6px;gap:7px;border-radius:15px}
+  .home-avatar{width:41px;height:41px;flex-basis:41px;font-size:1.55rem}
+  .home-player-copy strong{font-size:.79rem;max-width:135px}
+  .home-player-copy>span{font-size:.61rem}
+  .home-wallet{gap:5px;padding:6px 7px 6px 9px}
+  .home-scene{grid-template-columns:minmax(0,1fr) minmax(145px,.85fr);min-height:300px;padding:17px 13px 15px;margin-top:10px;gap:0}
+  .home-scene-copy h2{font-size:clamp(1.8rem,6vw,2.8rem);letter-spacing:-1.2px}
+  .home-scene-copy p{font-size:.77rem;line-height:1.4;margin-bottom:13px}
+  .home-kicker{font-size:.57rem;padding:5px 7px}
+  .home-play-btn{min-width:160px;padding:10px 16px;font-size:1.55rem;border-width:3px;gap:12px}
+  .home-play-arrow{width:27px;height:27px;font-size:.85rem}
+  .home-play-note{font-size:.62rem;line-height:1.3}
+  .home-mascot-area{min-height:245px}
+  .home-cat{width:120%;max-width:260px}
+  .home-mascot-area:before{width:200px;height:200px}
+  .home-castle{font-size:2.8rem}
+  .home-feature-grid{gap:7px;margin-top:10px}
+  .home-feature-card{grid-template-columns:36px minmax(0,1fr) 24px;gap:6px;padding:8px;border-radius:14px}
+  .home-feature-icon{width:35px;height:35px;border-radius:11px;font-size:1.25rem}
+  .home-feature-card strong{font-size:.68rem}
+  .home-feature-card span{font-size:.58rem}
+  .home-feature-card small{font-size:.55rem}
+  .home-feature-card button{width:23px;height:23px;font-size:1.05rem}
+  #appShell.game-focus .app-grid{display:block!important;min-height:0}
+  #appShell.game-focus .workspace{min-height:0!important;margin-bottom:0}
+  #appShell.game-focus #view-play{min-height:0!important}
+  #appShell.game-focus .game-panel{padding:9px;border-radius:20px}
+  #appShell.game-focus .level-toolbar{padding:8px 9px;margin-bottom:7px}
+  #appShell.game-focus .stats{gap:5px;margin-bottom:7px}
+  #appShell.game-focus .stat{padding:7px 7px;border-radius:11px}
+  #appShell.game-focus .stat small{font-size:.56rem}
+  #appShell.game-focus .stat strong{font-size:clamp(1rem,4vw,1.3rem)}
+  #appShell.game-focus .stat .substat{font-size:.62rem}
+  #appShell.game-focus .level-mission{padding:8px 9px;margin-bottom:7px;font-size:.7rem}
+  #appShell.game-focus .board-wrap{padding:5px;border-radius:15px}
+  #appShell.game-focus canvas{width:min(100%,640px,calc(100dvh - 385px));max-height:calc(100dvh - 385px)}
+  #appShell.game-focus .game-actions{gap:6px;margin-top:8px}
+  #appShell.game-focus .game-actions button{padding:9px 4px;font-size:.66rem;border-radius:11px}
+  #appShell.game-focus .status{font-size:.69rem;margin-top:4px}
+}
+@media(max-width:560px){
+  .home-scene{grid-template-columns:1fr;min-height:0;padding:15px 14px 10px}
+  .home-scene-copy{max-width:100%;text-align:center;padding:4px 0 0}
+  .home-scene-copy h2{margin:10px 0 7px;font-size:2.35rem}
+  .home-scene-copy p{max-width:300px;margin:0 auto 12px}
+  .home-play-btn{margin:0 auto;min-width:190px}
+  .home-play-note{margin-top:8px}
+  .home-mascot-area{min-height:190px;margin-top:-4px}
+  .home-cat{width:min(76%,235px);max-height:220px}
+  .home-mascot-area:before{width:180px;height:180px}
+  .home-castle{right:5%;top:0;font-size:2.6rem}
+  .home-sparkle.sparkle-one{left:13%;top:16%}
+  .home-sparkle.sparkle-two{right:11%;top:42%}
+  .home-feature-grid{grid-template-columns:1fr;gap:7px}
+  .home-feature-card{grid-template-columns:42px minmax(0,1fr) 28px;padding:8px 10px}
+  .home-feature-icon{width:39px;height:39px;font-size:1.4rem}
+  .home-feature-card strong{font-size:.77rem}
+  .home-feature-card span{font-size:.64rem}
+  .home-feature-card small{font-size:.61rem}
+  .home-feature-card button{width:26px;height:26px}
+  #appShell.game-focus .app-topbar{margin-bottom:8px}
+  #appShell.game-focus .game-panel{padding:7px}
+  #appShell.game-focus .level-toolbar{padding:7px 8px}
+  #appShell.game-focus #levelMapBtn{font-size:.65rem;padding:7px 8px}
+  #appShell.game-focus .stats{gap:4px}
+  #appShell.game-focus .stat{padding:6px 5px}
+  #appShell.game-focus .stat small{font-size:.5rem;letter-spacing:.2px}
+  #appShell.game-focus .stat strong{font-size:1.02rem}
+  #appShell.game-focus .stat .substat{font-size:.57rem}
+  #appShell.game-focus .level-mission{font-size:.64rem;padding:7px 8px}
+  #appShell.game-focus canvas{width:min(100%,640px,calc(100dvh - 360px));max-height:calc(100dvh - 360px)}
+  #appShell.game-focus .game-actions button{font-size:.61rem;padding:8px 3px}
+}
+@media(max-height:720px) and (max-width:900px){
+  #appShell.game-focus canvas{width:min(100%,640px,calc(100dvh - 330px));max-height:calc(100dvh - 330px)}
+  #appShell.game-focus .stat{padding:5px 6px}
+  #appShell.game-focus .level-mission{padding:6px 8px}
+}
+@media(min-width:901px){
+  .home-world{padding:20px}
+  .home-scene{min-height:390px}
+  .home-feature-card{padding:14px}
+}
+
 </style>
 </head>
 <body>
-<section class="auth-screen" id="authScreen" aria-label="Sign in to Sweet Match">
+<section class="auth-screen" id="authScreen" aria-label="Sign in to Sweet Match" hidden>
   <div class="auth-card">
 <div style="text-align: left; margin-bottom: 10px;">
   <button type="button" id="backToGameBtn" class="soft" style="padding: 6px 12px; font-size: 0.75rem;">← Back to Game</button>
@@ -294,10 +559,10 @@ body{display:block!important;}
   </div>
 </section>
 
-<div class="app-shell" id="appShell" hidden>
+<div class="app-shell" id="appShell">
   <header class="app-topbar">
-    <div class="app-logo"><div class="brand-mark">🍬</div><div><h1>Sweet <span style="color:var(--pink)">Match!</span></h1><p>Match gems. Collect joy.</p></div></div>
-    <div class="topbar-right"><div class="wallet-chip">🪙 <span id="coinsTop">200</span> coins</div><button class="account-pill" id="accountBtn" type="button">Guest · Sign in</button></div>
+    <div class="app-logo"><div class="brand-mark">🍬</div><div><h1>Sweet <span>Match!</span></h1><p>Match 3 Puzzle Adventure</p></div></div>
+    <div class="topbar-right"><div class="wallet-chip"><span class="wallet-coin">🪙</span><strong id="coinsTop">200</strong><span class="wallet-label">coins</span><button class="wallet-plus" data-go="coins" type="button" aria-label="Open coin shop">+</button></div><button class="account-pill" id="accountBtn" type="button">👤 Guest · Sign in</button></div>
   </header>
   <div class="app-grid">
     <nav class="nav-rail" aria-label="Main navigation">
@@ -313,23 +578,97 @@ body{display:block!important;}
 
     <main class="workspace">
       <section class="page-view active" id="view-home">
-        <div class="hero-card"><span class="demo-badge" style="display:inline-block;margin-bottom:12px">YOUR SWEET ADVENTURE</span><h2>Ready to match your way to the top?</h2><p>Match colourful gems, build your best score, earn demo coins and invite friends. Your game tools now have their own dedicated screens.</p><div class="hero-actions"><button id="startPlayBtn" type="button">▶ Play now</button><button class="secondary" data-go="rewards" type="button">🎁 Daily rewards</button></div></div>
-        <div class="overview-grid">
-          <div class="overview-stat"><span class="ov-icon">🪙</span><small>Coin wallet</small><strong id="homeCoins">200</strong></div>
-          <div class="overview-stat"><span class="ov-icon">⭐</span><small>Best score</small><strong id="homeBest">0</strong></div>
-          <div class="overview-stat"><span class="ov-icon">🗺️</span><small>Levels unlocked</small><strong id="homeLevel">1 / 100 unlocked</strong></div>
-          <div class="overview-stat"><span class="ov-icon">🎁</span><small>Ads today</small><strong id="homeDaily">0 / 30</strong></div>
-        </div>
-        <div class="page-heading"><div><h2>Quick access</h2><p>Everything in one place, without a long scrolling page.</p></div></div>
-        <div class="quick-grid">
-          <article class="quick-card"><div class="quick-icon">🎁</div><h3>Daily rewards</h3><p>Earn 500 coins per test ad. Only AI reward ads have a 3-per-day limit; coin-funded AI play is unlimited.</p><button class="secondary" data-go="rewards" type="button">Open rewards</button></article>
-          <article class="quick-card"><div class="quick-icon">🤝</div><h3>Invite friends</h3><p>Share your unique code. Live referral payouts need verification.</p><button class="secondary" data-go="referrals" type="button">Invite friends</button></article>
-          <article class="quick-card"><div class="quick-icon">🏆</div><h3>Leaderboards</h3><p>Explore weekly, monthly, country and global ranking screens.</p><button class="secondary" data-go="leaderboard" type="button">View rankings</button></article>
+        <div class="home-world">
+          <div class="home-player-strip">
+            <div class="home-player-card">
+              <div class="home-avatar" aria-hidden="true">🐱</div>
+              <div class="home-player-copy">
+                <strong id="homePlayerName">Guest Player</strong>
+                <span>Level <b id="homeLevelShort">1</b> · Candy Forest</span>
+                <div class="home-xp-track"><span id="homeLevelProgress"></span></div>
+              </div>
+            </div>
+            <div class="home-wallet">
+              <span class="home-coin-icon">🪙</span>
+              <strong id="homeCoins">200</strong>
+              <button type="button" class="home-plus" data-go="coins" aria-label="Open coin shop">+</button>
+            </div>
+          </div>
+
+          <div class="home-scene">
+            <div class="home-scene-copy">
+              <span class="home-kicker">🍬 MATCH 3 PUZZLE ADVENTURE</span>
+              <h2>Small Moves.<br><span>Big Joy!</span></h2>
+              <p>Swap colorful candies, make sweet combos and unlock 100 exciting levels.</p>
+              <button id="startPlayBtn" class="home-play-btn" type="button"><span>Play</span><span class="home-play-arrow">▶</span></button>
+              <div class="home-play-note"><span>✨</span> Your next sweet adventure is waiting!</div>
+            </div>
+
+            <div class="home-mascot-area" aria-hidden="true">
+              <div class="home-castle">🏰</div>
+              <div class="home-sparkle sparkle-one">✦</div>
+              <div class="home-sparkle sparkle-two">✧</div>
+              <div class="home-candy candy-one">🍬</div>
+              <div class="home-candy candy-two">💎</div>
+              <svg class="home-cat" viewBox="0 0 360 360" role="img" aria-label="Cute orange cat mascot">
+                <defs>
+                  <linearGradient id="catFur" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffc16c"/><stop offset=".55" stop-color="#f28a35"/><stop offset="1" stop-color="#cf5c24"/></linearGradient>
+                  <linearGradient id="catCream" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8e8"/><stop offset="1" stop-color="#f0d8b8"/></linearGradient>
+                  <linearGradient id="catScarf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#39b9ff"/><stop offset="1" stop-color="#2364d9"/></linearGradient>
+                  <radialGradient id="catCheek"><stop offset="0" stop-color="#ff9a9d" stop-opacity=".75"/><stop offset="1" stop-color="#ff9a9d" stop-opacity="0"/></radialGradient>
+                </defs>
+                <ellipse cx="180" cy="328" rx="126" ry="18" fill="#4b8c56" opacity=".2"/>
+                <path d="M91 271 C35 272 37 205 72 191 C92 184 111 203 99 224 C85 246 112 248 127 235" fill="none" stroke="#d66c2a" stroke-width="35" stroke-linecap="round"/>
+                <path d="M91 271 C35 272 37 205 72 191 C92 184 111 203 99 224 C85 246 112 248 127 235" fill="none" stroke="#f7a24d" stroke-width="25" stroke-linecap="round"/>
+                <ellipse cx="177" cy="267" rx="102" ry="69" fill="url(#catFur)"/>
+                <ellipse cx="183" cy="292" rx="54" ry="42" fill="url(#catCream)"/>
+                <ellipse cx="119" cy="316" rx="36" ry="18" fill="#f8e6cf"/>
+                <ellipse cx="230" cy="316" rx="36" ry="18" fill="#f8e6cf"/>
+                <path d="M91 111 L82 32 Q80 14 98 27 L154 74 Z" fill="url(#catFur)" stroke="#d66c2a" stroke-width="5"/>
+                <path d="M269 111 L278 32 Q280 14 262 27 L206 74 Z" fill="url(#catFur)" stroke="#d66c2a" stroke-width="5"/>
+                <path d="M101 85 L96 48 L133 78 Z" fill="#ff9ba9"/><path d="M259 85 L264 48 L227 78 Z" fill="#ff9ba9"/>
+                <ellipse cx="180" cy="151" rx="116" ry="103" fill="url(#catFur)" stroke="#d66c2a" stroke-width="5"/>
+                <path d="M131 67 Q180 35 229 67 Q205 86 180 82 Q154 86 131 67" fill="#ffb65e" opacity=".9"/>
+                <path d="M146 177 Q180 198 214 177 Q211 230 180 231 Q149 230 146 177" fill="url(#catCream)"/>
+                <ellipse cx="137" cy="143" rx="30" ry="36" fill="#fff"/><ellipse cx="223" cy="143" rx="30" ry="36" fill="#fff"/>
+                <ellipse cx="143" cy="148" rx="17" ry="23" fill="#573522"/><ellipse cx="217" cy="148" rx="17" ry="23" fill="#573522"/>
+                <ellipse cx="148" cy="140" rx="6" ry="8" fill="#fff"/><ellipse cx="222" cy="140" rx="6" ry="8" fill="#fff"/>
+                <ellipse cx="108" cy="184" rx="34" ry="20" fill="url(#catCheek)"/><ellipse cx="252" cy="184" rx="34" ry="20" fill="url(#catCheek)"/>
+                <ellipse cx="180" cy="184" rx="11" ry="8" fill="#8b4b47"/>
+                <path d="M180 192 Q164 213 150 198 M180 192 Q196 213 210 198" fill="none" stroke="#75423a" stroke-width="4" stroke-linecap="round"/>
+                <path d="M111 190 L67 184 M111 200 L70 205 M249 190 L293 184 M249 200 L290 205" stroke="#fff6e7" stroke-width="3" stroke-linecap="round"/>
+                <path d="M109 223 Q180 246 251 223 L235 263 Q180 290 125 263 Z" fill="url(#catScarf)" stroke="#2255bd" stroke-width="4"/>
+                <path d="M180 244 L190 256 L180 269 L170 256 Z" fill="#ffdb4d"/>
+                <circle cx="180" cy="256" r="5" fill="#fff3b1"/>
+                <path d="M126 91 Q139 73 155 68 M204 68 Q222 73 235 91" stroke="#d66c2a" stroke-width="8" stroke-linecap="round" fill="none" opacity=".7"/>
+              </svg>
+              <div class="home-scene-ground"></div>
+            </div>
+          </div>
+
+          <div class="home-feature-grid">
+            <article class="home-feature-card daily-feature">
+              <div class="home-feature-icon">🎁</div>
+              <div><strong>Daily Rewards</strong><span>Come back for sweet gifts</span></div>
+              <button type="button" data-go="rewards" aria-label="Open daily rewards">›</button>
+            </article>
+            <article class="home-feature-card progress-feature">
+              <div class="home-feature-icon">🗺️</div>
+              <div><strong>Your Progress</strong><span id="homeLevel">1 / 100 unlocked</span><small>Best score: <b id="homeBest">0</b></small></div>
+              <button type="button" id="homeMapBtn" aria-label="Open level map">›</button>
+            </article>
+            <article class="home-feature-card coins-feature">
+              <div class="home-feature-icon">🪙</div>
+              <div><strong>Coin Shop</strong><span>Get coins and boosters</span></div>
+              <button type="button" data-go="coins" aria-label="Open coin shop">›</button>
+            </article>
+          </div>
+          <span id="homeDaily" class="home-hidden-data">0 / 30</span>
         </div>
       </section>
 
       <section class="page-view" id="view-play">
-        <div class="page-heading"><div><h2>🎮 Play Sweet Match</h2><p>Play through the available levels. The game owner can add, edit, clone, or remove levels from the admin panel.</p></div><span class="demo-badge" id="seasonBadge">🌳 Candy Forest</span></div>
+        <div class="page-heading"><div><h2>🎮 Match 3 & Play</h2><p>Swap two nearby candies to match three or more. Reach the target before your moves run out.</p></div><span class="demo-badge" id="seasonBadge">🌳 Candy Forest</span></div>
         <div class="play-grid">
           <section class="content-card game-panel">
             <div class="level-toolbar"><span class="season-badge" id="seasonLabel">Season 1 · Candy Forest</span><button id="levelMapBtn" class="soft" type="button">🗺️ Level Map · 100</button></div>
@@ -908,6 +1247,9 @@ function refreshDashboard() {
   $("homeCoins").textContent = save.coins.toLocaleString();
   $("homeBest").textContent = save.bestScore.toLocaleString();
   if ($("homeLevel")) $("homeLevel").textContent = `${save.maxUnlocked} / ${LEVEL_COUNT} unlocked`;
+  if ($("homeLevelShort")) $("homeLevelShort").textContent = String(save.maxUnlocked);
+  if ($("homePlayerName")) $("homePlayerName").textContent = save.playerName || "Guest Player";
+  if ($("homeLevelProgress")) $("homeLevelProgress").style.width = `${Math.max(2, Math.min(100, save.maxUnlocked / LEVEL_COUNT * 100))}%`;
   $("homeDaily").textContent = `${save.dailyAdsCount} / ${DAILY_AD_LIMIT}`;
   $("dailyCount").textContent = `${save.dailyAdsCount} / ${DAILY_AD_LIMIT}`;
   $("dailyProgress").style.width = `${save.dailyAdsCount / DAILY_AD_LIMIT * 100}%`;
@@ -1250,12 +1592,24 @@ function buildRenderCaches() {
     return sprite;
   });
   const bg = boardTilesCtx.createLinearGradient(0,0,canvas.width,canvas.height);
-  bg.addColorStop(0,"#f7edff");bg.addColorStop(1,"#e9f7ff");
+  bg.addColorStop(0,"#344f9e");bg.addColorStop(.55,"#5267bb");bg.addColorStop(1,"#7452c8");
   boardTilesCtx.fillStyle=bg;boardTilesCtx.fillRect(0,0,canvas.width,canvas.height);
   for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
     const x=c*cell,y=r*cell;
-    boardTilesCtx.fillStyle=(r+c)%2===0?"#ffffff80":"#d8c8f522";
-    boardTilesCtx.fillRect(x+2,y+2,cell-4,cell-4);
+    const tile=boardTilesCtx.createLinearGradient(x,y,x+cell,y+cell);
+    tile.addColorStop(0,(r+c)%2===0?"#8299ed":"#7189df");
+    tile.addColorStop(1,(r+c)%2===0?"#536fc4":"#4e65b6");
+    boardTilesCtx.save();
+    boardTilesCtx.shadowColor="#263d8a88";boardTilesCtx.shadowBlur=5;boardTilesCtx.shadowOffsetY=2;
+    boardTilesCtx.fillStyle=tile;
+    const rx=x+3,ry=y+3,rw=cell-6,rh=cell-6,rr=10;
+    boardTilesCtx.beginPath();
+    if(boardTilesCtx.roundRect) boardTilesCtx.roundRect(rx,ry,rw,rh,rr);
+    else boardTilesCtx.rect(rx,ry,rw,rh);
+    boardTilesCtx.fill();
+    boardTilesCtx.shadowBlur=0;boardTilesCtx.shadowOffsetY=0;
+    boardTilesCtx.strokeStyle="#dce6ff55";boardTilesCtx.lineWidth=1.5;boardTilesCtx.stroke();
+    boardTilesCtx.restore();
   }
   rebuildBoardCache();
 }
@@ -1781,8 +2135,8 @@ function showApp(mode = "guest") {
   if (mode === "account") localStorage.setItem(SESSION_KEY, "account");
   $("authScreen").hidden = true;
   $("appShell").hidden = false;
-  // After guest entry or successful sign-in, open the actual game immediately.
-  setActiveView("play");
+  // Start on the game-first home screen. Players choose Play when they are ready.
+  setActiveView("home");
   refreshDashboard();
   renderLeaderboard();
   if (backendConfigured() && currentUser) {
@@ -1826,6 +2180,8 @@ function firebaseSetupMessage() {
   setAuthStatus("Sign-in is not connected yet. The game owner must add Firebase config and enable Email/Password, Google and Facebook providers. You can still play as a guest.");
 }
 function initAuthFlow() {
+  // The game is playable without an account. Authentication is an optional way
+  // to sync progress, and is opened only when the player chooses Sign in.
   if (firebaseConfigured() && window.firebase && firebase.apps) {
     try {
       if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
@@ -1842,21 +2198,20 @@ function initAuthFlow() {
           }
           refreshDashboard();
           showApp(sessionMode);
-        } else if (localStorage.getItem(SESSION_KEY) === "guest" && !backendConfigured()) {
-          showApp("guest");
         } else {
-          localStorage.removeItem(SESSION_KEY);
-          showAuth(false);
+          // Do not block the player with a sign-in page on first launch.
+          sessionMode = "guest";
+          localStorage.setItem(SESSION_KEY, "guest");
+          showApp("guest");
         }
       });
     } catch (error) {
       console.error("Firebase initialization failed:", error);
-      showAuth(false);
+      showApp("guest");
     }
-  } else if (sessionMode === "guest") {
-    showApp("guest");
   } else {
-    showAuth(false);
+    // Local guest play works even when Firebase has not been configured.
+    showApp("guest");
   }
 }
 async function signInWithProvider(providerName) {
@@ -1937,6 +2292,7 @@ async function handleAccountAction() {
 document.querySelectorAll(".nav-btn[data-view]").forEach(button => button.addEventListener("click", () => setActiveView(button.dataset.view)));
 document.querySelectorAll("[data-go]").forEach(button => button.addEventListener("click", () => setActiveView(button.dataset.go)));
 $("startPlayBtn").addEventListener("click", () => {setActiveView("play");updateLevelHUD();});
+$("homeMapBtn").addEventListener("click", openLevelMap);
 $("googleSignInBtn").addEventListener("click", () => signInWithProvider("Google"));
 $("facebookSignInBtn").addEventListener("click", () => signInWithProvider("Facebook"));
 $("authForm").addEventListener("submit", handleEmailAuth);
@@ -2015,126 +2371,58 @@ requestAnimationFrame(draw);
 })();
 </script>
 <script src="admin-tools.js"></script>
-<!-- AUDIO SYSTEM FOR SUGAR RUSH ADVENTURE -->
+<!-- Single audio controller: starts after the first user interaction (browser autoplay policy). -->
 <script>
 (function() {
-  // Define Audio Objects matching exact filenames and paths
   const audioFiles = {
     bgm: new Audio('Audio/game music.mp3'),
     pop: new Audio('Audio/Pop.mp3'),
     button: new Audio('Audio/Button Tap.mp3')
   };
-
-  // Configure Background Music
   audioFiles.bgm.loop = true;
-  audioFiles.bgm.volume = 0.4; // 40% volume for background music
-
+  audioFiles.bgm.volume = 0.32;
   let isBgmPlaying = false;
 
-  // Helper to safely play sound effects
   function playSFX(audioObj, volume = 0.7) {
     try {
       const soundClone = audioObj.cloneNode();
       soundClone.volume = volume;
-      soundClone.play().catch(e => {}); // catch browser autoplay restrictions
-    } catch(e) {}
+      soundClone.play().catch(() => {});
+    } catch (_) {}
   }
-
-  // Helper to start background music after first click/tap
   function startBGM() {
-    if (!isBgmPlaying) {
-      audioFiles.bgm.play().then(() => {
-        isBgmPlaying = true;
-      }).catch(e => {
-        // Retries on next interaction if blocked
-      });
-    }
+    if (isBgmPlaying) return;
+    audioFiles.bgm.play().then(() => { isBgmPlaying = true; }).catch(() => {});
   }
 
-  // Play button tap sound on any button click across the game
-  document.addEventListener('click', function(e) {
-    startBGM(); // Ensure BGM starts after any user click
-
-    const button = e.target.closest('button, .level-tile, [role="button"]');
-    if (button) {
-      playSFX(audioFiles.button, 0.6);
-    }
+  document.addEventListener('click', function(event) {
+    startBGM();
+    const button = event.target.closest('button, .level-tile, [role="button"]');
+    if (button) playSFX(audioFiles.button, 0.48);
   });
 
-  // Expose global sound trigger for game match popping sounds
-  window.playPopSound = function() {
-    playSFX(audioFiles.pop, 0.8);
-  };
-  
-  // Attach pop sound trigger to canvas interactions/touches
-  const canvas = document.querySelector('canvas');
-  if (canvas) {
-    canvas.addEventListener('pointerdown', function() {
-      startBGM();
-      playSFX(audioFiles.pop, 0.5);
-    });
-  }
-})();
-</script>
-  <!-- AUDIO SYSTEM & BACK BUTTON FIX -->
-<script>
-// Back button functionality
-document.addEventListener('DOMContentLoaded', function() {
-  const backBtn = document.getElementById('backToGameBtn');
-  if (backBtn) {
+  const gameCanvas = document.getElementById('board');
+  if (gameCanvas) gameCanvas.addEventListener('pointerdown', function() {
+    startBGM();
+    playSFX(audioFiles.pop, 0.45);
+  });
+  window.playPopSound = function() { playSFX(audioFiles.pop, 0.7); };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const backBtn = document.getElementById('backToGameBtn');
+    if (!backBtn) return;
     backBtn.addEventListener('click', function() {
       const authScreen = document.getElementById('authScreen');
       const appShell = document.getElementById('appShell');
       if (authScreen) authScreen.hidden = true;
       if (appShell) {
         appShell.hidden = false;
-        appShell.classList.add('game-focus');
+        appShell.classList.remove('game-focus');
       }
     });
-  }
-});
-
-// Audio System
-(function() {
-  const audioFiles = {
-    bgm: new Audio('Audio/game music.mp3'),
-    pop: new Audio('Audio/Pop.mp3'),
-    button: new Audio('Audio/Button Tap.mp3')
-  };
-
-  audioFiles.bgm.loop = true;
-  audioFiles.bgm.volume = 0.4;
-  let isBgmPlaying = false;
-
-  function playSFX(audioObj, volume = 0.7) {
-    try {
-      const soundClone = audioObj.cloneNode();
-      soundClone.volume = volume;
-      soundClone.play().catch(e => {});
-    } catch(e) {}
-  }
-
-  function startBGM() {
-    if (!isBgmPlaying) {
-      audioFiles.bgm.play().then(() => {
-        isBgmPlaying = true;
-      }).catch(e => {});
-    }
-  }
-
-  document.addEventListener('click', function(e) {
-    startBGM();
-    const button = e.target.closest('button, .level-tile, [role="button"]');
-    if (button) {
-      playSFX(audioFiles.button, 0.6);
-    }
   });
-
-  window.playPopSound = function() {
-    playSFX(audioFiles.pop, 0.8);
-  };
 })();
 </script>
-  
+
 </body>
 </html>
