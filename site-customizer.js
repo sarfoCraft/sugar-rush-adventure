@@ -2,7 +2,11 @@
    Public settings are read-only. All writes remain protected by Firebase admin authorization on the API. */
 (() => {
   "use strict";
-  const API = () => String(window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || "").replace(/\/+$/, "");
+  const API = () => {
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem("sra_admin_connection_settings_v1") || "{}") || {}; } catch (_) {}
+    return String(window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || saved.apiBaseUrl || "").replace(/\/+$/, "");
+  };
   let currentRevision = -1;
   let currentConfig = null;
   let currentCustomJs = "";
@@ -39,13 +43,13 @@
     const fonts = { system: "system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif", rounded: "Trebuchet MS,Arial,sans-serif", serif: "Georgia,serif" };
     if (fonts[theme.fontFamily]) document.body.style.fontFamily = fonts[theme.fontFamily];
     if (theme.backgroundAssetId) {
-      document.body.style.backgroundImage = `linear-gradient(135deg,${theme.pageBackground || "#fff7e8"}cc,${theme.pageBackground || "#fff7e8"}88),url("${assetUrl(theme.backgroundAssetId)}")`;
-      document.body.style.backgroundSize = "cover";
-      document.body.style.backgroundAttachment = "fixed";
-      document.body.style.backgroundPosition = "center";
-    } else if (theme.pageBackground) {
-      document.body.style.backgroundImage = `radial-gradient(circle at 12% 10%,${theme.accent || "#ff5d9e"}22 0,transparent 32%),linear-gradient(135deg,${theme.pageBackground},${theme.primary || "#7650d8"}18)`;
+      document.body.style.backgroundImage = `linear-gradient(180deg,${theme.pageBackground || "#fff7e8"}44,${theme.pageBackground || "#fff7e8"}22),url("${assetUrl(theme.backgroundAssetId)}")`;
+    } else {
+      document.body.style.backgroundImage = `linear-gradient(180deg,${theme.pageBackground || "#fff7e8"}44,${theme.pageBackground || "#fff7e8"}22),url("assets/candy-forest-background.svg")`;
     }
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundAttachment = "fixed";
+    document.body.style.backgroundPosition = "center";
     let themeStyle = $("#sra-theme-overrides");
     if (!themeStyle) { themeStyle = document.createElement("style"); themeStyle.id = "sra-theme-overrides"; document.head.appendChild(themeStyle); }
     themeStyle.textContent = `:root{--sra-primary:${theme.primary || "#7650d8"};--sra-accent:${theme.accent || "#ff5d9e"};--sra-panel:${theme.panelBackground || "#fff"};--sra-text:${theme.textColor || "#35234d"}}body{color:var(--sra-text)}.app-topbar{background:linear-gradient(120deg,var(--sra-primary),var(--sra-accent))}.content-card,.panel,.card,.auth-card{background:var(--sra-panel)}button:not(.soft):not(.green):not(.home-plus){background:linear-gradient(135deg,var(--sra-primary),var(--sra-accent))}`;

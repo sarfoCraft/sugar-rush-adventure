@@ -1,7 +1,11 @@
 (() => {
   "use strict";
   const $ = id => document.getElementById(id);
-  const API_BASE = () => String(window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || "").replace(/\/+$/, "");
+  const API_BASE = () => {
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem("sra_admin_connection_settings_v1") || "{}") || {}; } catch (_) {}
+    return String(window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || saved.apiBaseUrl || "").replace(/\/+$/, "");
+  };
   let loadedOnce = false;
   let activePane = "players";
   let cachedReferrals = [];
@@ -91,7 +95,7 @@
     return `${Math.floor(total / 3600)}h ${Math.floor((total % 3600) / 60)}m`;
   }
   async function api(path, options = {}) {
-    if (!API_BASE()) throw new Error("Set SUGAR_RUSH_API_BASE_URL in index.html first (the old SWEET_MATCH_API_BASE_URL is also supported).");
+    if (!API_BASE()) throw new Error("Connect your deployed backend in Profile → Admin login / connection setup first.");
     if (!window.firebase?.auth) throw new Error("Firebase Authentication is not configured.");
     const user = window.firebase.auth().currentUser;
     if (!user) throw new Error("Sign in first, then reopen Admin.");
@@ -104,7 +108,10 @@
       body: options.body === undefined ? undefined : JSON.stringify(options.body)
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || `Request failed (${response.status}).`);
+    if (!response.ok) {
+      const message = response.status === 403 ? "This Firebase account is not listed in the backend ADMIN_UIDS setting. Add the signed-in account UID to your hosting environment and redeploy." : (data.error || `Request failed (${response.status}).`);
+      throw new Error(message);
+    }
     return data;
   }
   function setStatus(message, isError = false) {

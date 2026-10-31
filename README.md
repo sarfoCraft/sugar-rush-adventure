@@ -26,3 +26,10 @@ Play the game directly in your browser:
 - **Custom Code Editor:** save HTML, CSS and trusted JavaScript as a draft, preview it, then publish without editing the repository. Custom JavaScript can use the small `window.SugarRush` API exposed by the game.
 - **Media Library:** upload and manage game images, audio and video (5 MB per file). Assets are stored in PostgreSQL and served through the backend.
 - **Publish history:** every publish creates a version that can be restored from the dashboard. Published visual settings are fetched by the game automatically; custom-JS changes trigger a clean page reload.
+
+
+## Admin connection wizard
+
+The game now includes a one-time connection wizard at **Profile → Admin login / connection setup**. It stores the public Firebase Web App configuration and deployed HTTPS API URL in the current browser, so these values do not need to be pasted into `index.html`.
+
+For the secure admin dashboard to work, the backend still needs PostgreSQL, `FIREBASE_SERVICE_ACCOUNT_JSON`, and your Firebase account UID in `ADMIN_UIDS`. See `ADMIN-DEPLOYMENT-GUIDE.md`. Never paste service-account credentials into the browser.

@@ -275,13 +275,12 @@ body{display:block!important;}
   --ink:#332052;--pink:#ff4f9a;--purple:#7436d2;--cream:#fff8ed;
   --muted:#78658f;--line:#eadcf5;--green:#12a879;
 }
-html{min-height:100%;background:#bcecff}
+html{min-height:100%;background:#c9efff}
 body{
   min-height:100vh;padding:0!important;margin:0;color:var(--ink);
-  background:
-    radial-gradient(ellipse at 8% 5%,#ffffffaa 0 5%,transparent 20%),
-    radial-gradient(ellipse at 92% 20%,#ffffff88 0 4%,transparent 18%),
-    linear-gradient(180deg,#77d5ff 0%,#c9f0ff 44%,#e4f5c5 100%);
+  background-color:#c9efff;
+  background-image:linear-gradient(180deg,#c6f1ff30 0%,#fff9ef20 52%,#ffe8c955 100%),url("assets/candy-forest-background.svg");
+  background-size:cover;background-position:center center;background-repeat:no-repeat;background-attachment:fixed;
   font-family:ui-rounded,"Trebuchet MS",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 button{border-radius:15px;font-weight:900;letter-spacing:.1px}
@@ -404,7 +403,7 @@ button:focus-visible{outline:3px solid #ffca4d;outline-offset:3px}
 #appShell.game-focus .level-mission{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;padding:10px 13px;border:0;border-radius:13px;background:linear-gradient(100deg,#8a38dc,#c42dd4);box-shadow:0 4px 0 #7125a7;color:#fff;font-size:.82rem;font-weight:950}
 #appShell.game-focus .level-mission .mission-detail{color:#fff4a8}
 #appShell.game-focus .timer-chip{background:#fff;color:#8c35b8;border:1px solid #f2d8ff}
-#appShell.game-focus .board-wrap{display:grid;place-items:center;padding:7px;border:3px solid #d7b8ff;border-radius:19px;background:linear-gradient(145deg,#a66bf0,#6841c5);box-shadow:0 5px 0 #5730a3,inset 0 2px 7px #fff7}
+#appShell.game-focus .board-wrap{display:grid;place-items:center;padding:7px;border:3px solid #e8c8ff;border-radius:19px;background:linear-gradient(135deg,#7040c7bd,#5426b5bd),url("assets/candy-forest-background.svg") center/cover no-repeat;box-shadow:0 5px 0 #5730a3,inset 0 2px 7px #fff7}
 #appShell.game-focus canvas{display:block;width:min(100%,640px,calc(100dvh - 370px));height:auto;max-width:100%;aspect-ratio:1;object-fit:contain;margin:0 auto;border-radius:12px;box-shadow:0 3px 12px #24145b55;touch-action:manipulation}
 #appShell.game-focus .game-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;max-width:640px;margin:11px auto 0}
 #appShell.game-focus .game-actions button{padding:10px 7px;border-radius:13px;font-size:.78rem;white-space:normal;line-height:1.2}
@@ -528,6 +527,32 @@ button.green{background:linear-gradient(135deg,#22c98c,#0b9b6c);box-shadow:0 4px
   .home-world{padding:20px}
   .home-scene{min-height:390px}
   .home-feature-card{padding:14px}
+}
+
+
+/* Candy-world visual refresh + secure admin connection wizard */
+#appShell.game-focus .board-wrap{position:relative;isolation:isolate}
+#appShell.game-focus .board-wrap:before{content:"";position:absolute;inset:0;z-index:-1;border-radius:14px;background:linear-gradient(135deg,#7a42c4aa,#5226a9aa),url("assets/candy-forest-background.svg") center/cover no-repeat}
+#view-home .home-world{background-attachment:local}
+#view-home .home-scene{background:linear-gradient(120deg,#e3f9ff66 0%,#d7f4ff44 48%,#b9e7ff22 100%),url("assets/candy-forest-background.svg") center 58%/cover no-repeat;border-color:#fff}
+#view-profile .content-card{backdrop-filter:blur(7px)}
+.admin-setup-modal{width:min(100%,680px);max-height:90vh;overflow:auto}
+.admin-setup-modal h2{color:#552b89}
+.admin-setup-intro{color:#76648a;line-height:1.5}
+.admin-setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.admin-setup-grid .wide{grid-column:1/-1}
+.admin-setup-grid label{display:block;margin:3px 0 5px;color:#755d8d;font-size:.7rem;font-weight:900;text-transform:uppercase}
+.admin-setup-grid input{width:100%;min-width:0}
+.admin-setup-note{margin:12px 0;padding:12px;border:1px solid #e5d5fa;border-radius:13px;background:#f8f2ff;color:#634b7e;font-size:.77rem;line-height:1.5}
+.admin-setup-status{min-height:1.3em;color:#6b3ca5;font-size:.8rem;font-weight:800}
+@media(max-width:620px){.admin-setup-grid{grid-template-columns:1fr}.admin-setup-grid .wide{grid-column:auto}}
+
+
+#view-home .home-world{
+  background:linear-gradient(180deg,#a5eaff55 0%,#eafaff33 48%,#e7f6c655 100%),url("assets/candy-forest-background.svg") center/cover no-repeat!important;
+}
+#view-home .home-scene{
+  background:linear-gradient(120deg,#e3f9ff55,#d7f4ff33 48%,#b9e7ff22),url("assets/candy-forest-background.svg") center 58%/cover no-repeat!important;
 }
 
 </style>
@@ -729,7 +754,7 @@ button.green{background:linear-gradient(135deg,#22c98c,#0b9b6c);box-shadow:0 4px
       <section class="page-view" id="view-profile">
         <div class="page-heading"><div><h2>👤 Player profile</h2><p>Manage your display name, country and sign-in option.</p></div></div>
         <div class="section-grid"><section class="content-card"><h3>Player details</h3><div style="display:flex;align-items:center;gap:12px;margin:4px 0 12px"><img id="playerPhotoPreview" alt="Player profile" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect width='100%25' height='100%25' rx='48' fill='%23f1e7ff'/%3E%3Ctext x='50%25' y='57%25' font-size='42' text-anchor='middle' fill='%237650d8'%3E%F0%9F%91%A4%3C/text%3E%3C/svg%3E" style="width:68px;height:68px;border-radius:50%;object-fit:cover;border:2px solid var(--line);background:#fff"><div style="min-width:0;flex:1"><label class="field-label" for="playerPhotoFile">Update profile picture</label><input class="field" id="playerPhotoFile" type="file" accept="image/jpeg,image/png,image/webp"><p class="tiny-note">JPG, PNG or WEBP · max 500 KB · requires backend</p></div></div><div class="profile-grid"><div><label class="field-label" for="playerName">Player name</label><input class="field" id="playerName" maxlength="20" value="Guest Player" autocomplete="nickname"></div><div><label class="field-label" for="countryCode">Country</label><select class="field" id="countryCode"><option value="US">United States</option><option value="PK">Pakistan</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="IN">India</option><option value="AE">United Arab Emirates</option><option value="AU">Australia</option><option value="BD">Bangladesh</option><option value="OTHER">Other</option></select></div></div><p class="tiny-note">Player ID: <strong id="playerPublicId">Connect backend to generate your ID</strong></p><p class="tiny-note">Total play time: <strong id="playerPlayHours">0h 0m</strong></p><p class="tiny-note">In live mode, the backend stores your IP address for account security and abuse prevention. Explain this in your privacy notice.</p></section>
-        <section class="content-card"><h3>Account & security</h3><p id="accountSummary">You are playing as a guest. No account is required.</p><p class="tiny-note">Google, Facebook and email authentication become active after the owner connects a Firebase project. Guest play remains available.</p><button id="profileAuthBtn" type="button" style="width:100%">Sign in or register</button><button class="secondary" id="adminLoginBtn" type="button" style="width:100%;margin-top:10px">🔐 Admin login / payment approvals</button><button class="soft" id="resetProgress" type="button" style="width:100%;margin-top:10px">Reset demo data</button></section></div>
+        <section class="content-card"><h3>Account & security</h3><p id="accountSummary">You are playing as a guest. No account is required.</p><p class="tiny-note">Sign in with Firebase to sync progress. Admin access uses the same Firebase account plus server-side administrator approval.</p><button id="profileAuthBtn" type="button" style="width:100%">Sign in or register</button><button class="secondary" id="adminLoginBtn" type="button" style="width:100%;margin-top:10px">🔐 Admin login / connection setup</button><button class="soft" id="resetProgress" type="button" style="width:100%;margin-top:10px">Reset demo data</button></section></div>
         <section class="content-card" style="margin-top:13px"><div class="notice"><strong>Before publishing</strong><br>Authentication is separate from the secure game backend. A production release still needs server-side coin balances, verified rewarded ads, referral validation, live leaderboards, privacy disclosures and abuse prevention.</div></section>
       </section>
       <section class="page-view" id="view-admin">
@@ -746,7 +771,25 @@ button.green{background:linear-gradient(135deg,#22c98c,#0b9b6c);box-shadow:0 4px
 <div class="overlay" id="levelResultOverlay" role="dialog" aria-modal="true" aria-labelledby="levelResultTitle"><div class="modal"><h2 id="levelResultTitle">Level complete!</h2><div id="levelResultBody"></div><div class="modal-actions" id="levelResultActions"></div></div></div>
 <div class="overlay" id="demoAdOverlay" role="dialog" aria-modal="true" aria-labelledby="demoAdTitle"><div class="modal"><h2 id="demoAdTitle">Test Rewarded Ad</h2><p>This is a development preview, not a real ad. If you complete this test, the game simulates a reward of <strong>500 coins</strong>. In production, only a verified ad completion can grant rewards.</p><div class="modal-actions"><button class="soft" id="cancelDemoAd" type="button">Cancel</button><button id="completeDemoAd" type="button">Complete test & earn 500</button></div></div></div>
 <div class="overlay" id="aiAdOverlay" role="dialog" aria-modal="true" aria-labelledby="aiAdTitle"><div class="modal"><h2 id="aiAdTitle">🎬 AI Auto-Play Reward</h2><p>In demo mode, completing this test ad adds <strong>500 coins</strong>, then AI automatically resumes if you have enough coins. Each AI level costs 5,000 coins. AI use is unlimited while you can afford it; only AI reward ads are limited to 3 per day. This is a simulation, not a real ad.</p><p class="tiny-note">Production rewards must be granted only after a rewarded-ad provider verifies completion on the server.</p><div class="modal-actions"><button class="soft" id="cancelAiAd" type="button">Cancel</button><button id="completeAiAdBtn" type="button">Complete test ad · +500</button></div></div></div>
-<div class="overlay" id="adminLoginOverlay" role="dialog" aria-modal="true" aria-labelledby="adminLoginTitle"><div class="modal"><h2 id="adminLoginTitle">🔐 Admin Login</h2><p id="adminLoginDescription">Demo login is only for testing this HTML file. It is not secure enough for a public website.</p><form id="adminLoginForm" class="auth-form"><label for="demoAdminUser">Username</label><input class="field" id="demoAdminUser" autocomplete="username" required placeholder="Admin username"><label for="demoAdminPassword">Password</label><input class="field" id="demoAdminPassword" type="password" autocomplete="current-password" required placeholder="Admin password"><button type="submit">Sign in as admin</button></form><p class="auth-status" id="adminLoginStatus" role="status"></p><p class="tiny-note">Admin access is verified by the backend using your Firebase account role. There is no shared demo password.</p><div class="modal-actions"><button class="soft" id="cancelAdminLogin" type="button">Cancel</button></div></div></div>
+<div class="overlay" id="adminSetupOverlay" role="dialog" aria-modal="true" aria-labelledby="adminSetupTitle">
+  <div class="modal admin-setup-modal">
+    <h2 id="adminSetupTitle">🔐 Connect Sugar Rush Admin</h2>
+    <p class="admin-setup-intro">One-time connection setup. Add your Firebase Web App details and the URL of your deployed game API. These settings are saved in this browser, so you do not need to edit index.html just to connect the dashboard.</p>
+    <form id="adminSetupForm" class="auth-form">
+      <div class="admin-setup-grid">
+        <div class="wide"><label for="adminApiBase">Backend API URL</label><input class="field" id="adminApiBase" type="url" placeholder="https://your-sugar-rush-api.onrender.com" required></div>
+        <div><label for="adminFirebaseApiKey">Firebase Web API Key</label><input class="field" id="adminFirebaseApiKey" autocomplete="off" placeholder="AIza..." required></div>
+        <div><label for="adminFirebaseAuthDomain">Firebase Auth Domain</label><input class="field" id="adminFirebaseAuthDomain" placeholder="your-project.firebaseapp.com" required></div>
+        <div><label for="adminFirebaseProjectId">Firebase Project ID</label><input class="field" id="adminFirebaseProjectId" placeholder="your-project-id" required></div>
+        <div><label for="adminFirebaseAppId">Firebase Web App ID</label><input class="field" id="adminFirebaseAppId" placeholder="1:123456:web:abcdef" required></div>
+      </div>
+      <button type="submit" class="auth-submit">Save connection & continue</button>
+    </form>
+    <div class="admin-setup-note"><strong>Security:</strong> Use Firebase Web App configuration only. Never paste a Firebase service-account JSON, database password or private key here. Your Firebase account UID must also be added to the backend hosting environment variable <code>ADMIN_UIDS</code>; the server, not this browser, decides who is an administrator.</div>
+    <p class="admin-setup-status" id="adminSetupStatus" role="status" aria-live="polite"></p>
+    <div class="modal-actions"><button class="soft" id="cancelAdminSetup" type="button">Cancel</button></div>
+  </div>
+</div></div>
 <div class="toast" id="globalToast" role="status" aria-live="polite"></div>
 
 <script>window.SUGAR_RUSH_API_BASE_URL = ""; // Paste your deployed Sugar Rush Adventure API URL here. The legacy SWEET_MATCH_API_BASE_URL is still supported.</script>
@@ -937,7 +980,8 @@ function setStatus(message) {
   }
 }
 function backendConfigured() {
-  return Boolean((window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL) && String(window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).trim() && !String(window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).includes("YOUR-BACKEND-URL"));
+  const base = getBackendApiBaseUrl();
+  return Boolean(base && /^https:\/\//i.test(base) && !/YOUR[-_ ]?(BACKEND|API)/i.test(base));
 }
 async function backendRequest(path, options = {}) {
   if (!backendConfigured()) return null;
@@ -947,13 +991,17 @@ async function backendRequest(path, options = {}) {
   const token = await currentUser.getIdToken();
   const headers = {"Authorization": `Bearer ${token}`};
   if (options.body !== undefined) headers["Content-Type"] = "application/json";
-  const response = await fetch(`${String(window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).replace(/\/+$/, "")}${path}`, {
+  const response = await fetch(`${getBackendApiBaseUrl()}${path}`, {
     method: options.method || "GET",
     headers,
     body: options.body === undefined ? undefined : JSON.stringify(options.body)
   });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || `Server request failed (${response.status}).`);
+  if (!response.ok) {
+    const error = new Error(response.status === 403 ? "Your Firebase account is signed in, but its UID is not authorized as an admin. Add this UID to the backend ADMIN_UIDS setting and redeploy the API." : (data.error || `Server request failed (${response.status}).`));
+    error.status = response.status;
+    throw error;
+  }
   return data;
 }
 function currentOwnerKey() {
@@ -994,7 +1042,7 @@ async function syncRemotePlayerState(restartLevel = false) {
 }
 async function publicBackendRequest(path) {
   if (!backendConfigured()) return null;
-  const response = await fetch(`${String(window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || BACKEND_API_BASE_URL).replace(/\/+$/, "")}${path}`, {headers:{"Accept":"application/json"}});
+  const response = await fetch(`${getBackendApiBaseUrl()}${path}`, {headers:{"Accept":"application/json"}});
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error || `Server request failed (${response.status}).`);
   return data;
@@ -1201,11 +1249,53 @@ async function handleAdminPaymentAction(event) {
   await renderAdminPayments();
   renderMyPayments();
 }
+function openAdminSetup() {
+  const saved = readConnectionSettings();
+  $("adminApiBase").value = saved.apiBaseUrl || getBackendApiBaseUrl();
+  $("adminFirebaseApiKey").value = FIREBASE_CONFIG.apiKey.startsWith("PASTE_") ? "" : FIREBASE_CONFIG.apiKey;
+  $("adminFirebaseAuthDomain").value = FIREBASE_CONFIG.authDomain.startsWith("YOUR_") ? "" : FIREBASE_CONFIG.authDomain;
+  $("adminFirebaseProjectId").value = FIREBASE_CONFIG.projectId.startsWith("YOUR_") ? "" : FIREBASE_CONFIG.projectId;
+  $("adminFirebaseAppId").value = FIREBASE_CONFIG.appId.startsWith("PASTE_") ? "" : FIREBASE_CONFIG.appId;
+  $("adminSetupStatus").textContent = "";
+  $("adminSetupOverlay").classList.add("show");
+}
+function closeAdminSetup() { $("adminSetupOverlay").classList.remove("show"); }
+function saveAdminConnectionSettings(event) {
+  event.preventDefault();
+  const apiBaseUrl = $("adminApiBase").value.trim().replace(/\/+$/, "");
+  const firebaseConfig = {
+    apiKey: $("adminFirebaseApiKey").value.trim(),
+    authDomain: $("adminFirebaseAuthDomain").value.trim(),
+    projectId: $("adminFirebaseProjectId").value.trim(),
+    appId: $("adminFirebaseAppId").value.trim()
+  };
+  if (!/^https:\/\//i.test(apiBaseUrl)) {
+    $("adminSetupStatus").textContent = "Enter your deployed backend URL beginning with https://.";
+    return;
+  }
+  if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId || !firebaseConfig.appId) {
+    $("adminSetupStatus").textContent = "Complete all four Firebase Web App fields.";
+    return;
+  }
+  if (!/^[a-z0-9-]+\.firebaseapp\.com$/i.test(firebaseConfig.authDomain)) {
+    $("adminSetupStatus").textContent = "Check the Firebase Auth Domain. It normally ends in .firebaseapp.com.";
+    return;
+  }
+  localStorage.setItem(CONNECTION_SETTINGS_KEY, JSON.stringify({apiBaseUrl, firebase:firebaseConfig}));
+  window.SUGAR_RUSH_API_BASE_URL = apiBaseUrl;
+  $("adminSetupStatus").textContent = "Connection details saved. Reloading the game to initialize Firebase…";
+  window.setTimeout(() => window.location.reload(), 700);
+}
 async function openAdminAccess() {
-  if (!backendConfigured()) { setStatus("Admin dashboard is disabled until the secure backend is configured."); return; }
-  if (!currentUser) {
-    setStatus("Sign in with your Firebase administrator account first.");
+  if (!backendConfigured() || !firebaseConfigured()) {
+    openAdminSetup();
+    $("adminSetupStatus").textContent = "Connect your deployed API and Firebase Web App first. Then sign in with the account assigned in ADMIN_UIDS.";
+    return;
+  }
+  if (!currentUser || currentUser.isAnonymous) {
+    pendingAdminOpen = true;
     showAuth(true);
+    setAuthStatus("Sign in with the Firebase account assigned as the Sugar Rush administrator. Guest accounts cannot open Admin.", true);
     return;
   }
   try {
@@ -1213,12 +1303,10 @@ async function openAdminAccess() {
     isAdminMode = true;
     setActiveView("admin");
     await renderAdminPayments();
-  } catch (error) { setStatus(`Admin access denied: ${error.message}`); }
-}
-function closeAdminLogin() { $("adminLoginOverlay").classList.remove("show"); }
-function handleDemoAdminLogin(event) {
-  event.preventDefault();
-  $("adminLoginStatus").textContent = "Local admin login is disabled for security. Configure the backend and assign your Firebase UID as an administrator.";
+  } catch (error) {
+    const uidHint = currentUser?.uid ? ` Your Firebase UID is ${currentUser.uid}.` : "";
+    setStatus(`Admin access denied: ${error.message}${uidHint}`);
+  }
 }
 async function syncPaymentRequestViews() {
   renderMyPayments();
@@ -2228,18 +2316,31 @@ function resetDemoData() {
 }
 
 const SESSION_KEY = "sweetMatchSessionMode_v1";
-const FIREBASE_CONFIG = {
+const CONNECTION_SETTINGS_KEY = "sra_admin_connection_settings_v1";
+function readConnectionSettings() {
+  try { return JSON.parse(localStorage.getItem(CONNECTION_SETTINGS_KEY) || "{}") || {}; }
+  catch (_) { return {}; }
+}
+const SAVED_CONNECTION_SETTINGS = readConnectionSettings();
+let FIREBASE_CONFIG = Object.assign({
   apiKey: "PASTE_FIREBASE_API_KEY",
   authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
   projectId: "YOUR_PROJECT_ID",
   appId: "PASTE_FIREBASE_APP_ID"
-};
+}, SAVED_CONNECTION_SETTINGS.firebase || {});
+function getBackendApiBaseUrl() {
+  const saved = readConnectionSettings();
+  return String(window.SUGAR_RUSH_API_BASE_URL || window.SWEET_MATCH_API_BASE_URL || saved.apiBaseUrl || BACKEND_API_BASE_URL || "").trim().replace(/\/+$/, "");
+}
 let auth = null;
 let currentUser = null;
 let sessionMode = localStorage.getItem(SESSION_KEY) || "";
 let authMode = "login";
+let authListenerAttached = false;
+let pendingAdminOpen = false;
+let forceAuthScreen = false;
 function firebaseConfigured() {
-  return Boolean(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.appId &&
+  return Boolean(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.authDomain && FIREBASE_CONFIG.projectId && FIREBASE_CONFIG.appId &&
     !FIREBASE_CONFIG.apiKey.startsWith("PASTE_") &&
     !FIREBASE_CONFIG.projectId.startsWith("YOUR_") &&
     !FIREBASE_CONFIG.appId.startsWith("PASTE_"));
@@ -2261,6 +2362,7 @@ function setAuthMode(mode) {
   setAuthStatus("");
 }
 function showAuth(clearSession = true) {
+  forceAuthScreen = true;
   if (clearSession) {
     localStorage.removeItem(SESSION_KEY);
     sessionMode = "";
@@ -2270,6 +2372,7 @@ function showAuth(clearSession = true) {
   setAuthMode("login");
 }
 function showApp(mode = "guest") {
+  forceAuthScreen = false;
   sessionMode = mode;
   if (mode === "guest") localStorage.setItem(SESSION_KEY, "guest");
   if (mode === "account") localStorage.setItem(SESSION_KEY, "account");
@@ -2320,37 +2423,46 @@ function firebaseSetupMessage() {
   setAuthStatus("Sign-in is not connected yet. The game owner must add Firebase config and enable Email/Password, Google and Facebook providers. You can still play as a guest.");
 }
 function initAuthFlow() {
-  // The game is playable without an account. Authentication is an optional way
-  // to sync progress, and is opened only when the player chooses Sign in.
+  // Guest play stays available, but Admin requires a real Firebase identity.
   if (firebaseConfigured() && window.firebase && firebase.apps) {
     try {
       if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
       auth = firebase.auth();
+      if (authListenerAttached) return;
+      authListenerAttached = true;
       auth.onAuthStateChanged(user => {
         currentUser = user || null;
-        if (!user) stopActivityTracking(false);
-        if (user) {
-          sessionMode = user.isAnonymous ? "guest" : "account";
-          localStorage.setItem(SESSION_KEY, sessionMode);
-          if (user.displayName && (!save.playerName || save.playerName === "Guest Player")) {
-            save.playerName = user.displayName.slice(0,20);
-            persist();
+        if (!user) {
+          stopActivityTracking(false);
+          if (forceAuthScreen) {
+            $("authScreen").hidden = false;
+            $("appShell").hidden = true;
+            return;
           }
-          refreshDashboard();
-          showApp(sessionMode);
-        } else {
-          // Do not block the player with a sign-in page on first launch.
           sessionMode = "guest";
           localStorage.setItem(SESSION_KEY, "guest");
           showApp("guest");
+          return;
+        }
+        forceAuthScreen = false;
+        sessionMode = user.isAnonymous ? "guest" : "account";
+        localStorage.setItem(SESSION_KEY, sessionMode);
+        if (user.displayName && (!save.playerName || save.playerName === "Guest Player")) {
+          save.playerName = user.displayName.slice(0,20);
+          persist();
+        }
+        refreshDashboard();
+        showApp(sessionMode);
+        if (pendingAdminOpen && !user.isAnonymous) {
+          pendingAdminOpen = false;
+          Promise.resolve().then(() => openAdminAccess());
         }
       });
     } catch (error) {
       console.error("Firebase initialization failed:", error);
-      showApp("guest");
+      if (!forceAuthScreen) showApp("guest");
     }
-  } else {
-    // Local guest play works even when Firebase has not been configured.
+  } else if (!forceAuthScreen) {
     showApp("guest");
   }
 }
@@ -2471,9 +2583,9 @@ $("paymentAttachment").addEventListener("change", () => {
   $("paymentAttachmentStatus").textContent = file ? `Selected: ${file.name} (${Math.ceil(file.size / 1024)} KB)` : "No receipt attached.";
 });
 $("adminLoginBtn").addEventListener("click",openAdminAccess);
-$("adminLoginForm").addEventListener("submit",handleDemoAdminLogin);
-$("cancelAdminLogin").addEventListener("click",closeAdminLogin);
-$("adminLoginOverlay").addEventListener("click",event=>{if(event.target===$("adminLoginOverlay"))closeAdminLogin();});
+$("adminSetupForm").addEventListener("submit",saveAdminConnectionSettings);
+$("cancelAdminSetup").addEventListener("click",closeAdminSetup);
+$("adminSetupOverlay").addEventListener("click",event=>{if(event.target===$("adminSetupOverlay"))closeAdminSetup();});
 $("exitAdminBtn").addEventListener("click",()=>{isAdminMode=false;setActiveView("profile");});
 $("refreshAdminPaymentsBtn").addEventListener("click",renderAdminPayments);
 $("adminPaymentsList").addEventListener("click",handleAdminPaymentAction);

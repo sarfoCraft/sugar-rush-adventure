@@ -11,7 +11,7 @@ https://sarfocraft.github.io/sugar-rush-adventure/
 - `index.html` — replace the repository's existing `index.html` with this updated version.
 - `admin-tools.js` — add this file to the repository root, beside `index.html`.
 - `site-customizer.js` — public runtime that loads published branding, theme, ad placements and custom code.
-- `assets/` — Sugar Rush Adventure logo and browser favicon used by the game.
+- `assets/` — Sugar Rush Adventure logo, browser favicon and local candy-forest background illustration used by the game.
 - `backend/` — separate Node.js API for the live admin controls, bulk-level cloning, media uploads and persistent customization settings.
 - `PRIVACY-NOTICE-TEMPLATE.md` — complete this before collecting IP addresses and activity data.
 
@@ -37,7 +37,7 @@ The frontend will still work in preview mode until Firebase and the API URL are 
 2. Under **Authentication → Sign-in method**, enable Email/Password and the providers you plan to offer.
 3. Enable **Anonymous** sign-in if guest players should be included in monitoring.
 4. Under **Authentication → Settings → Authorized domains**, add `sarfocraft.github.io`.
-5. In the new root `index.html`, find `const FIREBASE_CONFIG = { ... }` and replace the placeholders for `apiKey`, `authDomain`, `projectId`, and `appId` with the Firebase **web app** configuration.
+5. Open the game, choose Profile → Admin login / connection setup, and paste the Firebase **Web App** values (`apiKey`, `authDomain`, `projectId`, `appId`) into the one-time connection wizard. The values are saved in this browser's local storage; you no longer need to edit `index.html` just to enter the frontend Firebase config.
 
 The Firebase web configuration belongs in the frontend. Never put the Firebase Admin service-account private key in `index.html` or commit it to GitHub.
 
@@ -163,3 +163,18 @@ After deploying the updated frontend and backend, sign in with the Firebase admi
 - Use **Publish History & Restore** to roll back to an earlier published version. Assets referenced by a current draft or published design cannot be deleted until replaced.
 
 The new tables are created automatically by `backend/server.js` at startup. No additional environment variables are required beyond the backend setup above. The media library increases PostgreSQL storage usage, so remove unused assets from the dashboard periodically.
+
+
+## Admin login troubleshooting
+
+The admin dashboard cannot be securely enabled by a frontend-only password. This project verifies Firebase ID tokens on the API and checks the Firebase UID against the backend `ADMIN_UIDS` allow-list.
+
+If the Admin button opens the connection wizard:
+1. Deploy the `backend/` service and its PostgreSQL database.
+2. Enter the API HTTPS URL and Firebase Web App configuration in the in-game connection wizard.
+3. Register/sign in with the Firebase account you want to use as owner.
+4. Copy that account's Firebase UID from Firebase Console → Authentication → Users.
+5. Set the backend host environment variable `ADMIN_UIDS` to that UID, then redeploy the backend.
+6. Return to the game, open Profile → Admin login, and sign in with that same Firebase account.
+
+Do not paste a Firebase service-account private key or database password into the browser. The wizard only accepts public Firebase Web App configuration and the public API URL.
