@@ -144,6 +144,11 @@ button.provider-btn{background:#fff;color:#3c3150;border:1px solid #e8deef;box-s
 @media(max-width:650px){body{padding:10px 10px 86px}.auth-screen{min-height:calc(100vh - 20px);padding:0}.auth-card{padding:22px 18px;border-radius:23px}.auth-social{grid-template-columns:1fr}.auth-brand h1{font-size:1.6rem}.app-topbar{padding:4px 0 13px;align-items:center}.app-logo p{display:none}.brand-logo-image{width:168px;max-height:43px}.topbar-right{gap:6px}.wallet-chip{padding:8px 10px;font-size:.78rem}.account-pill{padding:8px 9px;max-width:105px;font-size:.7rem}.app-grid{display:block}.nav-rail{position:fixed;z-index:30;left:8px;right:8px;bottom:8px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;padding:6px;border-radius:17px;background:#fffF;border:1px solid #fff;box-shadow:0 8px 30px #3b1d4b25;backdrop-filter:blur(16px)}.nav-btn{min-width:0;padding:7px 1px;font-size:.58rem;border-radius:10px;gap:3px}.nav-btn .nav-icon{font-size:1.03rem}.workspace{min-height:0}.overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.overview-stat{padding:10px 8px;border-radius:13px}.overview-stat small{font-size:.58rem}.overview-stat strong{font-size:1.15rem}.hero-card{padding:20px 17px;border-radius:19px}.hero-card:after{right:2%;top:5%;font-size:3.4rem}.hero-card h2{font-size:1.7rem;max-width:80%}.hero-card p{font-size:.83rem;max-width:90%}.hero-actions button{min-width:0;flex:1}.quick-grid{grid-template-columns:1fr}.quick-card{display:grid;grid-template-columns:38px minmax(0,1fr);column-gap:8px;padding:12px}.quick-card .quick-icon{grid-row:span 3}.quick-card h3{margin:0 0 3px}.quick-card p{margin:0 0 8px}.quick-card button{grid-column:2}.play-grid{grid-template-columns:1fr}.play-side{grid-template-columns:1fr}.section-grid{grid-template-columns:1fr}.page-heading{align-items:flex-start}.page-heading h2{font-size:1.45rem}.reward-hero{padding:15px}.reward-big{font-size:1.9rem}.tabs{grid-template-columns:repeat(4,minmax(0,1fr))}.tab{font-size:.67rem;padding:8px 2px}.toast{bottom:86px;right:10px;max-width:calc(100vw - 20px)}}
 @media(min-width:901px){.nav-rail{min-height:calc(100vh - 125px)}}
 
+.board-repair{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;margin:8px auto 1px;font-size:.75rem;color:#734ca5}
+.board-repair button{background:#fff!important;color:#6243a2!important;border:1px solid #d9c3f4!important;border-radius:999px;padding:7px 12px;font-size:.73rem;box-shadow:none!important;font-weight:800}
+.board-repair button:hover{background:#f7efff!important}
+.board-repair button:disabled{opacity:.45;cursor:not-allowed}
+#boardBusyIndicator{font-weight:700}
 /* Responsive layout hotfix: keep the active screen visible and the mobile navigation anchored. */
 html,body{width:100%;min-height:100%;}
 body{display:block!important;}
@@ -568,6 +573,44 @@ body:has(#appShell.game-focus:not([hidden])){height:100dvh;overflow-y:hidden}
 body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:0;overflow-y:auto;overscroll-behavior:contain}
 #appShell.game-focus #view-play{justify-content:center}
 @media(max-height:700px){#appShell.game-focus #view-play{justify-content:flex-start}}
+
+/* v3.0 settings, boosters and game layout */
+/* Compact the board to the available viewport. The game remains centered and
+   playable without forced page scrolling on normal laptop/desktop displays. */
+#appShell.game-focus .app-grid{min-height:0;align-items:start}
+#appShell.game-focus .workspace{min-height:0!important}
+#appShell.game-focus #view-play{min-height:0!important;justify-content:flex-start}
+#appShell.game-focus canvas{width:min(100%,640px,max(210px,calc(100dvh - 510px)));height:auto;max-height:none}
+#appShell.game-focus .board-wrap{width:fit-content;max-width:100%;margin-inline:auto}
+#appShell.game-focus .game-panel{max-width:810px}
+@media(min-width:901px){#appShell.game-focus{height:100dvh;overflow:hidden}}
+@media(max-width:900px){#appShell.game-focus canvas{width:min(100%,640px,max(190px,calc(100dvh - 530px)));max-height:none}}
+
+.audio-settings-card{max-width:730px;margin-inline:auto;padding:clamp(18px,3vw,32px)}
+.audio-setting-row{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px}
+.audio-setting-row h3{margin-bottom:4px}.audio-setting-row p{font-size:.83rem;color:var(--muted);margin:0}
+.audio-switch{position:relative;display:inline-flex;align-items:center;flex-shrink:0;cursor:pointer}
+.audio-switch input{position:absolute;opacity:0;width:1px;height:1px}
+.audio-switch-track{position:relative;width:56px;height:32px;background:#b6acc4;border-radius:40px;transition:background .18s}
+.audio-switch-track:after{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;background:white;box-shadow:0 2px 6px #19152640;border-radius:50%;transition:transform .18s}
+.audio-switch input:checked+.audio-switch-track{background:linear-gradient(125deg,#9b63f7,#ec5fa5)}
+.audio-switch input:checked+.audio-switch-track:after{transform:translateX(24px)}
+.audio-switch input:focus-visible+.audio-switch-track{outline:3px solid #4b20a8;outline-offset:3px}
+.audio-level-row{display:flex;justify-content:space-between;gap:12px;font-weight:800;margin-top:17px}
+.audio-level-row output{color:#8444c9}.audio-slider{width:100%;accent-color:#9957d8;margin:12px 0 8px;height:10px;cursor:pointer}
+.audio-presets{display:flex;gap:8px;flex-wrap:wrap}.audio-presets button{font-size:.79rem;padding:8px 20px}
+.audio-separator{border:none;border-top:1px solid var(--line);margin:25px 0}
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.level-toolbar-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.level-toolbar-actions button{font-size:.75rem;padding:9px 11px}
+.special-boosters{margin-top:10px;background:linear-gradient(125deg,#fff2fb,#f3edff);border:1px solid #edd3fb;border-radius:15px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.special-label{display:flex;flex-direction:column;gap:2px;font-size:.79rem}.special-label span{font-size:.7rem;color:#765588}
+.special-buy{font-size:.76rem;background:linear-gradient(135deg,#7650d8,#e85aaf);box-shadow:0 3px 0 #6d3daa;padding:10px 12px;white-space:nowrap}
+@media(max-width:650px){
+  body:has(#appShell.game-focus){height:100dvh;overflow:hidden;padding-bottom:0}
+  #appShell.game-focus{height:calc(100dvh - 12px);overflow-y:auto;overscroll-behavior:contain;padding-bottom:84px}
+  #appShell.game-focus #view-play{padding-bottom:0}
+  .nav-rail{grid-template-columns:repeat(8,minmax(0,1fr))!important}.nav-btn{font-size:.51rem!important}.nav-btn .nav-icon{font-size:.98rem}.special-boosters{flex-wrap:wrap}.special-buy{width:100%}.level-toolbar-actions button{padding:7px 9px;font-size:.69rem}}
 </style>
 </head>
 <body>
@@ -613,6 +656,7 @@ body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:
       <button class="nav-btn" data-view="referrals" type="button"><span class="nav-icon">🤝</span><span>Invite</span></button>
       <button class="nav-btn" data-view="leaderboard" type="button"><span class="nav-icon">🏆</span><span>Ranks</span></button>
       <button class="nav-btn" data-view="profile" type="button"><span class="nav-icon">👤</span><span>Profile</span></button>
+      <button class="nav-btn" data-view="settings" type="button"><span class="nav-icon">⚙️</span><span>Settings</span></button>
     </nav>
 
     <main class="workspace">
@@ -710,14 +754,15 @@ body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:
         <div class="page-heading"><div><h2>🎮 Match 3 & Play</h2><p>Swap two nearby candies to match three or more. Reach the target before your moves run out.</p></div><span class="demo-badge" id="seasonBadge">🌳 Candy Forest</span></div>
         <div class="play-grid">
           <section class="content-card game-panel">
-            <div class="level-toolbar"><span class="season-badge" id="seasonLabel">Season 1 · Candy Forest</span><button id="levelMapBtn" class="soft" type="button">🗺️ Level Map · 100</button></div>
+            <div class="level-toolbar"><span class="season-badge" id="seasonLabel">Season 1 · Candy Forest</span><div class="level-toolbar-actions"><button class="soft" type="button" data-go="settings">⚙️ Sound</button><button id="levelMapBtn" class="soft" type="button">🗺️ Level Map · 100</button></div></div>
             <div class="stats level-stats"><div class="stat"><small>Level</small><strong id="levelNum">1 / 100</strong><span class="substat" id="levelTypeLabel">Score mission</span></div><div class="stat"><small id="scoreMetricLabel">Score / Target</small><strong id="score">0 / 600</strong><div class="level-progress-track"><span id="scoreProgress"></span></div></div><div class="stat"><small>Moves left</small><strong id="moveCount">24</strong><span class="substat" id="bestScore">Best 0</span></div></div>
             <div class="level-mission" aria-live="polite"><span id="missionText">⭐ Reach the score target</span><span id="jellyCount" class="mission-detail" hidden>🍮 0 jelly left</span><strong id="timerNum" class="timer-chip" hidden>60s</strong></div>
             <div class="board-wrap"><canvas id="board" width="640" height="640" aria-label="Match three game board"></canvas></div>
-            <div class="game-actions"><button id="restart" type="button">↻ Retry Level</button><button id="hintBtn" class="secondary" type="button">💡 Hint · 50 coins</button><button id="aiClearBtn" class="ai-clear-button" type="button">✨ AI Auto-Play · 5,000 coins</button></div>
+            <div class="game-actions"><button id="restart" type="button">↻ Retry Level</button><button id="hintBtn" class="secondary" type="button">💡 Hint · 50 coins</button><button id="aiClearBtn" class="ai-clear-button" type="button">🤖 AI · 1 Level · 5,000</button></div><div class="board-repair"><button id="repairBoardBtn" type="button" title="Keep your level progress and reshuffle candies for free">🛠️ Fix Stuck Board · Free</button><span id="boardBusyIndicator" aria-live="polite">Ready to swap</span></div>
+            <div class="special-boosters"><div class="special-label"><strong>🍬 Sweet Powers</strong><span>Special candies appear when you match 4 or 5!</span></div><button id="buyDiscoBtn" class="special-buy" type="button">🌈 Add Disco Ball · 750 🪙</button></div>
             <p class="help">Tap one gem, then an adjacent gem to swap. Match 3 or more of the same colour. Finish the level objective to unlock the next one.</p><div id="status" class="status" aria-live="polite">Ready to play!</div>
           </section>
-          <aside class="play-side"><section class="content-card"><h3>✨ How to play</h3><ul><li>Select a gem.</li><li>Swap it with an adjacent gem.</li><li>Match 3 or more of the same colour.</li><li>Use hints when you need help.</li></ul></section><section class="content-card"><h3>🪙 Your wallet</h3><p>Hints cost 50 coins. AI Auto-Play makes real swaps and matches until the objective is complete, then opens the next level. It costs 5,000 coins per level and can be used as often as your wallet allows. Only AI reward ads are limited to 3 per day.</p><div class="ai-usage"><span>AI levels played today</span><strong id="aiUsageInline">0</strong></div><button class="secondary" data-go="coins" type="button" style="width:100%;margin-top:10px">Buy coins</button><button class="soft" data-go="rewards" type="button" style="width:100%;margin-top:9px">Earn demo coins</button></section></aside>
+          <aside class="play-side"><section class="content-card"><h3>✨ How to play</h3><ul><li>Select a gem.</li><li>Swap it with an adjacent gem.</li><li>Match 3 or more of the same colour.</li><li>Match 4 to create a striped candy; match 5 to create a disco ball.</li><li>Swap a disco ball with any candy to clear that colour.</li><li>Make a T or L match for a wrapped candy.</li><li>Use hints when you need help.</li></ul></section><section class="content-card"><h3>🪙 Your wallet</h3><p>Hints cost 50 coins. AI Auto-Play plays <strong>only one selected level</strong>, charges 5,000 coins once, and stops at the results screen. Next level only starts when you choose it. Only AI reward ads are limited to 3 per day.</p><div class="ai-usage"><span>AI levels played today</span><strong id="aiUsageInline">0</strong></div><button class="secondary" data-go="coins" type="button" style="width:100%;margin-top:10px">Buy coins</button><button class="soft" data-go="rewards" type="button" style="width:100%;margin-top:9px">Earn demo coins</button></section></aside>
         </div>
       </section>
 
@@ -737,7 +782,7 @@ body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:
 
         <div class="page-heading"><div><h2>🎁 Rewards Centre</h2><p>Check your daily progress and available test rewards.</p></div><span class="demo-badge">DEMO ONLY</span></div>
         <section class="content-card"><div class="reward-hero"><div><h3>Daily rewarded ads</h3><p>Complete up to 30 simulated ad sessions per UTC day. Each test completion adds 500 demo coins.</p></div><div class="reward-big">🎬</div></div><div class="daily-count" style="margin-top:18px"><span>Today's completed test ads</span><strong id="dailyCount">0 / 30</strong></div><div class="reward-progress"><span id="dailyProgress"></span></div><button class="green reward-button" id="watchAdBtn" type="button">▶ Test rewarded ad · +500 coins</button><div class="notice" style="margin-top:14px"><strong>Important:</strong> This button simulates a test reward only. It does not load a real ad. Production rewards must be triggered by the ad provider's verified completion event and the daily limit must be enforced by a server.</div></section>
-        <section class="content-card"><div class="reward-hero"><div><h3>✨ AI Auto-Play</h3><p>AI visibly plays the board by swapping gems and making matches until the current level objective is complete. It then opens and plays the next level automatically. Each level costs 5,000 coins. Use AI as often as your wallet allows; only AI reward ads are limited to 3 per day, and each test ad adds 500 coins.</p></div><div class="reward-big">🤖</div></div><div class="ai-usage"><span>AI levels played today</span><strong id="aiUsageCount">0</strong></div><div class="ai-usage"><span>AI reward ads used today</span><strong id="aiAdsCount">0 / 3</strong></div><button class="ai-clear-button reward-button" type="button" data-go="play">Open game to use AI Auto-Play</button><p class="tiny-note">Both counters are local demo controls unless the backend and real rewarded-ad verification are configured.</p></section>
+        <section class="content-card"><div class="reward-hero"><div><h3>✨ AI Auto-Play</h3><p>AI visibly plays one level at a time and STOPS when that level finishes. It never starts the next level unless you press Next Level. Each activation costs 5,000 coins. Use AI as often as your wallet allows; only AI reward ads are limited to 3 per day, and each test ad adds 500 coins.</p></div><div class="reward-big">🤖</div></div><div class="ai-usage"><span>AI levels played today</span><strong id="aiUsageCount">0</strong></div><div class="ai-usage"><span>AI reward ads used today</span><strong id="aiAdsCount">0 / 3</strong></div><button class="ai-clear-button reward-button" type="button" data-go="play">Open game to use AI Auto-Play</button><p class="tiny-note">Both counters are local demo controls unless the backend and real rewarded-ad verification are configured.</p></section>
       </section>
 
       <section class="page-view" id="view-coins">
@@ -783,6 +828,22 @@ body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:
         <section class="content-card"><h3>Account & security</h3><p id="accountSummary">You are playing as a guest. No account is required.</p><p class="tiny-note">Sign in with Firebase to sync progress. Admin access uses the same Firebase account plus server-side administrator approval.</p><button id="profileAuthBtn" type="button" style="width:100%">Sign in or register</button><button class="secondary" id="adminLoginBtn" type="button" style="width:100%;margin-top:10px">🔐 Admin login / connection setup</button><button class="soft" id="resetProgress" type="button" style="width:100%;margin-top:10px">Reset demo data</button></section></div>
         <section class="content-card" style="margin-top:13px"><div class="notice"><strong>Before publishing</strong><br>Authentication is separate from the secure game backend. A production release still needs server-side coin balances, verified rewarded ads, referral validation, live leaderboards, privacy disclosures and abuse prevention.</div></section>
       </section>
+      <section class="page-view" id="view-settings">
+        <div class="page-heading"><div><h2>⚙️ Sound & Game Settings</h2><p>Apni pasand ka music aur sound level select karein. Settings is device par save hoti hain.</p></div></div>
+        <section class="content-card audio-settings-card">
+          <div class="audio-setting-row"><div><h3>🎵 Background Music</h3><p>Game ki background melody on / off karein.</p></div><label class="audio-switch"><input id="musicEnabled" type="checkbox" checked><span class="audio-switch-track"></span><span class="visually-hidden">Enable background music</span></label></div>
+          <div class="audio-level-row"><label for="musicVolume">Music Volume</label><output id="musicVolumeLabel" for="musicVolume">35%</output></div>
+          <input id="musicVolume" class="audio-slider" type="range" min="0" max="100" step="5" value="35" aria-label="Music volume">
+          <div class="audio-presets"><button class="soft audio-preset" type="button" data-sound="music" data-value="15">Low</button><button class="soft audio-preset" type="button" data-sound="music" data-value="45">Medium</button><button class="soft audio-preset" type="button" data-sound="music" data-value="85">High</button></div>
+          <hr class="audio-separator">
+          <div class="audio-setting-row"><div><h3>🔊 Sound Effects</h3><p>Candy pop, button tap aur special candy sounds.</p></div><label class="audio-switch"><input id="sfxEnabled" type="checkbox" checked><span class="audio-switch-track"></span><span class="visually-hidden">Enable sound effects</span></label></div>
+          <div class="audio-level-row"><label for="sfxVolume">Effects Volume</label><output id="sfxVolumeLabel" for="sfxVolume">65%</output></div>
+          <input id="sfxVolume" class="audio-slider" type="range" min="0" max="100" step="5" value="65" aria-label="Sound effects volume">
+          <div class="audio-presets"><button class="soft audio-preset" type="button" data-sound="sfx" data-value="15">Low</button><button class="soft audio-preset" type="button" data-sound="sfx" data-value="45">Medium</button><button class="soft audio-preset" type="button" data-sound="sfx" data-value="85">High</button></div>
+          <p class="tiny-note" style="margin-top:18px">Browser audio will start after your first interaction. Music pauses when this tab is hidden.</p>
+          <button class="secondary" id="soundPreviewBtn" type="button">▶ Test Sound</button>
+        </section>
+      </section>
       <section class="page-view" id="view-admin">
         <div class="page-heading"><div><h2>🔐 Admin · Coin Approvals</h2><p>Review bank transfer, EasyPaisa and JazzCash requests. Approve only after checking the transaction in your own account.</p></div><button id="exitAdminBtn" class="soft" type="button">Exit admin</button></div>
         <div class="admin-warning" id="adminModeWarning">Demo admin mode: this queue is stored in this browser only. It is not a secure live admin system. Use the backend starter included with this project for real multi-user approvals.</div>
@@ -796,7 +857,7 @@ body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:
 <div class="overlay" id="levelMapOverlay" role="dialog" aria-modal="true" aria-labelledby="levelMapTitle"><div class="modal level-map-modal"><h2 id="levelMapTitle">🗺️ Level Map</h2><p>The level list is managed by the game owner. The last available level is the final level.</p><div class="season-cards" id="seasonCards"></div><div class="level-map-legend"><span>🟣 Current level</span><span>⭐ Completed</span><span>🔒 Locked</span></div><div class="level-map-grid" id="levelMapGrid"></div><div class="modal-actions"><button class="soft" id="closeLevelMapBtn" type="button">Back to game</button></div></div></div>
 <div class="overlay" id="levelResultOverlay" role="dialog" aria-modal="true" aria-labelledby="levelResultTitle"><div class="modal"><h2 id="levelResultTitle">Level complete!</h2><div id="levelResultBody"></div><div class="modal-actions" id="levelResultActions"></div></div></div>
 <div class="overlay" id="demoAdOverlay" role="dialog" aria-modal="true" aria-labelledby="demoAdTitle"><div class="modal"><h2 id="demoAdTitle">Test Rewarded Ad</h2><p>This is a development preview, not a real ad. If you complete this test, the game simulates a reward of <strong>500 coins</strong>. In production, only a verified ad completion can grant rewards.</p><div class="modal-actions"><button class="soft" id="cancelDemoAd" type="button">Cancel</button><button id="completeDemoAd" type="button">Complete test & earn 500</button></div></div></div>
-<div class="overlay" id="aiAdOverlay" role="dialog" aria-modal="true" aria-labelledby="aiAdTitle"><div class="modal"><h2 id="aiAdTitle">🎬 AI Auto-Play Reward</h2><p>In demo mode, completing this test ad adds <strong>500 coins</strong>, then AI automatically resumes if you have enough coins. Each AI level costs 5,000 coins. AI use is unlimited while you can afford it; only AI reward ads are limited to 3 per day. This is a simulation, not a real ad.</p><p class="tiny-note">Production rewards must be granted only after a rewarded-ad provider verifies completion on the server.</p><div class="modal-actions"><button class="soft" id="cancelAiAd" type="button">Cancel</button><button id="completeAiAdBtn" type="button">Complete test ad · +500</button></div></div></div>
+<div class="overlay" id="aiAdOverlay" role="dialog" aria-modal="true" aria-labelledby="aiAdTitle"><div class="modal"><h2 id="aiAdTitle">🎬 AI Auto-Play Reward</h2><p>In demo mode, completing this test ad adds <strong>500 coins</strong>, then you can choose to start one AI level if you have enough coins. Each AI level costs 5,000 coins. AI works one selected level at a time; only AI reward ads are limited to 3 per day. This is a simulation, not a real ad.</p><p class="tiny-note">Production rewards must be granted only after a rewarded-ad provider verifies completion on the server.</p><div class="modal-actions"><button class="soft" id="cancelAiAd" type="button">Cancel</button><button id="completeAiAdBtn" type="button">Complete test ad · +500</button></div></div></div>
 <div class="overlay" id="adminSetupOverlay" role="dialog" aria-modal="true" aria-labelledby="adminSetupTitle">
   <div class="modal admin-setup-modal">
     <h2 id="adminSetupTitle">🔐 Connect Sugar Rush Admin</h2>
@@ -892,7 +953,7 @@ let activityInterval=null;
 let activityUid=null;
 let activityRequestInFlight=false;
 let activityHeartbeatCount=0;
-let grid = [], jellyGrid = [], selected = null, hintCells = [], score = 0, moves = 0, busy = false, animations = [];
+let grid = [], jellyGrid = [], specialGrid = [], selected = null, hintCells = [], score = 0, moves = 0, busy = false, animations = [];
 let levelConfig = {type:"score",timeLimit:0,jellyGoal:0};
 let timerEndsAt = 0, levelOver = false, lastTimerSecond = -1, currentLevelStartMoves = 24;
 let cell = canvas.width / SIZE;
@@ -911,6 +972,8 @@ let pendingDemoReward = false;
 let pendingAiAdReward = false;
 let aiResumeAfterAd = false;
 let aiAutoRunning = false;
+// Cancels obsolete asynchronous moves when the player restarts or repairs the board.
+let boardGeneration = 0;
 let aiCompleting = false;
 let isAdminMode = false;
 let pendingCloudProgress = Promise.resolve();
@@ -1375,8 +1438,9 @@ function refreshDashboard() {
   if ($("aiUsageInline")) $("aiUsageInline").textContent = `${save.aiUsesCount || 0}`;
   if ($("aiUsageCount")) $("aiUsageCount").textContent = `${save.aiUsesCount || 0}`;
   if ($("aiAdsCount")) $("aiAdsCount").textContent = `${save.aiAdsCount || 0} / ${AI_AD_DAILY_LIMIT}`;
-  if ($("aiClearBtn")) $("aiClearBtn").textContent = aiAutoRunning ? "🤖 AI is playing…" : `✨ AI Auto-Play · ${AI_CLEAR_COST.toLocaleString()} coins`;
+  if ($("aiClearBtn")) $("aiClearBtn").textContent = aiAutoRunning ? "🤖 AI is playing one level…" : `🤖 AI · 1 Level · ${AI_CLEAR_COST.toLocaleString()} coins`;
   if ($("aiClearBtn")) $("aiClearBtn").disabled = aiAutoRunning;
+  if (typeof updateBoardBusyIndicator === "function") updateBoardBusyIndicator();
   $("playerName").value = save.playerName || "Guest Player";
   $("countryCode").value = save.countryCode || "US";
   $("referralCode").textContent = save.referralCode;
@@ -1583,7 +1647,7 @@ function showLevelResult(won, reason='', rewardEarned=false) {
 }
 function completeLevel() {
   if(levelOver)return;
-  levelOver=true;busy=false;
+  levelOver=true;busy=false;updateBoardBusyIndicator();
   const level=save.currentLevel,wasCompleted=Boolean(save.completedLevels[level]);
   const remaining=levelConfig.type==='timed' ? Math.max(0,Math.ceil((timerEndsAt-performance.now())/1000)) : moves;
   const total=levelConfig.type==='timed' ? levelConfig.timeLimit : currentLevelStartMoves;
@@ -1614,7 +1678,7 @@ function completeLevel() {
 }
 function failLevel(reason='Time is up!') {
   if(levelOver)return;
-  levelOver=true;busy=false;
+  levelOver=true;busy=false;updateBoardBusyIndicator();
   showLevelResult(false,reason);
   setStatus(reason);
 }
@@ -1659,7 +1723,67 @@ function findMatches(board = grid) {
   }
   return found;
 }
+
+function matchingRuns(board=grid) {
+  const runs=[];
+  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;){
+    let end=c+1;while(end<SIZE&&board[r][end]===board[r][c]&&board[r][c]>=0)end++;
+    if(board[r][c]>=0&&end-c>=3)runs.push({axis:"h",type:board[r][c],cells:Array.from({length:end-c},(_,i)=>r*SIZE+c+i)});
+    c=end;
+  }
+  for(let c=0;c<SIZE;c++)for(let r=0;r<SIZE;){
+    let end=r+1;while(end<SIZE&&board[end][c]===board[r][c]&&board[r][c]>=0)end++;
+    if(board[r][c]>=0&&end-r>=3)runs.push({axis:"v",type:board[r][c],cells:Array.from({length:end-r},(_,i)=>(r+i)*SIZE+c)});
+    r=end;
+  }
+  return runs;
+}
+function specialSpawn(runs,preferred) {
+  if(!runs.length)return null;
+  const count=new Map();
+  for(const run of runs)for(const i of run.cells)count.set(i,(count.get(i)||0)+1);
+  const shape=Array.from(count.entries()).filter(([,n])=>n>=2);
+  const long=runs.filter(run=>run.cells.length>=5);
+  let candidates=[];let kind="";
+  if(long.length){kind="bomb";candidates=long.flatMap(run=>run.cells)}
+  else if(shape.length){kind="wrapped";candidates=shape.map(([i])=>i)}
+  else {const four=runs.filter(run=>run.cells.length>=4);if(!four.length)return null;
+    const chosen=four[0];kind=chosen.axis==="h"?"stripe-h":"stripe-v";candidates=chosen.cells;}
+  const chosen=preferred && candidates.includes(preferred.r*SIZE+preferred.c)?preferred.r*SIZE+preferred.c:candidates[Math.floor(candidates.length/2)];
+  return {index:chosen,kind};
+}
+function colorBombCells(type) {
+  const result=new Set();
+  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(grid[r][c]===type)result.add(r*SIZE+c);
+  return result;
+}
+function effectCells(index,effect) {
+  const r=Math.floor(index/SIZE),c=index%SIZE,found=new Set();
+  if(effect.kind==="stripe-h")for(let col=0;col<SIZE;col++)found.add(r*SIZE+col);
+  if(effect.kind==="stripe-v")for(let row=0;row<SIZE;row++)found.add(row*SIZE+c);
+  if(effect.kind==="wrapped")for(let rr=Math.max(0,r-1);rr<=Math.min(SIZE-1,r+1);rr++)for(let cc=Math.max(0,c-1);cc<=Math.min(SIZE-1,c+1);cc++)found.add(rr*SIZE+cc);
+  if(effect.kind==="bomb") {
+    const counts=TYPES.map((_,t)=>Array.from({length:SIZE},(_,row)=>grid[row].filter(v=>v===t).length).reduce((a,b)=>a+b,0));
+    const target=counts.indexOf(Math.max(...counts));
+    for(const i of colorBombCells(target))found.add(i);
+  }
+  found.add(index);
+  return found;
+}
+function expandSpecialEffects(indices,protectedIndex=-1) {
+  const all=new Set(indices),queue=[...all],done=new Set();
+  while(queue.length) {
+    const index=queue.pop();if(done.has(index)||index===protectedIndex)continue;
+    done.add(index);
+    const r=Math.floor(index/SIZE),c=index%SIZE,effect=specialGrid[r]?.[c];
+    if(!effect)continue;
+    for(const more of effectCells(index,effect))if(!all.has(more)&&more!==protectedIndex){all.add(more);queue.push(more)}
+  }
+  return all;
+}
+
 function makeBoard() {
+  boardGeneration++;
   grid=Array.from({length:SIZE},()=>Array(SIZE).fill(-1));
   for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) {
     let type,tries=0;
@@ -1668,6 +1792,7 @@ function makeBoard() {
     } while(tries<30&&((c>=2&&grid[r][c-1]===type&&grid[r][c-2]===type)||(r>=2&&grid[r-1][c]===type&&grid[r-2][c]===type)));
     grid[r][c]=type;
   }
+  specialGrid=Array.from({length:SIZE},()=>Array(SIZE).fill(null));
   jellyGrid=Array.from({length:SIZE},()=>Array(SIZE).fill(false));
   if(levelConfig.type==='jelly') {
     const positions=Array.from({length:SIZE*SIZE},(_,i)=>i).sort(()=>Math.random()-.5).slice(0,levelConfig.jellyGoal);
@@ -1678,7 +1803,8 @@ function makeBoard() {
   moves=levelConfig.type==='timed'?0:currentLevelStartMoves;
   timerEndsAt=levelConfig.type==='timed'?performance.now()+levelConfig.timeLimit*1000:0;
   lastTimerSecond=-1;setScore(0);
-  rebuildBoardCache();refreshDashboard();updateLevelHUD();
+  if (!findHint()) reshuffleAiBoard();
+  rebuildBoardCache();refreshDashboard();updateLevelHUD();updateBoardBusyIndicator();
   const cfg=levelConfig.type==='jelly'?'Clear every jelly tile.':levelConfig.type==='timed'?`Reach ${targetFor(save.currentLevel)} points in ${levelConfig.timeLimit} seconds.`:`Reach ${targetFor(save.currentLevel)} points in ${moves} moves.`;
   setStatus(`Level ${save.currentLevel}: ${cfg}`);
 }
@@ -1875,6 +2001,32 @@ function drawBaseCell(targetCtx,r,c) {
     targetCtx.strokeStyle='rgba(217,38,99,.7)';targetCtx.lineWidth=2;targetCtx.strokeRect(x+4,y+4,cell-8,cell-8);targetCtx.restore();
   }
 }
+function drawSpecialBadge(targetCtx,r,c,special) {
+  const x=(c+.5)*cell, y=(r+.5)*cell;
+  targetCtx.save();
+  targetCtx.translate(x,y);
+  targetCtx.shadowColor="#fff";targetCtx.shadowBlur=9;
+  if(special.kind==="bomb") {
+    const grad=targetCtx.createRadialGradient(-5,-7,2,0,0,cell*.36);
+    grad.addColorStop(0,"#fff8b5");grad.addColorStop(.28,"#fc9dd1");grad.addColorStop(.48,"#8d60f0");grad.addColorStop(.72,"#28375a");grad.addColorStop(1,"#151a42");
+    targetCtx.fillStyle=grad;targetCtx.strokeStyle="#ffeb82";targetCtx.lineWidth=3;
+    targetCtx.beginPath();targetCtx.arc(0,0,cell*.32,0,Math.PI*2);targetCtx.fill();targetCtx.stroke();
+    const colors=["#ffdd33","#ff719b","#74f5df","#92b8ff","#ffffff"];
+    colors.forEach((color,i)=>{const angle=i*Math.PI*2/colors.length;targetCtx.fillStyle=color;targetCtx.beginPath();targetCtx.arc(Math.cos(angle)*cell*.16,Math.sin(angle)*cell*.16,cell*.054,0,Math.PI*2);targetCtx.fill()});
+    targetCtx.font=`${Math.round(cell*.26)}px system-ui`;targetCtx.textAlign="center";targetCtx.textBaseline="middle";targetCtx.fillText("✦",0,0);
+  } else if(special.kind==="wrapped") {
+    targetCtx.fillStyle="#fff";targetCtx.strokeStyle="#5330ae";targetCtx.lineWidth=3;
+    targetCtx.beginPath();targetCtx.roundRect(-cell*.25,-cell*.23,cell*.5,cell*.46,8);targetCtx.fill();targetCtx.stroke();
+    targetCtx.strokeStyle="#f35c96";targetCtx.lineWidth=5;targetCtx.beginPath();targetCtx.moveTo(0,-cell*.23);targetCtx.lineTo(0,cell*.23);targetCtx.moveTo(-cell*.25,0);targetCtx.lineTo(cell*.25,0);targetCtx.stroke();
+    targetCtx.fillStyle="#ad53e8";targetCtx.font=`bold ${Math.round(cell*.23)}px system-ui`;targetCtx.textAlign="center";targetCtx.textBaseline="middle";targetCtx.fillText("✦",0,0);
+  } else {
+    targetCtx.strokeStyle="#fff";targetCtx.lineWidth=6;targetCtx.lineCap="round";
+    for(let i=-1;i<=1;i++) {const offset=i*cell*.15;targetCtx.beginPath();
+      if(special.kind==="stripe-h"){targetCtx.moveTo(-cell*.25,offset);targetCtx.lineTo(cell*.25,offset)}
+      else{targetCtx.moveTo(offset,-cell*.25);targetCtx.lineTo(offset,cell*.25)}targetCtx.stroke();}
+  }
+  targetCtx.restore();
+}
 function rebuildBoardCache() {
   boardCacheCtx.clearRect(0,0,boardCacheCanvas.width,boardCacheCanvas.height);
   boardCacheCtx.drawImage(boardTilesCanvas,0,0);
@@ -1882,6 +2034,7 @@ function rebuildBoardCache() {
     if(jellyGrid[r]?.[c]) drawBaseCell(boardCacheCtx,r,c);
     const type=grid[r]?.[c];
     if(type>=0 && gemSprites[type]) boardCacheCtx.drawImage(gemSprites[type],c*cell,r*cell,cell,cell);
+    if(type>=0 && specialGrid[r]?.[c]) drawSpecialBadge(boardCacheCtx,r,c,specialGrid[r][c]);
   }
 }
 function drawGemSprite(type,x,y,alpha=1,scale=1) {
@@ -1938,12 +2091,21 @@ function cellFromEvent(event) {
 }
 function swapGrid(a,b) {
   const tmp=grid[a.r][a.c];grid[a.r][a.c]=grid[b.r][b.c];grid[b.r][b.c]=tmp;
+  if (specialGrid.length) {
+    const effect=specialGrid[a.r][a.c];specialGrid[a.r][a.c]=specialGrid[b.r][b.c];specialGrid[b.r][b.c]=effect;
+  }
+}
+function updateBoardBusyIndicator() {
+  const indicator=$("boardBusyIndicator"),repair=$("repairBoardBtn");
+  if(indicator)indicator.textContent=levelOver?"Level finished":aiAutoRunning?"AI is playing…":busy?"Resolving move…":"Ready to swap";
+  if(repair)repair.disabled=aiAutoRunning || levelOver;
 }
 function findHint() {
   for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
     const a={r,c};
     for(const b of [{r,c:c+1},{r:r+1,c}]) {
       if(b.r>=SIZE||b.c>=SIZE)continue;
+      if(specialGrid[r]?.[c] || specialGrid[b.r]?.[b.c])return [a,b];
       swapGrid(a,b);const match=findMatches().size>0;swapGrid(a,b);
       if(match)return [a,b];
     }
@@ -1951,53 +2113,109 @@ function findHint() {
   return null;
 }
 async function handlePick(pos) {
-  if(aiAutoRunning||busy||levelOver||pos.r<0||pos.r>=SIZE||pos.c<0||pos.c>=SIZE)return;
+  if(levelOver||aiAutoRunning||pos.r<0||pos.r>=SIZE||pos.c<0||pos.c>=SIZE)return;
+  if(busy){setStatus("Finishing the current move… Use Fix Stuck Board if it does not finish.");return;}
+  // Level 3 regression guard: completion must never be blocked by a stale move lock.
+  if(levelConfig.type==="jelly" && countJelly()===0){completeLevel();return;}
   hintCells=[];
   if(!selected){selected=pos;setStatus("Now choose an adjacent gem.");return;}
   if(selected.r===pos.r&&selected.c===pos.c){selected=null;setStatus("Selection cleared.");return;}
   const first=selected;selected=null;
-  if(Math.abs(first.r-pos.r)+Math.abs(first.c-pos.c)!==1){selected=pos;setStatus("Choose a gem next to the selected one.");return;}
-  busy=true;setStatus("Swapping…");
-  const a=grid[first.r][first.c],b=grid[pos.r][pos.c];
-  swapGrid(first,pos);
-  rebuildBoardCache();
-  const start=performance.now();
-  animations=[{type:a,fromR:first.r,fromC:first.c,toR:pos.r,toC:pos.c,start,end:start+180},{type:b,fromR:pos.r,fromC:pos.c,toR:first.r,toC:first.c,start,end:start+180}];
-  await sleep(190);animations=[];
-  if(findMatches().size===0){
-    const back=performance.now();
-    animations=[{type:b,fromR:first.r,fromC:first.c,toR:pos.r,toC:pos.c,start:back,end:back+140},{type:a,fromR:pos.r,fromC:pos.c,toR:first.r,toC:first.c,start:back,end:back+140}];
-    await sleep(150);animations=[];
-    swapGrid(first,pos);rebuildBoardCache();
-    busy=false;setStatus("No match that time — try another swap.");return;
+  const isBomb = specialGrid[first.r]?.[first.c]?.kind==="bomb" || specialGrid[pos.r]?.[pos.c]?.kind==="bomb";
+  if(Math.abs(first.r-pos.r)+Math.abs(first.c-pos.c)!==1 && !isBomb){selected=pos;setStatus("Choose a gem next to the selected one, or a colour for your disco ball.");return;}
+  const generation=boardGeneration;
+  busy=true;updateBoardBusyIndicator();setStatus("Swapping…");
+  try {
+    const a=grid[first.r][first.c],b=grid[pos.r][pos.c];
+    const effectFirst=specialGrid[first.r][first.c],effectSecond=specialGrid[pos.r][pos.c];
+    const specialSwap=Boolean(effectFirst||effectSecond);
+    let extra=new Set();
+    if(effectFirst?.kind==="bomb"){for(const index of colorBombCells(b))extra.add(index);extra.add(first.r*SIZE+first.c);}
+    if(effectSecond?.kind==="bomb"){for(const index of colorBombCells(a))extra.add(index);extra.add(pos.r*SIZE+pos.c);}
+    swapGrid(first,pos);
+    if(effectFirst?.kind==="bomb"){
+      specialGrid[pos.r][pos.c]=null;extra.add(pos.r*SIZE+pos.c);
+    } else if(effectFirst){for(const i of effectCells(pos.r*SIZE+pos.c,effectFirst))extra.add(i);}
+    if(effectSecond?.kind==="bomb"){
+      specialGrid[first.r][first.c]=null;extra.add(first.r*SIZE+first.c);
+    } else if(effectSecond){for(const i of effectCells(first.r*SIZE+first.c,effectSecond))extra.add(i);}
+    rebuildBoardCache();
+    const start=performance.now();
+    animations=[{type:a,fromR:first.r,fromC:first.c,toR:pos.r,toC:pos.c,start,end:start+180},{type:b,fromR:pos.r,fromC:pos.c,toR:first.r,toC:first.c,start,end:start+180}];
+    await sleep(190);if(generation!==boardGeneration)return;
+    animations=[];
+    if(findMatches().size===0 && !specialSwap){
+      const back=performance.now();
+      animations=[{type:b,fromR:first.r,fromC:first.c,toR:pos.r,toC:pos.c,start:back,end:back+140},{type:a,fromR:pos.r,fromC:pos.c,toR:first.r,toC:first.c,start:back,end:back+140}];
+      await sleep(150);if(generation!==boardGeneration)return;
+      animations=[];swapGrid(first,pos);rebuildBoardCache();
+      setStatus("No match that time — try another swap.");return;
+    }
+    if(levelConfig.type!=="timed")moves=Math.max(0,moves-1);
+    updateLevelHUD();
+    await resolveMatches({extra,preferred:pos});
+    if(generation!==boardGeneration)return;
+    if(evaluateLevelEnd())return;
+    if(!findHint()) {
+      if(reshuffleAiBoard())setStatus("No matches left — candies reshuffled for free. Your level progress is safe.");
+      else setStatus("Board needs repair. Press Fix Stuck Board to continue.");
+    } else setStatus("Nice match! Keep going!");
+  } catch(error) {
+    console.error("Match processing failed:",error);
+    if(generation===boardGeneration){
+      animations=[];selected=null;hintCells=[];
+      setStatus("Move could not finish. Press Fix Stuck Board to recover without losing coins or level progress.");
+    }
+  } finally {
+    if(generation===boardGeneration){busy=false;animations=[];rebuildBoardCache();refreshDashboard();updateBoardBusyIndicator();}
   }
-  if(levelConfig.type!=='timed') moves=Math.max(0,moves-1);
-  updateLevelHUD();
-  await resolveMatches();busy=false;refreshDashboard();
-  if(evaluateLevelEnd())return;
-  setStatus("Nice match! Keep going!");
 }
-async function resolveMatches() {
-  let combo=0;
+async function resolveMatches(options={}) {
+  const generation=boardGeneration;
+  let combo=0, extra=new Set(options.extra || []), preferred=options.preferred || null;
   while(true) {
-    const matches=findMatches();if(matches.size===0)break;combo++;
-    const points=matches.size*10*combo;setScore(score+points);
-    setStatus(`Sweet! +${points} points${combo>1?" · Combo x"+combo:""}`);
+    const runs=matchingRuns();
+    const matched=new Set(runs.flatMap(run=>run.cells));
+    if(!matched.size && !extra.size)break;
+    combo++;
+    // Four straight candies create stripes; five create a rainbow disco ball;
+    // a T/L-shaped match creates wrapped candy. Cascades can create specials too.
+    const spawn=specialSpawn(runs,combo===1?preferred:null);
+    const keep=spawn ? spawn.index : -1;
+    let cleared=new Set([...matched,...extra]);
+    if(keep>=0)cleared.delete(keep);
+    cleared=expandSpecialEffects(cleared,keep);
+    if(keep>=0)cleared.delete(keep);
+    if(!cleared.size){extra.clear();break;}
+    const points=cleared.size*15*combo;
+    setScore(score+points);
+    setStatus(`🍬 Sweet combo x${combo}! +${points} points${spawn?` · ${spawn.kind==="bomb"?"Rainbow Disco Ball":spawn.kind==="wrapped"?"Wrapped Candy":"Striped Candy"} created!`:""}`);
+    if(typeof window.playPopSound==="function")window.playPopSound();
     const now=performance.now();animations=[];
-    for(const index of matches){
+    for(const index of cleared){
       const r=Math.floor(index/SIZE),c=index%SIZE;
-      animations.push({type:grid[r][c],fromR:r,fromC:c,toR:r,toC:c,start:now,end:now+190,fade:true,scaleFrom:1});
-      if(jellyGrid[r]?.[c]) jellyGrid[r][c]=false;
+      if(grid[r][c]<0)continue;
+      animations.push({type:grid[r][c],fromR:r,fromC:c,toR:r,toC:c,start:now,end:now+185,fade:true,scaleFrom:1});
+      if(jellyGrid[r]?.[c])jellyGrid[r][c]=false;
       grid[r][c]=-1;
+      specialGrid[r][c]=null;
+    }
+    if(spawn && grid[Math.floor(keep/SIZE)][keep%SIZE]>=0){
+      specialGrid[Math.floor(keep/SIZE)][keep%SIZE]={kind:spawn.kind};
     }
     rebuildBoardCache();
-    await sleep(195);animations=[];
-    const next=Array.from({length:SIZE},()=>Array(SIZE).fill(-1));animations=[];
-    const fallStart=performance.now();
+    await sleep(195);
+    if(generation!==boardGeneration)return;
+    animations=[];
+    // Do not keep cascading for seconds after all jelly was already removed.
+    if(levelConfig.type==="jelly" && countJelly()===0){updateLevelHUD();break;}
+    const next=Array.from({length:SIZE},()=>Array(SIZE).fill(-1));
+    const nextSpecial=Array.from({length:SIZE},()=>Array(SIZE).fill(null));
+    const fallStart=performance.now();animations=[];
     for(let c=0;c<SIZE;c++){
       let write=SIZE-1;
       for(let r=SIZE-1;r>=0;r--)if(grid[r][c]!==-1){
-        const type=grid[r][c];next[write][c]=type;
+        const type=grid[r][c];next[write][c]=type;nextSpecial[write][c]=specialGrid[r][c];
         if(write!==r)animations.push({type,fromR:r,fromC:c,toR:write,toC:c,start:fallStart,end:fallStart+120+Math.abs(write-r)*35});
         write--;
       }
@@ -2006,9 +2224,40 @@ async function resolveMatches() {
         animations.push({type,fromR:-1-(write+1)*.65,fromC:c,toR:write,toC:c,start:fallStart,end:fallStart+150+(write+1)*30});write--;
       }
     }
-    grid=next;rebuildBoardCache();updateLevelHUD();await sleep(310);animations=[];
+    grid=next;specialGrid=nextSpecial;rebuildBoardCache();updateLevelHUD();
+    await sleep(310);
+    if(generation!==boardGeneration)return;
+    animations=[];
+    extra.clear();preferred=null;
+    if(levelOver)break;
+    // Cap cascades to prevent a rare, extremely unlucky endless chain.
+    if(combo>=12){
+      // Stop an unusually long cascade instead of locking the game for 15+ seconds.
+      reshuffleAiBoard();
+      setStatus("Big combo! Fresh candies reshuffled so you can continue.");
+      break;
+    }
   }
 }
+
+async function buyDiscoBall() {
+  const price=750;
+  if(busy||levelOver||aiAutoRunning){setStatus(levelOver?"Level ended — choose Next Level or Retry.":aiAutoRunning?"AI is playing this level.":"Move still resolving — press Fix Stuck Board if it is stuck.");return;}
+  if(save.coins<price){setStatus(`Need ${price} coins to add a disco ball; you have ${save.coins.toLocaleString()}.`);return;}
+  const options=[];
+  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(!specialGrid[r][c])options.push({r,c});
+  if(!options.length){setStatus("Every candy is already special!");return;}
+  const pos=options[Math.floor(Math.random()*options.length)];
+  if(backendConfigured()){
+    try {const result=await backendRequest("/api/player/spend-coins",{method:"POST",body:{amount:price,reason:"disco-ball"}});
+      if(result?.state)applyRemoteState(result.state,false,true);
+    } catch(error){setStatus(`Could not buy a disco ball: ${error.message}`);return;}
+  } else {save.coins-=price;persist();refreshDashboard();}
+  specialGrid[pos.r][pos.c]={kind:"bomb"};
+  selected=null;hintCells=[pos];rebuildBoardCache();
+  setStatus("🌈 Disco Ball added! Tap the rainbow ball, then ANY candy colour to clear all candies of that colour.");
+}
+
 async function useHint() {
   if(busy)return;
   if(save.coins<HINT_COST){setStatus(`You need ${HINT_COST} coins for a hint.`);return;}
@@ -2052,26 +2301,55 @@ function findBestAiMove() {
 }
 
 function reshuffleAiBoard() {
-  // Rebuild only the gem arrangement; preserve score, moves, timer and remaining jelly.
-  for (let attempt=0;attempt<100;attempt++) {
-    const candidate=Array.from({length:SIZE},()=>Array(SIZE).fill(-1));
-    for (let r=0;r<SIZE;r++) for (let c=0;c<SIZE;c++) {
-      let type,tries=0;
-      do {
-        type=randType(); tries++;
-      } while (tries<40 && ((c>=2&&candidate[r][c-1]===type&&candidate[r][c-2]===type)
-        || (r>=2&&candidate[r-1][c]===type&&candidate[r-2][c]===type)));
-      candidate[r][c]=type;
+  // Shuffle candy+power pairs together, preserving all already-earned power-ups,
+  // remaining jelly, spent moves, score and coins. Never charges the player.
+  const pool=[];
+  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)pool.push({type:grid[r][c],special:specialGrid[r]?.[c]||null});
+  for(let attempt=0;attempt<140;attempt++){
+    const shuffled=pool.slice();
+    for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
+    for(let i=0;i<shuffled.length;i++){
+      const r=Math.floor(i/SIZE),c=i%SIZE;
+      grid[r][c]=shuffled[i].type;
+      specialGrid[r][c]=shuffled[i].special;
     }
-    grid=candidate;
-    if (findMatches().size===0 && findHint()) {
-      selected=null; hintCells=[]; animations=[]; rebuildBoardCache(); updateLevelHUD();
+    if(findMatches().size===0 && findHint()){
+      selected=null;hintCells=[];animations=[];rebuildBoardCache();updateLevelHUD();
       return true;
     }
   }
+  // Rare fallback if cascading specials leave empty cells in the pool.
+  for(let attempt=0;attempt<140;attempt++){
+    const candidate=Array.from({length:SIZE},()=>Array(SIZE).fill(-1));
+    for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
+      let type,tries=0;
+      do{type=randType();tries++;}while(tries<50&&((c>=2&&candidate[r][c-1]===type&&candidate[r][c-2]===type)||(r>=2&&candidate[r-1][c]===type&&candidate[r-2][c]===type)));
+      candidate[r][c]=type;
+    }
+    grid=candidate;
+    specialGrid=Array.from({length:SIZE},()=>Array(SIZE).fill(null));
+    // Retain the same earned special kinds and re-place them on new candies.
+    const effects=pool.map(x=>x.special).filter(Boolean);
+    for(let i=0;i<effects.length;i++)specialGrid[Math.floor(i/SIZE)][i%SIZE]=effects[i];
+    if(findMatches().size===0 && findHint()){
+      selected=null;hintCells=[];animations=[];rebuildBoardCache();updateLevelHUD();return true;
+    }
+  }
+  selected=null;hintCells=[];animations=[];rebuildBoardCache();updateLevelHUD();
   return false;
 }
-
+function repairStuckBoard() {
+  if(aiAutoRunning){setStatus("AI is finishing this level. Wait for it to stop before repairing.");return;}
+  if(levelOver){showLevelResult(Boolean(save.completedLevels[save.currentLevel]));return;}
+  // In particular, fix the reported Level 3 (0 jelly remaining) without restart.
+  if(levelConfig.type==="jelly" && countJelly()===0){
+    boardGeneration++;busy=false;animations=[];completeLevel();updateBoardBusyIndicator();return;
+  }
+  boardGeneration++;busy=false;selected=null;hintCells=[];animations=[];
+  const repaired=reshuffleAiBoard();
+  updateBoardBusyIndicator();
+  setStatus(repaired?"✅ Board repaired! Coins, moves, score and remaining jelly are unchanged.":"Could not find a valid board. Retry Level to generate a fresh board.");
+}
 async function aiPerformMove(move) {
   if (!move || levelOver) return;
   const a=move.a, b=move.b;
@@ -2092,139 +2370,93 @@ async function aiPerformMove(move) {
   }
   if (levelConfig.type!=='timed') moves=Math.max(0,moves-1);
   updateLevelHUD();
-  await resolveMatches();
-  busy=false; refreshDashboard();
+  try {await resolveMatches({preferred:b});}
+  finally {busy=false;animations=[];refreshDashboard();updateBoardBusyIndicator();}
   evaluateLevelEnd();
 }
 
 async function aiClearCurrentLevel() {
   syncDailyCount();
-  if (aiAutoRunning) { setStatus("AI is already playing the current level."); return; }
-  if (busy) { setStatus("Wait for the current match animation to finish."); return; }
-
-  // If the current level was already completed manually, start the next unlocked one.
-  if (levelOver) {
-    if (save.completedLevels[save.currentLevel] && save.currentLevel < LEVEL_COUNT && save.maxUnlocked >= save.currentLevel + 1) {
-      startLevel(save.currentLevel + 1);
-    } else if (save.currentLevel === LEVEL_COUNT && save.completedLevels[LEVEL_COUNT]) {
-      setStatus(`All ${LEVEL_COUNT} levels are complete. There is no next level.`); return;
-    } else if (!save.completedLevels[save.currentLevel]) {
-      startLevel(save.currentLevel);
+  if(aiAutoRunning){setStatus("AI is already playing this level.");return;}
+  if(busy){setStatus("Please wait for the current move to finish.");return;}
+  if(levelOver){
+    if(save.completedLevels[save.currentLevel] && save.currentLevel<LEVEL_COUNT && save.maxUnlocked>save.currentLevel){
+      setStatus("Choose Next Level in the results or from the level map, then press AI again.");
+      showLevelResult(true);return;
     }
+    if(save.completedLevels[LEVEL_COUNT] && save.currentLevel===LEVEL_COUNT){
+      setStatus("All levels have been completed!");showLevelResult(true);return;
+    }
+    startLevel(save.currentLevel);
   }
-  aiAutoRunning=true; aiCompleting=true; refreshDashboard();
-  let completedThisRun=0;
+  const level=save.currentLevel;
+  const wasCompletedBeforeAI=Boolean(save.completedLevels[level]);
+  if(save.coins<AI_CLEAR_COST){
+    setStatus(`You need ${AI_CLEAR_COST.toLocaleString()} coins for AI Auto-Play (one level). Your current balance: ${save.coins.toLocaleString()}.`);
+    if(!backendConfigured() && save.aiAdsCount<AI_AD_DAILY_LIMIT){
+      pendingAiAdReward=true;aiResumeAfterAd=false;$("aiAdOverlay").classList.add("show");
+    }
+    return;
+  }
+  aiAutoRunning=true;aiCompleting=true;refreshDashboard();updateBoardBusyIndicator();
+  let charged=false;
   try {
-    while (save.currentLevel <= LEVEL_COUNT) {
-      syncDailyCount();
-      let level=save.currentLevel;
-      if (levelOver && save.completedLevels[level]) {
-        if (level>=LEVEL_COUNT) break;
-        startLevel(level+1);
-        level=save.currentLevel;
-      } else if (levelOver) {
-        startLevel(level);
-        level=save.currentLevel;
-      }
-
-      const wasCompletedBeforeAI = Boolean(save.completedLevels[level]);
-      if (save.coins < AI_CLEAR_COST) {
-        if (backendConfigured()) {
-          setStatus(`AI played ${completedThisRun} level(s). You need 5,000 coins to start Level ${save.currentLevel}; demo ads are disabled in backend mode.`);
-        } else if (save.aiAdsCount < AI_AD_DAILY_LIMIT) {
-          pendingAiAdReward=true; aiResumeAfterAd=true;
-          $("aiAdOverlay").classList.add("show");
-          setStatus(`AI played ${completedThisRun} level(s). Watch a test ad for 500 coins; AI will resume automatically if your wallet reaches 5,000 coins.`);
-        } else {
-          setStatus(`AI paused before Level ${save.currentLevel}: not enough coins and all 3 AI reward ads have been used today.`);
-        }
-        break;
-      }
-
-      // Charge once per level, not once per retry. In backend mode the server enforces the coin cost; there is no AI-use cap.
-      if (backendConfigured()) {
-        await pendingCloudProgress;
-        const data=await backendRequest("/api/ai/start-level",{method:"POST",body:{level}});
-        if (!data || !data.state) throw new Error("The server did not return the AI session state.");
-        applyRemoteState(data.state,false,true);
-      } else {
-        save.coins-=AI_CLEAR_COST;
-        save.aiUsesDate=dateKey();
-        save.aiUsesCount+=1;
-        persist(); refreshDashboard();
-      }
-
-      let won=false;
-      let attempts=0;
-      // Keep trying fresh boards at no additional charge until the actual objective is met.
-      while (!won) {
-        if (levelOver) startLevel(level);
-        let moveGuard=0;
-        while (!levelOver && moveGuard<80) {
-          if (levelConfig.type==='timed' && performance.now()>=timerEndsAt) {
-            failLevel("Time is up. AI is retrying this level with a new board."); break;
-          }
-          let move=findBestAiMove();
-          if (!move) {
-            if (!reshuffleAiBoard()) { failLevel("No valid moves found. AI is reshuffling and retrying."); break; }
-            setStatus("🤖 AI reshuffled the board and is searching for a valid match…");
-            await sleep(120);
-            move=findBestAiMove();
-            if (!move) { failLevel("No valid moves found. AI is retrying this level."); break; }
-          }
-          await aiPerformMove(move);
-          moveGuard++;
-          if (save.completedLevels[level] || (levelOver && save.completedLevels[level])) { won=true; break; }
-        }
-        if (save.completedLevels[level]) { won=true; break; }
-        if (!won) {
-          attempts++;
-          setStatus(`AI did not finish Level ${level} on attempt ${attempts}. Rebuilding the board and continuing without another charge…`);
-          startLevel(level);
-          await sleep(220);
-        }
-      }
-
-      if (!won) break;
-      if (backendConfigured()) {
-        const data=await backendRequest("/api/ai/finish-level",{
-          method:"POST",
-          body:{level,score,jellyCleared:countJelly()===0}
-        });
-        if (!data || !data.state) throw new Error("The server did not confirm the completed AI-played level.");
-        applyRemoteState(data.state,false,true);
-        save.currentLevel=level;
-        save.completedLevels[level]=true;
-        save.levelStars[level]=Math.max(3,Number(save.levelStars[level])||0);
-        save.maxUnlocked=Math.max(save.maxUnlocked,Math.min(LEVEL_COUNT,level+1));
-        persist(); refreshDashboard(); renderLevelMap();
-      }
-      if (!backendConfigured() && !wasCompletedBeforeAI) {
-        save.coins += LEVEL_COMPLETION_REWARD;
-        persist(); refreshDashboard();
-      }
-      completedThisRun++;
-      setStatus(`🤖 AI actually played and completed Level ${level}. +${LEVEL_COMPLETION_REWARD.toLocaleString()} coins for first completion.`);
-      if (level>=LEVEL_COUNT) {
-        save.currentLevel=LEVEL_COUNT; persist(); refreshDashboard(); renderLevelMap();
-        setStatus(`🎉 AI completed the final level (${LEVEL_COUNT}). All available levels are finished.`);
-        break;
-      }
-      startLevel(level+1);
-      await sleep(260);
+    if(backendConfigured()){
+      await pendingCloudProgress;
+      const data=await backendRequest("/api/ai/start-level",{method:"POST",body:{level}});
+      if(!data?.state)throw new Error("Server did not confirm AI payment.");
+      applyRemoteState(data.state,false,true);
+    } else {
+      save.coins-=AI_CLEAR_COST;
+      save.aiUsesDate=dateKey();save.aiUsesCount+=1;
+      persist();refreshDashboard();
     }
-
-    if (!pendingAiAdReward && save.currentLevel===LEVEL_COUNT && save.completedLevels[LEVEL_COUNT]) {
-      setStatus("AI completed the final level. Adventure complete!");
-    } else if (!pendingAiAdReward && completedThisRun>0) {
-      setStatus(`AI finished ${completedThisRun} level(s) by playing actual matches. Level ${save.currentLevel} is ready if your wallet can cover the next level.`);
+    charged=true;
+    let won=false;
+    // Retry incomplete attempts inside the SAME level without further charges.
+    for(let attempt=0;attempt<20&&!won;attempt++){
+      if(levelOver)startLevel(level);
+      let moveGuard=0;
+      while(!levelOver && moveGuard<80){
+        if(levelConfig.type==="timed" && performance.now()>=timerEndsAt){failLevel("AI is retrying this same level.");break;}
+        let move=findBestAiMove();
+        if(!move){
+          if(!reshuffleAiBoard()){failLevel("No valid moves — rebuilding this level.");break;}
+          await sleep(100);
+          move=findBestAiMove();
+          if(!move){failLevel("No moves available.");break;}
+        }
+        await aiPerformMove(move);
+        moveGuard++;
+        if(save.completedLevels[level] && levelOver){won=true;break;}
+      }
+      if(save.completedLevels[level]&&levelOver)won=true;
+      else if(attempt<19){setStatus(`🤖 Trying Level ${level} again. No extra coins charged.`);startLevel(level);await sleep(170);}
     }
-  } catch (error) {
-    setStatus(`AI Auto-Play failed: ${error.message}`);
+    if(!won){
+      setStatus(`AI could not finish Level ${level} after 20 attempts. No other levels were started. Contact support if this keeps happening.`);
+      return;
+    }
+    if(backendConfigured()){
+      const data=await backendRequest("/api/ai/finish-level",{method:"POST",body:{level,score,jellyCleared:countJelly()===0}});
+      if(!data?.state)throw new Error("Server did not confirm the finished level.");
+      applyRemoteState(data.state,false,true);
+      save.currentLevel=level;
+      save.completedLevels[level]=true;
+      save.maxUnlocked=Math.max(save.maxUnlocked,Math.min(LEVEL_COUNT,level+1));
+      persist();refreshDashboard();renderLevelMap();
+    } else if(!wasCompletedBeforeAI){
+      save.coins+=LEVEL_COMPLETION_REWARD;
+      persist();refreshDashboard();
+    }
+    // Deliberately DO NOT call startLevel(level+1). Player controls navigation.
+    save.currentLevel=level;persist();
+    setStatus(`✅ AI completed only Level ${level}. Next level will start ONLY when you press Next Level.`);
+    showLevelResult(true,"",!wasCompletedBeforeAI);
+  } catch(error){
+    setStatus(`AI Auto-Play error${charged?" (coins may have been spent)":""}: ${error.message}`);
   } finally {
-    aiCompleting=false;
-    aiAutoRunning=false;
-    refreshDashboard();
+    aiCompleting=false;aiAutoRunning=false;busy=false;animations=[];refreshDashboard();updateBoardBusyIndicator();
   }
 }
 function closeAiAdReward() {
@@ -2579,7 +2811,8 @@ $("guestBtn").addEventListener("click", continueAsGuest);
 $("accountBtn").addEventListener("click", handleAccountAction);
 $("profileAuthBtn").addEventListener("click", handleAccountAction);
 
-canvas.addEventListener("pointerdown",event=>{event.preventDefault();handlePick(cellFromEvent(event));});
+canvas.addEventListener("pointerdown",event=>{event.preventDefault();void handlePick(cellFromEvent(event));});
+$("repairBoardBtn").addEventListener("click",repairStuckBoard);
 restartBtn.addEventListener("click",()=>startLevel(save.currentLevel));
 $("levelMapBtn").addEventListener("click",openLevelMap);
 $("closeLevelMapBtn").addEventListener("click",closeLevelMap);
@@ -2595,6 +2828,7 @@ $("levelResultActions").addEventListener("click",event=>{
 });
 $("levelResultOverlay").addEventListener("click",event=>{if(event.target===$("levelResultOverlay")){$("levelResultOverlay").classList.remove("show");}});
 $("hintBtn").addEventListener("click",useHint);
+$("buyDiscoBtn").addEventListener("click",buyDiscoBall);
 $("aiClearBtn").addEventListener("click",aiClearCurrentLevel);
 $("cancelAiAd").addEventListener("click",closeAiAdReward);
 $("completeAiAdBtn").addEventListener("click",completeAiAdReward);
@@ -2647,12 +2881,13 @@ startLevel(save.currentLevel || 1);
 initAuthFlow();
 // Small, documented hooks for owner-published custom code from the Admin Dashboard.
 window.SugarRush = Object.assign(window.SugarRush || {}, {
-  version: "1.0",
+  version: "4.0-freeze-fix",
   navigate: name => setActiveView(String(name || "home")),
   startLevel: level => startLevel(Math.max(1, Math.floor(Number(level) || 1))),
   refreshLevels: () => loadRemoteLevels(),
   showMessage: message => setStatus(String(message || "")),
   getState: () => ({ coins: Number(save.coins) || 0, currentLevel: Number(save.currentLevel) || 1, maxUnlocked: Number(save.maxUnlocked) || 1, bestScore: Number(save.bestScore) || 0 }),
+  repairBoard: repairStuckBoard,
   // Browser-local demonstration bridge. Reject local rewards when cloud backend is enabled.
   getBonusSnapshot: () => ({
     cloudMode: backendConfigured(),
@@ -2674,58 +2909,7 @@ requestAnimationFrame(draw);
 <script src="bonus-features.js?v=2"></script>
 <script src="site-customizer.js?v=1"></script>
 <script src="admin-tools.js"></script>
-<!-- Single audio controller: starts after the first user interaction (browser autoplay policy). -->
-<script>
-(function() {
-  const audioFiles = {
-    bgm: new Audio('Audio/game music.mp3'),
-    pop: new Audio('Audio/Pop.mp3'),
-    button: new Audio('Audio/Button Tap.mp3')
-  };
-  audioFiles.bgm.loop = true;
-  audioFiles.bgm.volume = 0.32;
-  let isBgmPlaying = false;
-
-  function playSFX(audioObj, volume = 0.7) {
-    try {
-      const soundClone = audioObj.cloneNode();
-      soundClone.volume = volume;
-      soundClone.play().catch(() => {});
-    } catch (_) {}
-  }
-  function startBGM() {
-    if (isBgmPlaying) return;
-    audioFiles.bgm.play().then(() => { isBgmPlaying = true; }).catch(() => {});
-  }
-
-  document.addEventListener('click', function(event) {
-    startBGM();
-    const button = event.target.closest('button, .level-tile, [role="button"]');
-    if (button) playSFX(audioFiles.button, 0.48);
-  });
-
-  const gameCanvas = document.getElementById('board');
-  if (gameCanvas) gameCanvas.addEventListener('pointerdown', function() {
-    startBGM();
-    playSFX(audioFiles.pop, 0.45);
-  });
-  window.playPopSound = function() { playSFX(audioFiles.pop, 0.7); };
-
-  document.addEventListener('DOMContentLoaded', function() {
-    const backBtn = document.getElementById('backToGameBtn');
-    if (!backBtn) return;
-    backBtn.addEventListener('click', function() {
-      const authScreen = document.getElementById('authScreen');
-      const appShell = document.getElementById('appShell');
-      if (authScreen) authScreen.hidden = true;
-      if (appShell) {
-        appShell.hidden = false;
-        appShell.classList.remove('game-focus');
-      }
-    });
-  });
-})();
-</script>
+<script src="audio-settings.js?v=3"></script>
 
 </body>
 </html>
