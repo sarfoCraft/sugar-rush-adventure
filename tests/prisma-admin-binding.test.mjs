@@ -21,5 +21,5 @@ test("composer runtime unwraps secret; legacy backend fallback remains intact", 
   assert.match(adapter, /ADMIN_UIDS:\s*input\.adminUids\.expose\(\)/);
   const backend = source("../backend/server.js");
   assert.match(backend, /parseAdminUids\(runtimeConfig\.ADMIN_UIDS\)/);
-  assert.match(backend, /const RELEASE_VERSION = "admin-access-fix-v6"/);
+  assert.match(backend, /const RELEASE_VERSION = "cloud-rewards-v7"/);
 });

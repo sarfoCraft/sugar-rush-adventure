@@ -8,7 +8,8 @@
 - **Rich Polish:** Smooth animations, floating score text, and responsive layout.
 - **Local Audio System:** Built-in support for background music and sound effects (`Audio/`).
 - **AI Auto-Play & Hints:** Built-in hint system and solver options.
-- **Client-Side Storage:** Full game state persistence using browser localStorage.
+- **Cloud player wallet and progress (Firebase signed-in):** Coins, level unlocks, stars and score sync through the Prisma API. Guest demo progress remains in browser localStorage.
+- **Server-backed rewards:** Five free 2,500-coin claims per three-hour UTC window, 7-day login streak, and 5,000-coin weekend mission prize after finishing three different levels. Only the server can grant signed-in coins.
 
 ## 🚀 Play Live
 Play the game directly in your browser:
@@ -40,3 +41,10 @@ For the secure admin dashboard to work, the backend still needs PostgreSQL, `FIR
 This repository includes a Prisma Composer module and GitHub Actions workflow for deploying the secure API backend and a Prisma Postgres database. The public game frontend remains on GitHub Pages.
 
 See [`PRISMA-DEPLOYMENT-GUIDE.md`](PRISMA-DEPLOYMENT-GUIDE.md) for the required Firebase secret, deployment steps, and how to connect the deployed API URL to the game.
+
+
+## V7 cloud sync + reward rules
+
+See `CLOUD-SYNC-V7-START-HERE.md` before deploying. The new reward endpoints require the database migration (created automatically during server startup) and the V7 Prisma deployment. Browser users should continue to sign in through the existing Firebase connection wizard; they do not need to re-enter secrets.
+
+**Security scope:** Currency grants, claim cadence and server-side ledgers are protected by Firebase-authenticated SQL transactions. Game completion reports are still submitted by the browser (including scores and jelly completion), so an advanced attacker could forge level wins until server-side move verification or trusted gameplay proof is implemented. Do not launch a cash-redeemable economy based on these scores.

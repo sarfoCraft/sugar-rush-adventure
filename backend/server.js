@@ -7,6 +7,7 @@ import pg from "pg";
 import firebaseAdmin from "firebase-admin";
 import { randomUUID, randomBytes } from "node:crypto";
 import { parseAdminUids } from "./admin-auth.js";
+import { FREE_WINDOW_MS, FREE_CLAIM_LIMIT, FREE_REWARD, DAILY_REWARDS, EVENT_REWARD, freeWindow, utcDate, dayBefore, weekendWindow, dailyStreakNext } from "./reward-policy.js";
 
 const { Pool } = pg;
 const app = express();
@@ -19,7 +20,7 @@ const PORT = Number(runtimeConfig.PORT || 3000);
 // Accept plain UID, comma/newline-separated values, and a JSON string array.
 // Do not accept email addresses, names or client-side claims as admin proof.
 const ADMIN_UIDS = parseAdminUids(runtimeConfig.ADMIN_UIDS);
-const RELEASE_VERSION = "admin-access-fix-v6";
+const RELEASE_VERSION = "cloud-rewards-v7";
 const allowedOrigins = String(runtimeConfig.FRONTEND_ORIGINS || "https://sarfocraft.github.io,http://localhost:5500,http://127.0.0.1:5500")
   .split(",").map(x => x.trim()).filter(Boolean);
 
@@ -383,6 +384,31 @@ async function ensureSchema() {
       ai_uses_date DATE NOT NULL DEFAULT CURRENT_DATE,
       ai_uses_count INTEGER NOT NULL DEFAULT 0
     );
+    ALTER TABLE players ADD COLUMN IF NOT EXISTS daily_streak INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE players ADD COLUMN IF NOT EXISTS daily_claim_date DATE;
+    ALTER TABLE players ADD COLUMN IF NOT EXISTS ai_pending_level INTEGER;
+    ALTER TABLE players ADD COLUMN IF NOT EXISTS ai_pending_until TIMESTAMPTZ;
+    CREATE TABLE IF NOT EXISTS reward_claims (
+      uid TEXT NOT NULL REFERENCES players(uid),
+      reward_key TEXT NOT NULL,
+      amount INTEGER NOT NULL CHECK(amount > 0),
+      claimed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      PRIMARY KEY (uid, reward_key)
+    );
+    CREATE TABLE IF NOT EXISTS level_first_completions (
+      uid TEXT NOT NULL REFERENCES players(uid),
+      level_number INTEGER NOT NULL,
+      completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      PRIMARY KEY (uid, level_number)
+    );
+    CREATE INDEX IF NOT EXISTS level_first_completions_event_idx ON level_first_completions(uid, completed_at);
+    CREATE TABLE IF NOT EXISTS level_weekend_completions (
+      uid TEXT NOT NULL REFERENCES players(uid),
+      event_key TEXT NOT NULL,
+      level_number INTEGER NOT NULL,
+      completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      PRIMARY KEY(uid,event_key,level_number)
+    );
     CREATE TABLE IF NOT EXISTS game_levels (
       id UUID PRIMARY KEY,
       position INTEGER NOT NULL,
@@ -521,6 +547,77 @@ app.get("/api/auth/status", (req, res) => res.json({
 }));
 
 app.get("/api/player/state", wrap(async (req, res) => res.json({ state: await stateResponse(req.user.uid) })));
+// All authenticated rewards are calculated and granted from the server clock.
+// A per-player SQL row lock serializes claims across devices and API instances.
+async function rewardStatus(db, uid, now = new Date()) {
+  const window = freeWindow(now);
+  const today = utcDate(now);
+  const weekend = weekendWindow(now);
+  const [playerResult, freeResult, eventResult, eventClaimResult] = await Promise.all([
+    db.query("SELECT daily_streak, daily_claim_date FROM players WHERE uid = $1", [uid]),
+    db.query("SELECT COUNT(*)::int AS n FROM reward_claims WHERE uid = $1 AND reward_key LIKE $2", [uid, `free:${window.id}:%`]),
+    db.query("SELECT COUNT(*)::int AS n FROM level_weekend_completions WHERE uid=$1 AND event_key=$2", [uid, weekend.key]),
+    db.query("SELECT 1 FROM reward_claims WHERE uid = $1 AND reward_key = $2", [uid, `event:${weekend.key}`])
+  ]);
+  const p = playerResult.rows[0] || {};
+  const lastDay = p.daily_claim_date ? utcDate(new Date(p.daily_claim_date)) : null;
+  const alreadyDaily = lastDay === today;
+  const nextStreak = dailyStreakNext(lastDay, Number(p.daily_streak)||0, now);
+  const freeUsed = Number(freeResult.rows[0]?.n)||0;
+  const levels = Number(eventResult.rows[0]?.n)||0;
+  return {
+    serverTime: now.toISOString(),
+    free: { amount: FREE_REWARD, remaining: Math.max(0, FREE_CLAIM_LIMIT - freeUsed), limit: FREE_CLAIM_LIMIT, resetAt: window.end.toISOString() },
+    daily: { claimed: alreadyDaily, streak: Number(p.daily_streak)||0, nextDay: ((nextStreak-1)%7)+1, amount: DAILY_REWARDS[(nextStreak-1)%7], nextAt: new Date(Date.parse(today+'T00:00:00Z')+86400000).toISOString() },
+    event: { active: weekend.active, levels: Math.min(3, levels), goal: 3, claimed: eventClaimResult.rows.length>0, amount: EVENT_REWARD, endsAt: weekend.end.toISOString() }
+  };
+}
+app.get("/api/player/rewards/status", wrap(async (req,res) => {
+  res.json({ rewards: await rewardStatus(pool, req.user.uid) });
+}));
+app.post("/api/player/rewards/claim", wrap(async (req,res) => {
+  const kind = String(req.body?.kind || '');
+  if (!['free','daily','event'].includes(kind)) return res.status(400).json({ error: 'Invalid reward type.' });
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const locked = await client.query('SELECT * FROM players WHERE uid = $1 FOR UPDATE', [req.user.uid]);
+    if (!locked.rows.length) throw Object.assign(new Error('Player not found.'), {status:404});
+    const player = locked.rows[0];
+    // Evaluate time only after acquiring the lock, so midnight and 3-hour boundaries are consistent.
+    const now = new Date();
+    const today = utcDate(now);
+    let key, amount;
+    if (kind === 'free') {
+      const window = freeWindow(now);
+      const used = await client.query('SELECT COUNT(*)::int AS n FROM reward_claims WHERE uid=$1 AND reward_key LIKE $2', [req.user.uid, `free:${window.id}:%`]);
+      const n = Number(used.rows[0]?.n)||0;
+      if (n >= FREE_CLAIM_LIMIT) throw Object.assign(new Error('All five free claims used. Wait for the next three-hour window.'), {status:409});
+      key = `free:${window.id}:${n+1}`; amount = FREE_REWARD;
+    } else if (kind === 'daily') {
+      const lastDay = player.daily_claim_date ? utcDate(new Date(player.daily_claim_date)) : null;
+      if (lastDay === today) throw Object.assign(new Error('Daily bonus already claimed today.'), {status:409});
+      const streak = dailyStreakNext(lastDay, Number(player.daily_streak)||0, now);
+      amount = DAILY_REWARDS[(streak-1)%7]; key = `daily:${today}`;
+      await client.query('UPDATE players SET daily_streak=$2, daily_claim_date=$3::date WHERE uid=$1', [req.user.uid, streak, today]);
+    } else {
+      const w = weekendWindow(now);
+      if (!w.active) throw Object.assign(new Error('Weekend Candy Rush is available on Saturday and Sunday (UTC).'), {status:409});
+      const done = await client.query('SELECT COUNT(*)::int AS n FROM level_weekend_completions WHERE uid=$1 AND event_key=$2', [req.user.uid, w.key]);
+      if ((Number(done.rows[0]?.n)||0)<3) throw Object.assign(new Error('Finish three different levels this weekend first.'), {status:409});
+      const claimed = await client.query('SELECT 1 FROM reward_claims WHERE uid=$1 AND reward_key=$2', [req.user.uid, `event:${w.key}`]);
+      if (claimed.rows.length) throw Object.assign(new Error('Weekend bonus already claimed.'), {status:409});
+      key=`event:${w.key}`;amount=EVENT_REWARD;
+    }
+    await client.query('INSERT INTO reward_claims (uid,reward_key,amount) VALUES ($1,$2,$3)', [req.user.uid,key,amount]);
+    await client.query('UPDATE players SET coins=coins+$2 WHERE uid=$1', [req.user.uid,amount]);
+    await client.query('COMMIT');
+    // Refresh from server to keep multiple browser tabs consistent.
+    res.json({ ok:true, amount, state:await stateResponse(req.user.uid), rewards:await rewardStatus(pool,req.user.uid) });
+  } catch(error) { await client.query('ROLLBACK').catch(()=>{}); throw error; }
+  finally {client.release();}
+}));
+
 app.get("/api/player/profile", wrap(async (req, res) => {
   const row = await getPlayerRow(req.user.uid);
   let referredByCode = "";
@@ -588,32 +685,48 @@ app.post("/api/player/start-level", wrap(async (req, res) => {
   await pool.query("UPDATE players SET current_level = $2 WHERE uid = $1", [req.user.uid, level]);
   res.json({ state: await stateResponse(req.user.uid) });
 }));
-async function finishLevelForPlayer(uid, body = {}) {
+async function finishLevelForPlayer(uid, body = {}, aiMode = false) {
   const level = Math.floor(Number(body.level));
   const count = await levelCount();
   if (!Number.isFinite(level) || level < 1 || level > count) throw Object.assign(new Error("That level does not exist."), { status: 400 });
   const levelRow = await findLevelByNumber(level);
   if (!levelRow) throw Object.assign(new Error("That level is unavailable."), { status: 404 });
-  const player = await getPlayerRow(uid);
-  if (level > Number(player.max_unlocked)) throw Object.assign(new Error("Complete the previous level first."), { status: 403 });
-  const score = Math.max(0, Math.floor(Number(body.score) || 0));
-  const jellyCleared = Boolean(body.jellyCleared);
+  const score = Math.floor(Number(body.score));
+  if (!Number.isSafeInteger(score) || score < 0 || score > 10_000_000) throw Object.assign(new Error("Invalid score."), {status:400});
+  const jellyCleared = body.jellyCleared === true;
   const won = levelRow.type === "jelly" ? jellyCleared : score >= Number(levelRow.target_score);
   if (!won) throw Object.assign(new Error("The submitted result does not meet this level's objective."), { status: 400 });
-  const completed = asJsonObject(player.completed_levels);
-  const starsMap = asJsonObject(player.level_stars);
-  const alreadyCompleted = Boolean(completed[level]);
-  completed[level] = true;
-  const stars = Math.max(1, Math.min(3, score >= Number(levelRow.target_score) * 1.6 ? 3 : score >= Number(levelRow.target_score) ? 2 : 1));
-  starsMap[level] = Math.max(Number(starsMap[level]) || 0, stars);
-  const nextMax = Math.max(Number(player.max_unlocked) || 1, Math.min(count, level + 1));
-  const bonus = alreadyCompleted ? 0 : LEVEL_COMPLETION_REWARD;
-  await pool.query(
-    `UPDATE players SET coins = coins + $2, current_level = GREATEST(current_level, $3), max_unlocked = $4, best_score = GREATEST(best_score, $5),
-       level_stars = $6::jsonb, completed_levels = $7::jsonb WHERE uid = $1`,
-    [uid, bonus, Math.min(count, level + 1), nextMax, score, JSON.stringify(starsMap), JSON.stringify(completed)]
-  );
-  return { state: await stateResponse(uid), rewardEarned: bonus > 0 };
+  const client = await pool.connect();
+  let bonus=0;
+  try {
+    await client.query('BEGIN');
+    const locked = await client.query('SELECT * FROM players WHERE uid=$1 FOR UPDATE', [uid]);
+    if (!locked.rows.length) throw Object.assign(new Error('Player not found.'), {status:404});
+    const player = locked.rows[0];
+    if (level > Number(player.max_unlocked)) throw Object.assign(new Error('Complete the previous level first.'),{status:403});
+    if (aiMode && (Number(player.ai_pending_level)!==level || !player.ai_pending_until || new Date(player.ai_pending_until).getTime()<=Date.now())) {
+      throw Object.assign(new Error('AI level was not paid for, or the AI session expired. Start AI for this level first.'), {status:403});
+    }
+    const completed = asJsonObject(player.completed_levels);
+    const starsMap = asJsonObject(player.level_stars);
+    const alreadyCompleted = Boolean(completed[level]);
+    completed[level] = true;
+    const stars = Math.max(1, Math.min(3, score >= Number(levelRow.target_score) * 1.6 ? 3 : score >= Number(levelRow.target_score) ? 2 : 1));
+    starsMap[level] = Math.max(Number(starsMap[level])||0,stars);
+    const nextMax = Math.max(Number(player.max_unlocked)||1,Math.min(count,level+1));
+    bonus = alreadyCompleted ? 0 : LEVEL_COMPLETION_REWARD;
+    await client.query(
+      `UPDATE players SET coins=coins+$2, current_level=GREATEST(current_level,$3), max_unlocked=$4,
+       best_score=GREATEST(best_score,$5), level_stars=$6::jsonb, completed_levels=$7::jsonb WHERE uid=$1`,
+      [uid,bonus,Math.min(count,level+1),nextMax,score,JSON.stringify(starsMap),JSON.stringify(completed)]);
+    if (!alreadyCompleted) await client.query('INSERT INTO level_first_completions (uid,level_number) VALUES ($1,$2) ON CONFLICT DO NOTHING',[uid,level]);
+    const eventNow=weekendWindow(new Date());
+    if(eventNow.active) await client.query('INSERT INTO level_weekend_completions (uid,event_key,level_number) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING',[uid,eventNow.key,level]);
+    if(aiMode) await client.query('UPDATE players SET ai_pending_level=NULL,ai_pending_until=NULL WHERE uid=$1',[uid]);
+    await client.query('COMMIT');
+  } catch(error) { await client.query('ROLLBACK').catch(()=>{});throw error; }
+  finally {client.release();}
+  return { state:await stateResponse(uid), rewardEarned:bonus>0 };
 }
 app.post("/api/player/complete-level", wrap(async (req, res) => {
   const result = await finishLevelForPlayer(req.user.uid, req.body || {});
@@ -630,14 +743,29 @@ app.post("/api/ai/start-level", wrap(async (req, res) => {
   const level = Math.floor(Number(req.body?.level));
   const count = await levelCount();
   if (!Number.isFinite(level) || level < 1 || level > count) return res.status(400).json({ error: "That level does not exist." });
-  const player = await getPlayerRow(req.user.uid);
-  if (level > Number(player.max_unlocked)) return res.status(403).json({ error: "That level is locked." });
-  const result = await pool.query("UPDATE players SET coins = coins - $2, current_level = $3, ai_uses_count = CASE WHEN ai_uses_date = CURRENT_DATE THEN ai_uses_count + 1 ELSE 1 END, ai_uses_date = CURRENT_DATE WHERE uid = $1 AND coins >= $2 RETURNING *", [req.user.uid, AI_CLEAR_COST, level]);
-  if (!result.rows.length) return res.status(400).json({ error: `You need ${AI_CLEAR_COST.toLocaleString()} coins to use AI Auto-Play.` });
-  res.json({ state: playerState(result.rows[0]) });
+  const client=await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const locked=await client.query('SELECT * FROM players WHERE uid=$1 FOR UPDATE',[req.user.uid]);
+    if(!locked.rows.length)throw Object.assign(new Error('Player not found.'),{status:404});
+    const player=locked.rows[0];
+    if(level>Number(player.max_unlocked))throw Object.assign(new Error('That level is locked.'),{status:403});
+    // Same active AI session can resume without charging twice after a browser interruption.
+    const resume=Number(player.ai_pending_level)===level && player.ai_pending_until && new Date(player.ai_pending_until).getTime()>Date.now();
+    if (!resume) {
+      if(Number(player.coins)<AI_CLEAR_COST)throw Object.assign(new Error(`You need ${AI_CLEAR_COST.toLocaleString()} coins to use AI Auto-Play.`),{status:400});
+      await client.query(`UPDATE players SET coins=coins-$2, current_level=$3,
+        ai_uses_count=CASE WHEN ai_uses_date=CURRENT_DATE THEN ai_uses_count+1 ELSE 1 END,
+        ai_uses_date=CURRENT_DATE, ai_pending_level=$3, ai_pending_until=NOW()+INTERVAL '20 minutes'
+        WHERE uid=$1`,[req.user.uid,AI_CLEAR_COST,level]);
+    }
+    await client.query('COMMIT');
+    res.json({ state: await stateResponse(req.user.uid),resumed:Boolean(resume) });
+  }catch(error){await client.query('ROLLBACK').catch(()=>{});throw error;}
+  finally{client.release()}
 }));
 app.post("/api/ai/finish-level", wrap(async (req, res) => {
-  const result = await finishLevelForPlayer(req.user.uid, req.body || {});
+  const result = await finishLevelForPlayer(req.user.uid, req.body || {}, true);
   res.json(result);
 }));
 

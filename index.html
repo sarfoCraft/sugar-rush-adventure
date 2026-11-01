@@ -635,7 +635,7 @@ body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:
       <button class="auth-submit" id="authSubmit" type="submit">Sign in</button>
     </form>
     <button class="auth-switch" id="authModeToggle" type="button">New here? Create an account</button>
-    <button class="guest-btn" id="guestBtn" type="button">🎮 Play as Guest — No Login Required</button>
+    <button class="guest-btn" id="guestBtn" type="button">🎮 Play as Guest — No Login Required</button><p class="tiny-note" style="text-align:center;margin:9px 0 0">Guest play works without Firebase sign-in. Guest coins and progress are saved on this device only.</p>
     <p class="auth-status" id="authStatus" aria-live="polite"></p>
     <p class="auth-footnote">You can play as a guest anytime. Account sign-in needs Firebase Authentication setup by the game owner. Guest progress stays on this device in this demo.</p>
   </div>
@@ -644,7 +644,7 @@ body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:
 <div class="app-shell" id="appShell">
   <header class="app-topbar">
     <div class="app-logo"><img class="brand-logo-image" src="assets/sugar-rush-adventure-logo.svg" alt="Sugar Rush Adventure"><p>Match 3 Puzzle Adventure</p></div>
-    <div class="topbar-right"><div class="wallet-chip"><span class="wallet-coin">🪙</span><strong id="coinsTop">200</strong><span class="wallet-label">coins</span><button class="wallet-plus" data-go="coins" type="button" aria-label="Open coin shop">+</button></div><button class="account-pill" id="accountBtn" type="button">👤 Guest · Sign in</button></div>
+    <div class="topbar-right"><div class="wallet-chip"><span class="wallet-coin">🪙</span><strong id="coinsTop">200</strong><span class="wallet-label">coins</span><button class="wallet-plus" data-go="coins" type="button" aria-label="Open coin shop">+</button></div><button class="account-pill" id="accountBtn" type="button" title="Open your profile">👤 Guest · Sign in</button></div>
   </header>
   <div class="app-grid">
     <nav class="nav-rail" aria-label="Main navigation">
@@ -825,7 +825,7 @@ body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:
       <section class="page-view" id="view-profile">
         <div class="page-heading"><div><h2>👤 Player profile</h2><p>Manage your display name, country and sign-in option.</p></div></div>
         <div class="section-grid"><section class="content-card"><h3>Player details</h3><div style="display:flex;align-items:center;gap:12px;margin:4px 0 12px"><img id="playerPhotoPreview" alt="Player profile" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect width='100%25' height='100%25' rx='48' fill='%23f1e7ff'/%3E%3Ctext x='50%25' y='57%25' font-size='42' text-anchor='middle' fill='%237650d8'%3E%F0%9F%91%A4%3C/text%3E%3C/svg%3E" style="width:68px;height:68px;border-radius:50%;object-fit:cover;border:2px solid var(--line);background:#fff"><div style="min-width:0;flex:1"><label class="field-label" for="playerPhotoFile">Update profile picture</label><input class="field" id="playerPhotoFile" type="file" accept="image/jpeg,image/png,image/webp"><p class="tiny-note">JPG, PNG or WEBP · max 500 KB · requires backend</p></div></div><div class="profile-grid"><div><label class="field-label" for="playerName">Player name</label><input class="field" id="playerName" maxlength="20" value="Guest Player" autocomplete="nickname"></div><div><label class="field-label" for="countryCode">Country</label><select class="field" id="countryCode"><option value="US">United States</option><option value="PK">Pakistan</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="IN">India</option><option value="AE">United Arab Emirates</option><option value="AU">Australia</option><option value="BD">Bangladesh</option><option value="OTHER">Other</option></select></div></div><p class="tiny-note">Player ID: <strong id="playerPublicId">Connect backend to generate your ID</strong></p><p class="tiny-note">Total play time: <strong id="playerPlayHours">0h 0m</strong></p><p class="tiny-note">In live mode, the backend stores your IP address for account security and abuse prevention. Explain this in your privacy notice.</p></section>
-        <section class="content-card"><h3>Account & security</h3><p id="accountSummary">You are playing as a guest. No account is required.</p><p class="tiny-note">Sign in with Firebase to sync progress. Admin access uses the same Firebase account plus server-side administrator approval.</p><button id="profileAuthBtn" type="button" style="width:100%">Sign in or register</button><button class="secondary" id="adminLoginBtn" type="button" style="width:100%;margin-top:10px">🔐 Admin login / connection setup</button><p id="adminAuthDiagnostic" role="status" hidden style="padding:11px 13px;margin:9px 0;border:1px solid #e5d1f5;border-radius:10px;background:#fff8fe;color:#652b82;line-height:1.5;font-size:.82rem;overflow-wrap:anywhere"></p><button class="soft" id="resetProgress" type="button" style="width:100%;margin-top:10px">Reset demo data</button></section></div>
+        <section class="content-card"><h3>Account & security</h3><p id="accountSummary">You are playing as a guest. No account is required.</p><p class="tiny-note">Sign in with Firebase to sync progress. Admin access uses the same Firebase account plus server-side administrator approval.</p><button id="profileAuthBtn" type="button" style="width:100%">Sign in or register</button><button class="secondary" id="adminLoginBtn" type="button" style="width:100%;margin-top:10px">🔐 Admin login / connection setup</button><button class="soft" id="syncCloudProgress" type="button" style="width:100%;margin-top:10px">☁ Sync coins & progress from cloud</button><p class="tiny-note" id="cloudSyncStatus" role="status" style="margin:7px 0">Signed-in progress is stored in Prisma; guest saves remain on this device.</p><p id="adminAuthDiagnostic" role="status" hidden style="padding:11px 13px;margin:9px 0;border:1px solid #e5d1f5;border-radius:10px;background:#fff8fe;color:#652b82;line-height:1.5;font-size:.82rem;overflow-wrap:anywhere"></p><button class="soft" id="resetProgress" type="button" style="width:100%;margin-top:10px">Reset demo data</button></section></div>
         <section class="content-card" style="margin-top:13px"><div class="notice"><strong>Before publishing</strong><br>Authentication is separate from the secure game backend. A production release still needs server-side coin balances, verified rewarded ads, referral validation, live leaderboards, privacy disclosures and abuse prevention.</div></section>
       </section>
       <section class="page-view" id="view-settings">
@@ -845,7 +845,7 @@ body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:
         </section>
       </section>
       <section class="page-view" id="view-admin">
-        <div class="page-heading"><div><h2>🔐 Admin · Coin Approvals</h2><p>Review bank transfer, EasyPaisa and JazzCash requests. Approve only after checking the transaction in your own account.</p></div><button id="exitAdminBtn" class="soft" type="button">Exit admin</button></div>
+        <div class="page-heading"><div><h2>🔐 Admin · Coin Approvals</h2><p>Review bank transfer, EasyPaisa and JazzCash requests. Approve only after checking the transaction in your own account.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button id="exitAdminBtn" class="soft" type="button">← Player profile</button><button id="adminSignOutBtn" class="secondary" type="button">🚪 Log out</button></div></div>
         <div class="admin-warning" id="adminModeWarning">Demo admin mode: this queue is stored in this browser only. It is not a secure live admin system. Use the backend starter included with this project for real multi-user approvals.</div>
         <section class="content-card"><div class="card-head"><h3>Payment requests</h3><button id="refreshAdminPaymentsBtn" class="soft" type="button">Refresh</button></div><div id="adminPaymentsList" class="order-list"><div class="empty-state">No payment requests found.</div></div></section>
       </section>
@@ -1120,10 +1120,11 @@ function applyRemoteState(remoteState, restartLevel = false, preserveCurrentLeve
   save.completedLevels = remoteState.completedLevels && typeof remoteState.completedLevels === "object" ? remoteState.completedLevels : save.completedLevels;
   save.aiUsesDate = remoteState.aiUsesDate || save.aiUsesDate || dateKey();
   save.aiUsesCount = Math.max(0, Math.floor(Number(remoteState.aiUsesCount ?? save.aiUsesCount) || 0));
-  save.bestScore = Math.max(Number(save.bestScore)||0, Math.floor(Number(remoteState.bestScore)||0));
+  save.bestScore = Math.max(0, Math.floor(Number(remoteState.bestScore)||0));
   persist();
   refreshDashboard();
   renderLevelMap();
+  window.dispatchEvent(new Event("sugar-rush:cloud-progress"));
   if (restartLevel || (!preserveCurrentLevel && oldLevel !== save.currentLevel)) startLevel(save.currentLevel);
 }
 async function syncRemotePlayerState(restartLevel = false) {
@@ -1400,7 +1401,7 @@ async function openAdminAccess() {
     // Check exactly what the deployed API knows before opening a protected page.
     // This also detects when Prisma is still serving an older build.
     const status = await backendRequest("/api/auth/status");
-    if (!status || status.version !== "admin-access-fix-v6") {
+    if (!status || !String(status.version || "").startsWith("cloud-rewards-v7")) {
       const detail = "Old API version detected. Upload this corrected ZIP to GitHub and wait for a fresh Prisma deployment, then reload the game.";
       showAdminDiagnostic(detail);
       setStatus(detail);
@@ -1461,10 +1462,10 @@ function refreshDashboard() {
   $("homeDaily").textContent = `${save.dailyAdsCount} / ${DAILY_AD_LIMIT}`;
   $("dailyCount").textContent = `${save.dailyAdsCount} / ${DAILY_AD_LIMIT}`;
   $("dailyProgress").style.width = `${save.dailyAdsCount / DAILY_AD_LIMIT * 100}%`;
-  $("watchAdBtn").disabled = save.dailyAdsCount >= DAILY_AD_LIMIT;
-  $("watchAdBtn").textContent = save.dailyAdsCount >= DAILY_AD_LIMIT
-    ? "✓ Daily limit reached"
-    : `▶ Test Rewarded Ad · +${COINS_PER_TEST_AD}`;
+  $("watchAdBtn").disabled = save.dailyAdsCount >= DAILY_AD_LIMIT || (backendConfigured() && !!currentUser);
+  $("watchAdBtn").textContent = backendConfigured() && currentUser
+    ? "Simulation disabled for cloud wallets"
+    : save.dailyAdsCount >= DAILY_AD_LIMIT ? "✓ Daily limit reached" : `▶ Test Rewarded Ad · +${COINS_PER_TEST_AD}`;
   if ($("aiUsageInline")) $("aiUsageInline").textContent = `${save.aiUsesCount || 0}`;
   if ($("aiUsageCount")) $("aiUsageCount").textContent = `${save.aiUsesCount || 0}`;
   if ($("aiAdsCount")) $("aiAdsCount").textContent = `${save.aiAdsCount || 0} / ${AI_AD_DAILY_LIMIT}`;
@@ -1695,14 +1696,14 @@ function completeLevel() {
     pendingCloudProgress = backendRequest("/api/player/complete-level", {method:"POST",body:{level,score,jellyCleared:countJelly()===0}})
       .then(data => {
         if (data.state) {
-          save.coins = Math.max(0, Math.floor(Number(data.state.coins ?? save.coins) || 0));
-          save.maxUnlocked = Math.max(1, Math.min(LEVEL_COUNT, Math.floor(Number(data.state.maxUnlocked ?? save.maxUnlocked) || 1)));
-          save.levelStars = data.state.levelStars || save.levelStars;
-          save.completedLevels = data.state.completedLevels || save.completedLevels;
-          persist(); refreshDashboard(); renderLevelMap();
+          applyRemoteState(data.state, false, true);
+          window.dispatchEvent(new Event("sugar-rush:cloud-progress"));
         }
       })
-      .catch(error => { setStatus(`Cloud progress sync failed: ${error.message}`); });
+      .catch(async error => {
+        try {await syncRemotePlayerState(true);} catch (_) {}
+        setStatus(`Cloud did not confirm the level. Progress restored from server: ${error.message}`);
+      });
   }
   if (!aiAutoRunning) aiCompleting = false;
 }
@@ -2527,6 +2528,7 @@ function closeDemoAd() {
   $("demoAdOverlay").classList.remove("show");pendingDemoReward=false;
 }
 function completeDemoAd() {
+  if(backendConfigured() && currentUser){closeDemoAd();setStatus("Simulated ads cannot grant cloud coins. Claim the secure Free Coins bonus instead.");return;}
   if(!pendingDemoReward)return;
   if (backendConfigured()) { closeDemoAd(); setStatus("Demo ad rewards are disabled in backend mode."); return; }
   syncDailyCount();
@@ -2657,6 +2659,7 @@ function showAuth(clearSession = true) {
   }
   $("authScreen").hidden = false;
   $("appShell").hidden = true;
+  updateAccountDisplay();
   setAuthMode("login");
 }
 function showApp(mode = "guest") {
@@ -2690,7 +2693,7 @@ function setActiveView(name) {
   document.querySelectorAll(".nav-btn[data-view]").forEach(button => button.classList.toggle("active", button.dataset.view === name));
   if (name === "leaderboard") renderLeaderboard();
   if (name === "profile" && backendConfigured() && currentUser) loadPlayerProfile();
-  if (name === "rewards") { syncDailyCount(); refreshDashboard(); }
+  if (name === "rewards") { syncDailyCount(); refreshDashboard(); window.dispatchEvent(new Event("sugar-rush:rewards-open")); }
   if (name === "coins") {
     renderMyPayments(); loadPaymentInstructions();
     if (backendConfigured() && currentUser) syncRemotePlayerState(false).catch(error => setStatus(`Balance refresh failed: ${error.message}`));
@@ -2705,7 +2708,8 @@ function updateAccountDisplay() {
   $("accountSummary").textContent = isAccount
     ? `Signed in as ${currentUser.email || currentUser.displayName || "your account"}. ${backendConfigured() ? "Cloud player data is enabled." : "This preview stores coins locally; cloud sync is not connected."}`
     : "You are playing as a guest. No account is required, and guest mode keeps demo progress on this device.";
-  $("profileAuthBtn").textContent = isAccount ? "Sign out" : "Sign in or register";
+  $("profileAuthBtn").textContent = isAccount ? "🚪 Log out of account" : "Sign in or register";
+  $("accountBtn").title = isAccount ? "Open your profile and account settings" : "Sign in or open your profile";
 }
 function firebaseSetupMessage() {
   setAuthStatus("Sign-in is not connected yet. The game owner must add Firebase config and enable Email/Password, Google and Facebook providers. You can still play as a guest.");
@@ -2722,6 +2726,7 @@ function initAuthFlow() {
         currentUser = user || null;
         if (!user) {
           stopActivityTracking(false);
+          isAdminMode = false;
           if (forceAuthScreen) {
             $("authScreen").hidden = false;
             $("appShell").hidden = true;
@@ -2801,33 +2806,65 @@ async function handleEmailAuth(event) {
     setAuthStatus(messages[error.code] || error.message || "Authentication failed.");
   }
 }
+// Local guest mode must not depend on Firebase Anonymous Authentication.
+// A guest does not get a Firebase token or cloud rewards; progress stays on this browser.
 async function continueAsGuest() {
-  if (backendConfigured() && auth) {
+  if (auth && (currentUser || auth.currentUser)) {
+    forceAuthScreen = true; // prevent the auth listener from briefly reopening the account
     try {
-      if (currentUser) await auth.signOut();
-      await auth.signInAnonymously();
-      return;
-    } catch(error) {
-      setAuthStatus(`Guest tracking needs Firebase Anonymous Authentication enabled: ${error.message}`);
+      stopActivityTracking(true);
+      await auth.signOut();
+    } catch (error) {
+      forceAuthScreen = false;
+      setAuthStatus("Could not switch to Guest: " + (error.message || "please try again"));
       return;
     }
   }
-  if (auth && currentUser) { try { await auth.signOut(); } catch (_) {} }
   currentUser = null;
+  isAdminMode = false;
+  pendingAdminOpen = false;
+  forceAuthScreen = false;
   if (!save.playerName || save.playerName.trim() === "") save.playerName = "Guest Player";
   showApp("guest");
+  updateAccountDisplay();
 }
-async function handleAccountAction() {
-  if (auth && currentUser && (sessionMode === "account" || currentUser.isAnonymous)) {
-    stopActivityTracking(true);
-    try { await auth.signOut(); } catch (error) { setStatus("Sign out failed: " + (error.message || "please try again")); return; }
-    currentUser = null;
-    localStorage.removeItem(SESSION_KEY);
-    sessionMode = "";
-    showAuth(false);
+// Sign out is explicit, never triggered by clicking the top-right account/email.
+async function signOutAccount() {
+  if (!auth || !(currentUser || auth.currentUser)) {
+    isAdminMode = false;
+    showAuth(true);
+    return;
+  }
+  forceAuthScreen = true;
+  pendingAdminOpen = false;
+  stopActivityTracking(true);
+  try {
+    await auth.signOut();
+  } catch (error) {
+    forceAuthScreen = false;
+    setStatus("Sign out failed: " + (error.message || "please try again"));
+    return;
+  }
+  isAdminMode = false;
+  currentUser = null;
+  localStorage.removeItem(SESSION_KEY);
+  sessionMode = "";
+  showAuth(false);
+  updateAccountDisplay();
+}
+function openAccountProfile() {
+  // A signed-in player/admin expects their profile, not the login form.
+  if (currentUser && !currentUser.isAnonymous) {
+    setActiveView("profile");
+  } else if (sessionMode === "guest") {
+    setActiveView("profile");
   } else {
     showAuth(true);
   }
+}
+function handleProfileAuthAction() {
+  if (currentUser && !currentUser.isAnonymous) return signOutAccount();
+  showAuth(true);
 }
 document.querySelectorAll(".nav-btn[data-view]").forEach(button => button.addEventListener("click", () => setActiveView(button.dataset.view)));
 document.querySelectorAll("[data-go]").forEach(button => button.addEventListener("click", () => setActiveView(button.dataset.go)));
@@ -2838,8 +2875,9 @@ $("facebookSignInBtn").addEventListener("click", () => signInWithProvider("Faceb
 $("authForm").addEventListener("submit", handleEmailAuth);
 $("authModeToggle").addEventListener("click", () => setAuthMode(authMode === "login" ? "register" : "login"));
 $("guestBtn").addEventListener("click", continueAsGuest);
-$("accountBtn").addEventListener("click", handleAccountAction);
-$("profileAuthBtn").addEventListener("click", handleAccountAction);
+$("accountBtn").addEventListener("click", openAccountProfile);
+$("profileAuthBtn").addEventListener("click", handleProfileAuthAction);
+$("adminSignOutBtn").addEventListener("click", signOutAccount);
 
 canvas.addEventListener("pointerdown",event=>{event.preventDefault();void handlePick(cellFromEvent(event));});
 $("repairBoardBtn").addEventListener("click",repairStuckBoard);
@@ -2873,6 +2911,14 @@ $("paymentAttachment").addEventListener("change", () => {
   $("paymentAttachmentStatus").textContent = file ? `Selected: ${file.name} (${Math.ceil(file.size / 1024)} KB)` : "No receipt attached.";
 });
 $("adminLoginBtn").addEventListener("click",openAdminAccess);
+$("syncCloudProgress").addEventListener("click",async()=>{
+  const button=$("syncCloudProgress");const info=$("cloudSyncStatus");
+  if(!backendConfigured() || !currentUser){info.textContent="Sign in and connect Prisma first to use cloud sync.";return;}
+  button.disabled=true;info.textContent="Syncing with Prisma…";
+  try {await pendingCloudProgress;await syncRemotePlayerState(true);info.textContent="✓ Cloud coins and progress synchronized.";window.dispatchEvent(new Event("sugar-rush:rewards-open"));}
+  catch(e){info.textContent=`Cloud sync failed: ${e.message}`;}
+  finally{button.disabled=false;}
+});
 $("adminSetupForm").addEventListener("submit",saveAdminConnectionSettings);
 $("cancelAdminSetup").addEventListener("click",closeAdminSetup);
 $("adminSetupOverlay").addEventListener("click",event=>{if(event.target===$("adminSetupOverlay"))closeAdminSetup();});
@@ -2896,7 +2942,7 @@ document.querySelectorAll(".tab").forEach(button=>button.addEventListener("click
   renderLeaderboard();
 }));
 document.addEventListener("visibilitychange",()=>{
-  if(!document.hidden){syncDailyCount();refreshDashboard();startActivityTracking();}
+  if(!document.hidden){syncDailyCount();refreshDashboard();startActivityTracking();if(backendConfigured()&&currentUser)syncRemotePlayerState(false).catch(()=>{});}
   else stopActivityTracking(true);
 });
 window.addEventListener("pagehide",()=>stopActivityTracking(true));
@@ -2911,16 +2957,28 @@ startLevel(save.currentLevel || 1);
 initAuthFlow();
 // Small, documented hooks for owner-published custom code from the Admin Dashboard.
 window.SugarRush = Object.assign(window.SugarRush || {}, {
-  version: "4.0-freeze-fix",
+  version: "8.0-guest-profile-logout",
   navigate: name => setActiveView(String(name || "home")),
   startLevel: level => startLevel(Math.max(1, Math.floor(Number(level) || 1))),
   refreshLevels: () => loadRemoteLevels(),
   showMessage: message => setStatus(String(message || "")),
   getState: () => ({ coins: Number(save.coins) || 0, currentLevel: Number(save.currentLevel) || 1, maxUnlocked: Number(save.maxUnlocked) || 1, bestScore: Number(save.bestScore) || 0 }),
   repairBoard: repairStuckBoard,
+  isCloudSignedIn: () => backendConfigured() && Boolean(currentUser),
+  getCloudRewards: async () => {
+    const data = await backendRequest("/api/player/rewards/status");
+    return data.rewards;
+  },
+  claimCloudReward: async kind => {
+    const data = await backendRequest("/api/player/rewards/claim", {method:"POST",body:{kind}});
+    if (data?.state) applyRemoteState(data.state,false,true);
+    return data;
+  },
   // Browser-local demonstration bridge. Reject local rewards when cloud backend is enabled.
   getBonusSnapshot: () => ({
     cloudMode: backendConfigured(),
+    signedIn: Boolean(currentUser),
+    uid: currentUser?.uid || "",
     coins: Number(save.coins) || 0,
     completedLevels: Object.keys(save.completedLevels || {}).filter(key => !!save.completedLevels[key]).sort(),
     stars: Object.values(save.levelStars || {}).reduce((sum, value) => sum + (Number(value) || 0), 0),
@@ -2936,7 +2994,7 @@ window.SugarRush = Object.assign(window.SugarRush || {}, {
 requestAnimationFrame(draw);
 })();
 </script>
-<script src="bonus-features.js?v=2"></script>
+<script src="bonus-features.js?v=7"></script>
 <script src="site-customizer.js?v=1"></script>
 <script src="admin-tools.js?v=5"></script>
 <script src="audio-settings.js?v=3"></script>
