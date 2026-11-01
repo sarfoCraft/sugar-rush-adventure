@@ -12,8 +12,8 @@
     "check": "node --check backend/server.js && node --check admin-tools.js && node --check site-customizer.js"
   },
   "dependencies": {
-    "@prisma/composer": "0.36.0",
-    "@prisma/composer-prisma-cloud": "0.36.0",
+    "@prisma/composer": "0.35.0",
+    "@prisma/composer-prisma-cloud": "0.35.0",
     "arktype": "2.2.9",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
