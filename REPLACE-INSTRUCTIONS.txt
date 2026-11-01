@@ -1,0 +1,22 @@
+SUGAR RUSH ADVENTURE - ONLY REPLACE THESE FILES (V6)
+
+GitHub repository: sarfoCraft/sugar-rush-adventure
+
+Replace these exact paths, keeping the same folder structure:
+
+  module.ts
+  backend/service.ts
+  backend/prisma-server.ts
+  backend/server.js
+  backend/admin-auth.js
+  admin-tools.js
+  index.html
+
+Do not upload this ZIP as a file into GitHub. Extract and upload its contents to the repository root so that backend/ stays under backend/. Commit directly to main.
+
+The existing .github/workflows/prisma-deploy.yml will trigger the Prisma Deploy action on a push.
+
+Then check: https://uqwoghlmc2prvme3xhq3oh1a.sin.prisma.build/health
+Expected backend version: admin-access-fix-v6
+
+Do not alter the Firebase UID, or expose secrets on GitHub. Live result needs to be tested after deployment.
