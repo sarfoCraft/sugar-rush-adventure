@@ -60,7 +60,7 @@ It uses GitHub OIDC (`id-token: write`) and the existing repository connection i
 3. Wait for the build and deploy job to finish.
 4. A push to `main` targets production. A push to another branch creates a preview stage for that branch.
 
-The workflow explicitly runs `bun install` and `bun run build`, so it does not rely on automatic package-manager detection. It uses Node.js 22 and Bun 1.3.10.
+The workflow explicitly runs `npm ci` and `npm run build`, so it does not rely on automatic package-manager detection. It uses Node.js 22 and Bun 1.3.10 (Bun runs the bundling command in the build script).
 
 ## Connect the deployed API to the game
 
