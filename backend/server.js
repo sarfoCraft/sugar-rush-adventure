@@ -6,6 +6,7 @@ import rateLimit from "express-rate-limit";
 import pg from "pg";
 import firebaseAdmin from "firebase-admin";
 import { randomUUID, randomBytes } from "node:crypto";
+import { parseAdminUids } from "./admin-auth.js";
 
 const { Pool } = pg;
 const app = express();
@@ -14,7 +15,11 @@ const app = express();
 // The process.env fallback preserves compatibility with ordinary Node.js hosts.
 const runtimeConfig = globalThis.__SUGAR_RUSH_RUNTIME_CONFIG__ || process.env;
 const PORT = Number(runtimeConfig.PORT || 3000);
-const ADMIN_UIDS = new Set(String(runtimeConfig.ADMIN_UIDS || "").split(",").map(x => x.trim()).filter(Boolean));
+// Normalize the exact Firebase Authentication UID(s) supplied in Prisma.
+// Accept plain UID, comma/newline-separated values, and a JSON string array.
+// Do not accept email addresses, names or client-side claims as admin proof.
+const ADMIN_UIDS = parseAdminUids(runtimeConfig.ADMIN_UIDS);
+const RELEASE_VERSION = "admin-access-fix-v5";
 const allowedOrigins = String(runtimeConfig.FRONTEND_ORIGINS || "https://sarfocraft.github.io,http://localhost:5500,http://127.0.0.1:5500")
   .split(",").map(x => x.trim()).filter(Boolean);
 
@@ -254,7 +259,7 @@ async function authenticate(req, res, next) {
     req.user = decoded;
     req.isAdmin = ADMIN_UIDS.has(decoded.uid);
     req.player = await ensurePlayer(req);
-    if (req.player.banned && !req.isAdmin) return res.status(403).json({ error: `This account is banned${req.player.ban_reason ? `: ${req.player.ban_reason}` : "."}` });
+    if (req.player.banned && !req.isAdmin) return res.status(403).json({ code: "ACCOUNT_BANNED", error: "This account is banned. Contact support if you believe this is a mistake." });
     return next();
   } catch (error) {
     if (error?.code === "auth/id-token-expired" || error?.code === "auth/argument-error" || error?.code === "auth/invalid-id-token") {
@@ -264,7 +269,12 @@ async function authenticate(req, res, next) {
   }
 }
 function requireAdmin(req, res, next) {
-  if (!req.isAdmin) return res.status(403).json({ error: "Administrator access is required." });
+  if (!req.isAdmin) return res.status(403).json({
+    code: ADMIN_UIDS.size ? "ADMIN_UID_NOT_ALLOWED" : "ADMIN_UIDS_EMPTY",
+    error: ADMIN_UIDS.size
+      ? "This Firebase account is not in the server's ADMIN_UIDS allowlist. Check the exact Firebase UID and redeploy the backend."
+      : "The deployed API has no admin UIDs configured. Set ADMIN_UIDS in Prisma Production and deploy again."
+  });
   return next();
 }
 async function getLevels(activeOnly = true) {
@@ -450,7 +460,7 @@ async function ensureSchema() {
   }
 }
 
-app.get("/health", (_req, res) => res.json({ ok: true, service: "sugar-rush-adventure-api" }));
+app.get("/health", (_req, res) => res.json({ ok: true, service: "sugar-rush-adventure-api", version: RELEASE_VERSION }));
 app.get("/api/levels", wrap(async (_req, res) => res.json({ levels: await getLevels(true) })));
 app.get("/api/payment-instructions", (_req, res) => {
   let instructions = {};
@@ -498,6 +508,17 @@ app.get("/api/public/assets/:id", wrap(async (req, res) => {
 }));
 
 app.use("/api", authenticate);
+// Private self-check: Firebase token is verified before reporting administrator status.
+// Never expose the allowlist or secrets; only report status for this signed-in account.
+app.get("/api/auth/status", (req, res) => res.json({
+  ok: true,
+  version: RELEASE_VERSION,
+  authenticated: true,
+  isAdmin: req.isAdmin,
+  configuredAdminCount: ADMIN_UIDS.size,
+  uidSuffix: String(req.user.uid || "").slice(-6),
+  firebaseProjectMatches: req.user.aud === serviceAccount.project_id
+}));
 
 app.get("/api/player/state", wrap(async (req, res) => res.json({ state: await stateResponse(req.user.uid) })));
 app.get("/api/player/profile", wrap(async (req, res) => {
@@ -983,5 +1004,6 @@ app.use((error, _req, res, _next) => {
 await ensureSchema();
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Sugar Rush Adventure API listening on port ${PORT}`);
-  if (!ADMIN_UIDS.size) console.warn("ADMIN_UIDS is empty. No account will have administrator access until you configure it.");
+  console.log(`Admin authorization ${RELEASE_VERSION}: ${ADMIN_UIDS.size} configured UID(s), without exposing identities.`);
+  if (!ADMIN_UIDS.size) console.warn("ADMIN_UIDS is empty. Set it in Prisma Production and redeploy to enable admin access.");
 });

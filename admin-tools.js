@@ -109,7 +109,7 @@
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      const message = response.status === 403 ? "This Firebase account is not listed in the backend ADMIN_UIDS setting. Add the signed-in account UID to your hosting environment and redeploy." : (data.error || `Request failed (${response.status}).`);
+      const message = data.error || `Request failed (${response.status}).`;
       throw new Error(message);
     }
     return data;

@@ -825,7 +825,7 @@ body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:
       <section class="page-view" id="view-profile">
         <div class="page-heading"><div><h2>👤 Player profile</h2><p>Manage your display name, country and sign-in option.</p></div></div>
         <div class="section-grid"><section class="content-card"><h3>Player details</h3><div style="display:flex;align-items:center;gap:12px;margin:4px 0 12px"><img id="playerPhotoPreview" alt="Player profile" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect width='100%25' height='100%25' rx='48' fill='%23f1e7ff'/%3E%3Ctext x='50%25' y='57%25' font-size='42' text-anchor='middle' fill='%237650d8'%3E%F0%9F%91%A4%3C/text%3E%3C/svg%3E" style="width:68px;height:68px;border-radius:50%;object-fit:cover;border:2px solid var(--line);background:#fff"><div style="min-width:0;flex:1"><label class="field-label" for="playerPhotoFile">Update profile picture</label><input class="field" id="playerPhotoFile" type="file" accept="image/jpeg,image/png,image/webp"><p class="tiny-note">JPG, PNG or WEBP · max 500 KB · requires backend</p></div></div><div class="profile-grid"><div><label class="field-label" for="playerName">Player name</label><input class="field" id="playerName" maxlength="20" value="Guest Player" autocomplete="nickname"></div><div><label class="field-label" for="countryCode">Country</label><select class="field" id="countryCode"><option value="US">United States</option><option value="PK">Pakistan</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="IN">India</option><option value="AE">United Arab Emirates</option><option value="AU">Australia</option><option value="BD">Bangladesh</option><option value="OTHER">Other</option></select></div></div><p class="tiny-note">Player ID: <strong id="playerPublicId">Connect backend to generate your ID</strong></p><p class="tiny-note">Total play time: <strong id="playerPlayHours">0h 0m</strong></p><p class="tiny-note">In live mode, the backend stores your IP address for account security and abuse prevention. Explain this in your privacy notice.</p></section>
-        <section class="content-card"><h3>Account & security</h3><p id="accountSummary">You are playing as a guest. No account is required.</p><p class="tiny-note">Sign in with Firebase to sync progress. Admin access uses the same Firebase account plus server-side administrator approval.</p><button id="profileAuthBtn" type="button" style="width:100%">Sign in or register</button><button class="secondary" id="adminLoginBtn" type="button" style="width:100%;margin-top:10px">🔐 Admin login / connection setup</button><button class="soft" id="resetProgress" type="button" style="width:100%;margin-top:10px">Reset demo data</button></section></div>
+        <section class="content-card"><h3>Account & security</h3><p id="accountSummary">You are playing as a guest. No account is required.</p><p class="tiny-note">Sign in with Firebase to sync progress. Admin access uses the same Firebase account plus server-side administrator approval.</p><button id="profileAuthBtn" type="button" style="width:100%">Sign in or register</button><button class="secondary" id="adminLoginBtn" type="button" style="width:100%;margin-top:10px">🔐 Admin login / connection setup</button><p id="adminAuthDiagnostic" role="status" hidden style="padding:11px 13px;margin:9px 0;border:1px solid #e5d1f5;border-radius:10px;background:#fff8fe;color:#652b82;line-height:1.5;font-size:.82rem;overflow-wrap:anywhere"></p><button class="soft" id="resetProgress" type="button" style="width:100%;margin-top:10px">Reset demo data</button></section></div>
         <section class="content-card" style="margin-top:13px"><div class="notice"><strong>Before publishing</strong><br>Authentication is separate from the secure game backend. A production release still needs server-side coin balances, verified rewarded ads, referral validation, live leaderboards, privacy disclosures and abuse prevention.</div></section>
       </section>
       <section class="page-view" id="view-settings">
@@ -1087,8 +1087,10 @@ async function backendRequest(path, options = {}) {
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const error = new Error(response.status === 403 ? "Your Firebase account is signed in, but its UID is not authorized as an admin. Add this UID to the backend ADMIN_UIDS setting and redeploy the API." : (data.error || `Server request failed (${response.status}).`));
+    // Preserve the actual server error: not every HTTP 403 means a wrong admin UID.
+    const error = new Error(data.error || `Server request failed (${response.status}).`);
     error.status = response.status;
+    error.code = data.code || "";
     throw error;
   }
   return data;
@@ -1375,7 +1377,14 @@ function saveAdminConnectionSettings(event) {
   $("adminSetupStatus").textContent = "Connection details saved. Reloading the game to initialize Firebase…";
   window.setTimeout(() => window.location.reload(), 700);
 }
+function showAdminDiagnostic(message) {
+  const target = $("adminAuthDiagnostic");
+  if (!target) return;
+  target.textContent = message;
+  target.hidden = !message;
+}
 async function openAdminAccess() {
+  showAdminDiagnostic("Checking administrator permission on the live Prisma API…");
   if (!backendConfigured() || !firebaseConfigured()) {
     openAdminSetup();
     $("adminSetupStatus").textContent = "Connect your deployed API and Firebase Web App first. Then sign in with the account assigned in ADMIN_UIDS.";
@@ -1388,13 +1397,34 @@ async function openAdminAccess() {
     return;
   }
   try {
+    // Check exactly what the deployed API knows before opening a protected page.
+    // This also detects when Prisma is still serving an older build.
+    const status = await backendRequest("/api/auth/status");
+    if (!status || status.version !== "admin-access-fix-v5") {
+      const detail = "Old API version detected. Upload this corrected ZIP to GitHub and wait for a fresh Prisma deployment, then reload the game.";
+      showAdminDiagnostic(detail);
+      setStatus(detail);
+      return;
+    }
+    if (!status.isAdmin) {
+      const detail = status.configuredAdminCount === 0
+        ? "The running Prisma API has ZERO admin UIDs. Confirm ADMIN_UIDS in Production, then trigger a new deployment."
+        : `The running Prisma API has ${status.configuredAdminCount} admin UID(s), but this login does not match (your UID ends in ${status.uidSuffix}). Recheck that exact Firebase UID, and redeploy.`;
+      showAdminDiagnostic(detail);
+      setStatus(`Admin access denied: ${detail}`);
+      return;
+    }
     await backendRequest("/api/admin/coin-orders");
     isAdminMode = true;
+    showAdminDiagnostic("");
     setActiveView("admin");
     await renderAdminPayments();
   } catch (error) {
-    const uidHint = currentUser?.uid ? ` Your Firebase UID is ${currentUser.uid}.` : "";
-    setStatus(`Admin access denied: ${error.message}${uidHint}`);
+    const msg = error.status === 404
+      ? "Your API is serving an older version without admin diagnostics. Deploy the corrected backend, then refresh."
+      : error.message;
+    showAdminDiagnostic(msg);
+    setStatus(`Admin check failed: ${msg}`);
   }
 }
 async function syncPaymentRequestViews() {
@@ -2908,7 +2938,7 @@ requestAnimationFrame(draw);
 </script>
 <script src="bonus-features.js?v=2"></script>
 <script src="site-customizer.js?v=1"></script>
-<script src="admin-tools.js"></script>
+<script src="admin-tools.js?v=5"></script>
 <script src="audio-settings.js?v=3"></script>
 
 </body>
