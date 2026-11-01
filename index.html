@@ -611,6 +611,16 @@ body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:
   #appShell.game-focus{height:calc(100dvh - 12px);overflow-y:auto;overscroll-behavior:contain;padding-bottom:84px}
   #appShell.game-focus #view-play{padding-bottom:0}
   .nav-rail{grid-template-columns:repeat(8,minmax(0,1fr))!important}.nav-btn{font-size:.51rem!important}.nav-btn .nav-icon{font-size:.98rem}.special-boosters{flex-wrap:wrap}.special-buy{width:100%}.level-toolbar-actions button{padding:7px 9px;font-size:.69rem}}
+/* V10: compact player identity, completion progress, and mobile admin payment controls */
+.player-progress-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:8px 0;color:#6c5482;font-size:.79rem;font-weight:750}
+.player-progress-track{height:11px;background:#eee2f7;border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.player-progress-track span{display:block;height:100%;width:0;background:linear-gradient(90deg,#7650d8,#fa66aa);transition:width .25s;border-radius:99px}
+.player-identity-badge{display:inline-flex;align-items:center;max-width:100%;gap:5px;padding:5px 9px;border-radius:99px;background:#f2e9ff;color:#613c91;font-size:.72rem;font-weight:850;overflow-wrap:anywhere}
+#adminPaymentsToolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+#clearApprovedPaymentsBtn{background:#f2e9ff;color:#6842ac;border:1px solid #e3d5f1;box-shadow:none;max-width:100%}
+#clearApprovedPaymentsBtn:disabled{opacity:.5;cursor:not-allowed}
+#adminPaymentsNotice{font-size:.76rem;line-height:1.45;color:#705b81;margin:8px 0}
+@media(max-width:650px){#view-admin .card-head{align-items:stretch;flex-wrap:wrap;gap:9px}#view-admin .content-card{max-width:100%;min-width:0;overflow-wrap:anywhere}#view-admin .card-head>*{min-width:0}#adminPaymentsToolbar{width:100%}#adminPaymentsToolbar button{flex:1 1 130px;font-size:.76rem;padding:9px 8px}#adminPaymentsList .order-row{padding:12px;overflow-wrap:anywhere}#adminPaymentsList .order-row-head{flex-wrap:wrap;gap:8px}#view-profile .section-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -729,6 +739,8 @@ body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:
             </div>
           </div>
 
+          <div class="player-progress-summary"><span class="player-identity-badge" id="homeIdentityBadge">🎮 Guest Player · Guest</span><span id="homeProgressSummary">0 / 100 levels completed · 0%</span></div>
+          <div class="player-progress-track" role="progressbar" aria-label="Your completed levels" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="homeCompletedProgressTrack"><span id="homeCompletedProgress"></span></div>
           <div class="home-feature-grid">
             <article class="home-feature-card daily-feature">
               <div class="home-feature-icon">🎁</div>
@@ -826,6 +838,12 @@ body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:
         <div class="page-heading"><div><h2>👤 Player profile</h2><p>Manage your display name, country and sign-in option.</p></div></div>
         <div class="section-grid"><section class="content-card"><h3>Player details</h3><div style="display:flex;align-items:center;gap:12px;margin:4px 0 12px"><img id="playerPhotoPreview" alt="Player profile" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect width='100%25' height='100%25' rx='48' fill='%23f1e7ff'/%3E%3Ctext x='50%25' y='57%25' font-size='42' text-anchor='middle' fill='%237650d8'%3E%F0%9F%91%A4%3C/text%3E%3C/svg%3E" style="width:68px;height:68px;border-radius:50%;object-fit:cover;border:2px solid var(--line);background:#fff"><div style="min-width:0;flex:1"><label class="field-label" for="playerPhotoFile">Update profile picture</label><input class="field" id="playerPhotoFile" type="file" accept="image/jpeg,image/png,image/webp"><p class="tiny-note">JPG, PNG or WEBP · max 500 KB · requires backend</p></div></div><div class="profile-grid"><div><label class="field-label" for="playerName">Player name</label><input class="field" id="playerName" maxlength="20" value="Guest Player" autocomplete="nickname"></div><div><label class="field-label" for="countryCode">Country</label><select class="field" id="countryCode"><option value="US">United States</option><option value="PK">Pakistan</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="IN">India</option><option value="AE">United Arab Emirates</option><option value="AU">Australia</option><option value="BD">Bangladesh</option><option value="OTHER">Other</option></select></div></div><p class="tiny-note">Player ID: <strong id="playerPublicId">Connect backend to generate your ID</strong></p><p class="tiny-note">Total play time: <strong id="playerPlayHours">0h 0m</strong></p><p class="tiny-note">In live mode, the backend stores your IP address for account security and abuse prevention. Explain this in your privacy notice.</p></section>
         <section class="content-card"><h3>Account & security</h3><p id="accountSummary">You are playing as a guest. No account is required.</p><p class="tiny-note">Sign in with Firebase to sync progress. Admin access uses the same Firebase account plus server-side administrator approval.</p><button id="profileAuthBtn" type="button" style="width:100%">Sign in or register</button><button class="secondary" id="adminLoginBtn" type="button" style="width:100%;margin-top:10px">🔐 Admin login / connection setup</button><button class="soft" id="syncCloudProgress" type="button" style="width:100%;margin-top:10px">☁ Sync coins & progress from cloud</button><p class="tiny-note" id="cloudSyncStatus" role="status" style="margin:7px 0">Signed-in progress is stored in Prisma; guest saves remain on this device.</p><p id="adminAuthDiagnostic" role="status" hidden style="padding:11px 13px;margin:9px 0;border:1px solid #e5d1f5;border-radius:10px;background:#fff8fe;color:#652b82;line-height:1.5;font-size:.82rem;overflow-wrap:anywhere"></p><button class="soft" id="resetProgress" type="button" style="width:100%;margin-top:10px">Reset demo data</button></section></div>
+        <section class="content-card" id="myProfileProgress" style="margin-top:13px">
+          <div class="card-head"><div><h3>🏆 My Game Progress</h3><span class="player-identity-badge" id="profileIdentityBadge">🎮 Guest Player · Guest</span></div><strong id="profileProgressPercent">0%</strong></div>
+          <div class="player-progress-track" role="progressbar" aria-label="Completed levels" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="profileProgressTrack"><span id="profileProgressFill"></span></div>
+          <div class="player-progress-summary"><span id="profileProgressLevels">0 / 100 levels completed</span><span id="profileProgressScore">Best score 0 · 0 stars</span></div>
+          <p class="tiny-note" id="profileProgressStorage">Guest progress is saved only on this device.</p>
+        </section>
         <section class="content-card" style="margin-top:13px"><div class="notice"><strong>Before publishing</strong><br>Authentication is separate from the secure game backend. A production release still needs server-side coin balances, verified rewarded ads, referral validation, live leaderboards, privacy disclosures and abuse prevention.</div></section>
       </section>
       <section class="page-view" id="view-settings">
@@ -847,7 +865,7 @@ body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:
       <section class="page-view" id="view-admin">
         <div class="page-heading"><div><h2>🔐 Admin · Coin Approvals</h2><p>Review bank transfer, EasyPaisa and JazzCash requests. Approve only after checking the transaction in your own account.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button id="exitAdminBtn" class="soft" type="button">← Player profile</button><button id="adminSignOutBtn" class="secondary" type="button">🚪 Log out</button></div></div>
         <div class="admin-warning" id="adminModeWarning">Demo admin mode: this queue is stored in this browser only. It is not a secure live admin system. Use the backend starter included with this project for real multi-user approvals.</div>
-        <section class="content-card"><div class="card-head"><h3>Payment requests</h3><button id="refreshAdminPaymentsBtn" class="soft" type="button">Refresh</button></div><div id="adminPaymentsList" class="order-list"><div class="empty-state">No payment requests found.</div></div></section>
+        <section class="content-card"><div class="card-head"><h3>Payment requests</h3><div id="adminPaymentsToolbar"><button id="refreshAdminPaymentsBtn" class="soft" type="button">Refresh</button><button id="clearApprovedPaymentsBtn" type="button" disabled>🗂️ Clear All Approved (0)</button></div></div><p id="adminPaymentsNotice" aria-live="polite">Clearing archives approved requests from this admin list only. Player coins and payment history stay saved.</p><div id="adminPaymentsList" class="order-list"><div class="empty-state">No payment requests found.</div></div></section>
       </section>
     </main>
   </div>
@@ -1293,15 +1311,42 @@ async function renderAdminPayments() {
       const orders = Array.isArray(data.orders) ? data.orders : [];
       $("adminModeWarning").textContent = "Secure backend mode: requests are loaded from the server. Verify the transaction in your payment account before approving.";
       target.innerHTML = orders.length ? orders.map(order => renderPaymentOrder(order,true)).join("") : `<div class="empty-state">No payment requests found.</div>`;
+      const approved=orders.filter(order=>order.status==="approved").length;
+      $("clearApprovedPaymentsBtn").disabled=!approved;
+      $("clearApprovedPaymentsBtn").textContent=`🗂️ Clear All Approved (${approved} shown)`;
     } catch (error) {
       isAdminMode = false;
       target.innerHTML = `<div class="empty-state">Admin access denied or backend unavailable: ${escapeHtml(error.message)}</div>`;
     }
     return;
   }
-  const queue = readPaymentQueue().sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+  const queue = readPaymentQueue().filter(order=>!order.adminArchived).sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt)));
   $("adminModeWarning").textContent = "DEMO ONLY: the queue is saved in this browser. Anyone who can inspect or edit this HTML can bypass demo controls. Never use this mode to approve real payments.";
   target.innerHTML = queue.length ? queue.map(order => renderPaymentOrder(order,true)).join("") : `<div class="empty-state">No payment requests found. Submit a test request from the Coin Shop to see it here.</div>`;
+  const approved=queue.filter(order=>order.status==="approved").length;
+  $("clearApprovedPaymentsBtn").disabled=!approved;
+  $("clearApprovedPaymentsBtn").textContent=`🗂️ Clear All Approved (${approved} shown)`;
+}
+async function clearApprovedPaymentRequests() {
+  const button=$("clearApprovedPaymentsBtn");
+  if(!isAdminMode)return setStatus("Open Admin Dashboard first.");
+  if(button.disabled)return;
+  if(!window.confirm("Archive ALL approved payment requests from the admin queue? This does not remove payment history or withdraw any credited coins."))return;
+  button.disabled=true;
+  try{
+    let archivedCount=0;
+    if(backendConfigured()){
+      const result=await backendRequest("/api/admin/coin-orders/archive-approved",{method:"POST",body:{}});
+      archivedCount=Number(result.archivedCount)||0;
+    }else{
+      const queue=readPaymentQueue();
+      for(const order of queue){if(order.status==="approved"&&!order.adminArchived){order.adminArchived=true;archivedCount++;}}
+      writePaymentQueue(queue);
+    }
+    await renderAdminPayments();renderMyPayments();
+    setStatus(`${archivedCount} approved payment request(s) archived from Admin. Payment history and coins were preserved.`);
+  }catch(error){setStatus(`Could not archive approved payments: ${error.message}`);}
+  finally{button.disabled=false;}
 }
 async function handleAdminPaymentAction(event) {
   const approveButton = event.target.closest("[data-approve-payment]");
@@ -1448,6 +1493,26 @@ function setCoins(value) {
   persist();
   refreshDashboard();
 }
+function refreshPlayerProgressUI() {
+  const account=Boolean(currentUser && !currentUser.isAnonymous && sessionMode==="account");
+  const savedName=(save.playerName||"").trim();
+  const accountName=(currentUser?.displayName||currentUser?.email?.split("@")[0]||"Player").trim();
+  const displayName=(account && (!savedName || savedName==="Guest Player") ? accountName : savedName || "Guest Player").slice(0,28);
+  const accountKind=account?"Registered account":"Guest";
+  const completed=Object.values(save.completedLevels||{}).filter(Boolean).length;
+  const total=Math.max(1,Number(LEVEL_COUNT)||100);
+  const percent=Math.max(0,Math.min(100,Math.round(completed/total*100)));
+  const stars=Object.values(save.levelStars||{}).reduce((sum,n)=>sum+(Number(n)||0),0);
+  for(const id of ["homeIdentityBadge","profileIdentityBadge"]){if($(id))$(id).textContent=`${account?"👤":"🎮"} ${displayName} · ${accountKind}`;}
+  if($("homeProgressSummary"))$("homeProgressSummary").textContent=`${completed} / ${total} levels completed · ${percent}%`;
+  if($("homeCompletedProgress"))$("homeCompletedProgress").style.width=`${percent}%`;
+  if($("profileProgressFill"))$("profileProgressFill").style.width=`${percent}%`;
+  if($("profileProgressPercent"))$("profileProgressPercent").textContent=`${percent}%`;
+  if($("profileProgressLevels"))$("profileProgressLevels").textContent=`${completed} / ${total} levels completed · ${save.maxUnlocked||1} unlocked`;
+  if($("profileProgressScore"))$("profileProgressScore").textContent=`Best score ${(Number(save.bestScore)||0).toLocaleString()} · ${stars} stars`;
+  if($("profileProgressStorage"))$("profileProgressStorage").textContent=account&&backendConfigured()?"Progress synced with your signed-in Prisma account.":"Guest progress is saved on this device only. Sign in to use cloud progress.";
+  for(const id of ["homeCompletedProgressTrack","profileProgressTrack"]){if($(id))$(id).setAttribute("aria-valuenow",String(percent));}
+}
 function refreshDashboard() {
   syncDailyCount();
   $("coinsTop").textContent = save.coins.toLocaleString();
@@ -1480,6 +1545,7 @@ function refreshDashboard() {
     ? (backendConfigured() ? `Referral code ${save.appliedReferralCode} recorded. Rewards are subject to verification.` : `Code ${save.appliedReferralCode} saved locally; it has not been verified or paid.`)
     : (backendConfigured() ? "Your referrals are tracked by the server." : "Referral tracking is a preview until a shared backend is connected.");
   if (typeof updateAccountDisplay === "function") updateAccountDisplay();
+  refreshPlayerProgressUI();
 }
 function renderLeaderboard() {
   const active = document.querySelector(".tab.active");
@@ -1508,12 +1574,31 @@ function updateProfile() {
     .then(data=>{remoteProfile=data.profile||remoteProfile;refreshDashboard();})
     .catch(error=>setStatus(`Profile sync failed: ${error.message}`));
 }
-function targetFor(level) { return Math.max(1,Math.floor(Number(levelRecord(level).targetScore)||450)); }
-function movesFor(level) { return Math.max(1,Math.floor(Number(levelRecord(level).moves)||24)); }
+// Custom difficulty overrides change real gameplay; auto mode keeps original balancing.
+const CUSTOM_DIFFICULTY = {
+  Easy: {target:.78,moves:5,time:1.25,jelly:.85},
+  Medium: {target:1,moves:2,time:1.1,jelly:1},
+  Hard: {target:1.18,moves:-1,time:.94,jelly:1.1},
+  Expert: {target:1.32,moves:-3,time:.85,jelly:1.18},
+  Master: {target:1.48,moves:-5,time:.75,jelly:1.27}
+};
+function customDifficulty(level) { return CUSTOM_DIFFICULTY[levelRecord(level).difficultyOverride] || null; }
+function targetFor(level) {
+  const item=levelRecord(level), mod=customDifficulty(level);
+  return Math.max(1,Math.floor((Number(item.targetScore)||450)*(mod?.target||1)));
+}
+function movesFor(level) {
+  const item=levelRecord(level), mod=customDifficulty(level);
+  const base=Math.floor(Number(item.moves)||24);
+  return mod ? Math.max(5,base+mod.moves) : Math.max(1,base);
+}
 function seasonIndex(level) { return Math.max(0,[...new Set(levelCatalog.map(item=>item.season||"Candy Forest"))].indexOf(levelRecord(level).season||"Candy Forest")); }
 function getLevelConfig(level) {
   const item=levelRecord(level);
-  return {type:["score","timed","jelly"].includes(item.type)?item.type:"score",timeLimit:Math.max(0,Math.floor(Number(item.timeLimit)||0)),jellyGoal:Math.max(0,Math.floor(Number(item.jellyGoal)||0))};
+  const mod=customDifficulty(level);
+  return {type:["score","timed","jelly"].includes(item.type)?item.type:"score",
+    timeLimit:Math.max(0,Math.floor((Number(item.timeLimit)||0)*(mod?.time||1))),
+    jellyGoal:Math.max(0,Math.floor((Number(item.jellyGoal)||0)*(mod?.jelly||1)))};
 }
 async function loadRemoteLevels() {
   if(!backendConfigured()) return;
@@ -1523,7 +1608,7 @@ async function loadRemoteLevels() {
       levelCatalog=data.levels.map((item,index)=>({
         id:String(item.id||`remote-${index+1}`),number:index+1,name:String(item.name||`Level ${index+1}`),season:String(item.season||"Candy Forest"),
         type:["score","timed","jelly"].includes(item.type)?item.type:"score",targetScore:Math.max(1,Number(item.targetScore)||450+(index*4)),
-        moves:Math.max(1,Number(item.moves)||24),timeLimit:Math.max(0,Number(item.timeLimit)||0),jellyGoal:Math.max(0,Number(item.jellyGoal)||0),difficulty:String(item.difficulty||"Medium")
+        moves:Math.max(1,Number(item.moves)||24),timeLimit:Math.max(0,Number(item.timeLimit)||0),jellyGoal:Math.max(0,Number(item.jellyGoal)||0),difficulty:String(item.difficulty||"Medium"),difficultyOverride:item.difficultyOverride||null
       }));
       LEVEL_COUNT=levelCatalog.length;
       save.currentLevel=Math.max(1,Math.min(LEVEL_COUNT,Number(save.currentLevel)||1));
@@ -2710,6 +2795,7 @@ function updateAccountDisplay() {
     : "You are playing as a guest. No account is required, and guest mode keeps demo progress on this device.";
   $("profileAuthBtn").textContent = isAccount ? "🚪 Log out of account" : "Sign in or register";
   $("accountBtn").title = isAccount ? "Open your profile and account settings" : "Sign in or open your profile";
+  refreshPlayerProgressUI();
 }
 function firebaseSetupMessage() {
   setAuthStatus("Sign-in is not connected yet. The game owner must add Firebase config and enable Email/Password, Google and Facebook providers. You can still play as a guest.");
@@ -2925,6 +3011,7 @@ $("adminSetupOverlay").addEventListener("click",event=>{if(event.target===$("adm
 $("exitAdminBtn").addEventListener("click",()=>{isAdminMode=false;setActiveView("profile");});
 $("refreshAdminPaymentsBtn").addEventListener("click",renderAdminPayments);
 $("adminPaymentsList").addEventListener("click",handleAdminPaymentAction);
+$("clearApprovedPaymentsBtn").addEventListener("click",clearApprovedPaymentRequests);
 $("cancelDemoAd").addEventListener("click",closeDemoAd);
 $("completeDemoAd").addEventListener("click",completeDemoAd);
 $("demoAdOverlay").addEventListener("click",event=>{if(event.target===$("demoAdOverlay"))closeDemoAd();});
@@ -2996,7 +3083,7 @@ requestAnimationFrame(draw);
 </script>
 <script src="bonus-features.js?v=7"></script>
 <script src="site-customizer.js?v=1"></script>
-<script src="admin-tools.js?v=5"></script>
+<script src="admin-tools.js?v=10"></script>
 <script src="audio-settings.js?v=3"></script>
 
 </body>

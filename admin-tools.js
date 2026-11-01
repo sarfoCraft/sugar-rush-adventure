@@ -10,6 +10,8 @@
   let activePane = "players";
   let cachedReferrals = [];
   let cachedLevels = [];
+  const selectedLevelIds = new Set();
+  let selectedAllLevels = false;
   let customizationDraft = null;
   let customizationHistory = [];
   let cachedAssets = [];
@@ -33,6 +35,11 @@
   #adminOpsPanel .sma-actions button{padding:7px 9px;font-size:.7rem;box-shadow:none}
   #adminOpsPanel .sma-actions .sma-danger{background:#fff0f3;color:#a12e58;border:1px solid #ffc9d5}
   #adminOpsPanel .sma-actions .sma-edit{background:#f3edff;color:#6842ac;border:1px solid #e4d7fa}
+  #adminOpsPanel .sma-ip-cell{min-width:146px}
+  #adminOpsPanel .sma-ip-value{display:block;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.73rem;color:#625579;overflow-wrap:anywhere;margin-bottom:5px}
+  #adminOpsPanel .sma-ip-toggle{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:8px;background:#f2eaff;color:#5e378f;border:1px solid #dec9f5;box-shadow:none;font-size:.7rem;font-weight:800}
+  #adminOpsPanel .sma-ip-toggle:focus-visible{outline:3px solid #694bd2;outline-offset:2px}
+  #adminOpsPanel .sma-ip-toggle:disabled{opacity:.55;cursor:wait}
   #adminOpsPanel .sma-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0;padding:13px;border:1px solid var(--line);border-radius:14px;background:#fff}
   #adminOpsPanel .sma-form label{display:block;font-size:.7rem;font-weight:850;color:var(--muted);text-transform:uppercase;margin-bottom:5px}
   #adminOpsPanel .sma-form .sma-full{grid-column:1/-1}
@@ -74,6 +81,38 @@
   #adminOpsPanel .sma-asset small{display:block;color:var(--muted);font-size:.66rem}
   #adminOpsPanel .sma-asset-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
   #adminOpsPanel .sma-asset-actions button{padding:6px 8px;font-size:.65rem;box-shadow:none}
+  #adminOpsPanel{min-width:0;max-width:100%;overflow-wrap:anywhere}
+  #adminOpsPanel .sma-progress{height:8px;max-width:160px;background:#efe7f8;border-radius:99px;overflow:hidden;margin:5px 0}
+  #adminOpsPanel .sma-progress span{display:block;height:100%;background:linear-gradient(90deg,#7852d9,#ff62ac);border-radius:99px}
+  #adminOpsPanel .sma-bulk-panel{border:1px solid #d8c4f4;background:#fbf8ff;border-radius:16px;padding:14px;margin:12px 0}
+  #adminOpsPanel .sma-bulk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:10px 0}
+  #adminOpsPanel .sma-bulk-grid label{display:block;font-weight:800;color:#70528c;font-size:.74rem;margin-bottom:5px}
+  #adminOpsPanel .sma-bulk-panel .sma-actions{align-items:center;margin-top:9px}
+  #adminOpsPanel .sma-level-check{width:19px;height:19px;accent-color:#7650d8;cursor:pointer}
+  #adminOpsPanel .sma-tabs button{min-height:38px}
+  @media(max-width:850px){#adminOpsPanel .sma-bulk-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:650px){
+    #view-admin{max-width:100%;min-width:0}
+    #view-admin>.content-card,#adminOpsPanel{padding:12px!important}
+    #adminOpsPanel .card-head{flex-wrap:wrap;gap:9px}
+    #adminOpsPanel .card-head button{max-width:100%}
+    #adminOpsPanel .sma-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+    #adminOpsPanel .sma-tabs button{font-size:.73rem;padding:9px 5px;white-space:normal}
+    #adminOpsPanel .sma-bulk-grid{grid-template-columns:1fr}
+    #adminOpsPanel .sma-toolbar>*{flex:1 1 100%;min-width:0}
+    #adminOpsPanel .sma-scroll{overflow:visible;border:0;background:transparent}
+    #adminOpsPanel table{display:block;min-width:0;width:100%;border:0;background:transparent}
+    #adminOpsPanel thead{display:none}
+    #adminOpsPanel tbody{display:grid;gap:10px}
+    #adminOpsPanel tbody tr{display:block;padding:8px 12px;background:#fff;border:1px solid #e7d6f2;border-radius:13px;box-shadow:0 2px 8px #4e27820a;min-width:0}
+    #adminOpsPanel tbody td{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;max-width:none;min-width:0;width:100%;font-size:.77rem;white-space:normal;text-align:right;border-bottom:1px solid #f3ebf9;padding:9px 2px}
+    #adminOpsPanel tbody td:last-child{border-bottom:none}
+    #adminOpsPanel tbody td:before{content:attr(data-label);flex:0 0 34%;text-align:left;white-space:normal;color:#765d89;font-size:.72rem;font-weight:850}
+    #adminOpsPanel tbody td[colspan]:before{content:none}
+    #adminOpsPanel tbody td .sma-progress{width:100%;min-width:68px}
+    #adminOpsPanel tbody td .sma-actions{justify-content:flex-end;min-width:0}
+    #adminOpsPanel .sma-form{padding:10px;gap:10px}
+  }
   @media(max-width:760px){#adminOpsPanel .sma-custom-grid{grid-template-columns:1fr}#adminOpsPanel .sma-custom-grid .wide{grid-column:auto}}
   @media(max-width:760px){#adminOpsPanel .sma-clone-grid{grid-template-columns:1fr 1fr}#adminOpsPanel .sma-clone-preview{grid-column:1/-1}}
   @media(max-width:650px){#adminOpsPanel .sma-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#adminOpsPanel .sma-form{grid-template-columns:1fr}#adminOpsPanel .sma-form .sma-full{grid-column:auto}}
@@ -139,8 +178,8 @@
       <p id="smaStatus" class="sma-status" role="status" aria-live="polite">Admin data will load when this screen opens.</p>
       <div id="smaPlayersPane">
         <div class="sma-toolbar"><input class="field" id="smaPlayerSearch" placeholder="Search name, email, player ID or IP address"><button class="secondary" id="smaSearchPlayers" type="button">Search</button></div>
-        <p class="sma-note">IP addresses are sensitive data. Use them only for legitimate security and abuse-prevention purposes, and explain collection/retention in your privacy notice.</p>
-        <div class="sma-scroll"><table><thead><tr><th>Player</th><th>Random player ID</th><th>Email</th><th>IP address</th><th>Last seen</th><th>Play time</th><th>Level</th><th>Referrals</th><th>Status</th><th>Action</th></tr></thead><tbody id="smaPlayersRows"><tr><td colspan="10">Loading players…</td></tr></tbody></table></div>
+        <p class="sma-note">Registered and Firebase anonymous accounts appear here. Local "Play as Guest" users are saved only on their own device and cannot be listed on the server. Admin IP addresses stay private. Player IPs are hidden by default; use the eye button to view one when needed for security. IPs are sensitive data—describe collection and retention in your privacy notice.</p>
+        <div class="sma-scroll"><table><thead><tr><th>Player</th><th>Random player ID</th><th>Email</th><th>IP address</th><th>Last seen</th><th>Play time</th><th>Progress</th><th>Referrals</th><th>Status</th><th>Action</th></tr></thead><tbody id="smaPlayersRows"><tr><td colspan="10">Loading players…</td></tr></tbody></table></div>
       </div>
       <div id="smaReferralsPane" hidden>
         <p class="sma-note">Referral applications stay pending until you review them. Approving a valid referral awards 3,000 coins to the referrer once; rejected or already reviewed referrals cannot be paid again.</p>
@@ -148,12 +187,13 @@
         <div class="sma-scroll"><table><thead><tr><th>Referrer</th><th>Referred player</th><th>Referral code</th><th>Status</th><th>Applied</th><th>Action</th></tr></thead><tbody id="smaReferralsRows"><tr><td colspan="6">Loading referrals…</td></tr></tbody></table></div>
       </div>
       <div id="smaLevelsPane" hidden>
-        <p class="sma-note">Difficulty is assigned automatically by level position: 1–20 Easy, 21–40 Medium, 41–60 Hard, 61–80 Expert, and 81+ Master. New levels get scaled defaults. Deleting a level shifts the following level numbers, so player progress may be affected.</p>
+        <p class="sma-note">Difficulty uses automatic bands by default (1–20 Easy, 21–40 Medium, 41–60 Hard, 61–80 Expert, 81+ Master). A custom difficulty also adjusts actual game targets, moves, and applicable timers/jelly goals while preserving base settings. You can override difficulty per level or use bulk editing. Deleting levels renumbers them and may affect progress.</p>
         <form class="sma-form" id="smaLevelForm">
           <input type="hidden" id="smaLevelId">
           <div><label for="smaLevelName">Level name</label><input class="field" id="smaLevelName" maxlength="60" required value="New Level"></div>
           <div><label for="smaLevelSeason">World / season</label><input class="field" id="smaLevelSeason" maxlength="60" required value="Candy Forest"></div>
           <div><label for="smaLevelType">Mission type</label><select class="field" id="smaLevelType"><option value="score">Score mission</option><option value="timed">Timed challenge</option><option value="jelly">Jelly mission</option></select></div>
+          <div><label for="smaLevelDifficulty">Difficulty</label><select class="field" id="smaLevelDifficulty"><option value="auto">Auto (by level number)</option><option value="Easy">Easy</option><option value="Medium">Medium</option><option value="Hard">Hard</option><option value="Expert">Expert</option><option value="Master">Master</option></select></div>
           <div><label for="smaTargetScore">Score target</label><input class="field" id="smaTargetScore" type="number" min="100" max="1000000" required value="850"></div>
           <div><label for="smaMoves">Moves</label><input class="field" id="smaMoves" type="number" min="1" max="100" required value="20"></div>
           <div><label for="smaTimeLimit">Time limit (seconds)</label><input class="field" id="smaTimeLimit" type="number" min="0" max="3600" value="0"></div>
@@ -174,7 +214,18 @@
           </div>
           <p class="sma-note" style="margin:9px 0 0">Safety limit: 500 clones per action. Existing levels and player progress are not deleted.</p>
         </section>
-        <div class="sma-scroll"><table><thead><tr><th>#</th><th>Name / season</th><th>Mission</th><th>Target</th><th>Moves</th><th>Time</th><th>Jelly</th><th>Auto difficulty</th><th>Actions</th></tr></thead><tbody id="smaLevelsRows"><tr><td colspan="9">Loading levels…</td></tr></tbody></table></div>
+        <section class="sma-bulk-panel" aria-label="Bulk edit levels">
+          <div class="sma-clone-head"><strong>✏️ Bulk Edit Levels</strong><span class="sma-new-tag">NEW</span></div>
+          <p class="sma-note">Tick specific levels below, or select Change All. Only the fields you select will change. Progress and level numbers stay intact.</p>
+          <div class="sma-actions"><button type="button" id="smaSelectVisible" class="secondary">✓ Select all loaded</button><button type="button" id="smaClearSelection" class="soft">Clear selection</button><label class="sma-note"><input type="checkbox" id="smaChangeAll"> Change ALL active levels</label></div>
+          <div class="sma-bulk-grid">
+            <div><label for="smaBulkDifficulty">Difficulty</label><select class="field" id="smaBulkDifficulty"><option value="keep">Keep unchanged</option><option value="auto">Reset to auto</option><option value="Easy">Easy</option><option value="Medium">Medium</option><option value="Hard">Hard</option><option value="Expert">Expert</option><option value="Master">Master</option></select></div>
+            <div><label for="smaBulkMission">Mission type</label><select class="field" id="smaBulkMission"><option value="keep">Keep unchanged</option><option value="score">Score mission</option><option value="timed">Timed challenge</option><option value="jelly">Jelly mission</option></select></div>
+            <div><label>Selected levels</label><strong id="smaBulkCount" aria-live="polite">0 selected</strong></div>
+          </div>
+          <div class="sma-actions"><button id="smaApplyBulk" type="button">💾 Apply Bulk Update</button><span class="sma-note" id="smaBulkHelp">Choose levels, then fields to change.</span></div>
+        </section>
+        <div class="sma-scroll"><table><thead><tr><th><input type="checkbox" class="sma-level-check" id="smaSelectPage" aria-label="Select all loaded levels"></th><th>#</th><th>Name / season</th><th>Mission</th><th>Target</th><th>Moves</th><th>Time</th><th>Jelly</th><th>Difficulty</th><th>Actions</th></tr></thead><tbody id="smaLevelsRows"><tr><td colspan="10">Loading levels…</td></tr></tbody></table></div>
       </div>
       <div id="smaCustomizationPane" hidden>
         <div class="sma-custom-actions"><button id="smaLoadCustomization" class="soft" type="button">↻ Load saved settings</button><button id="smaPreviewCustomization" class="secondary" type="button">👁 Preview draft</button><button id="smaRevertPreview" class="soft" type="button">Undo preview</button><button id="smaSaveCustomization" class="soft" type="button">💾 Save draft</button><button id="smaPublishCustomization" type="button">🚀 Publish changes</button></div>
@@ -242,6 +293,23 @@
         </section>
       </div>`;
     root.appendChild(panel);
+    // Attach field labels to the original tables so mobile can render readable cards.
+    const decorateRows = tbody => {
+      const headings = [...tbody.closest("table").querySelectorAll("thead th")].map(th => th.textContent.trim() || "Select");
+      tbody.querySelectorAll("tr").forEach(tr => {
+        tr.querySelectorAll("td").forEach((td, index) => td.setAttribute("data-label", headings[index] || "Details"));
+      });
+    };
+    ["smaPlayersRows","smaLevelsRows","smaReferralsRows"].forEach(id => {
+      const tbody=$(id); if(!tbody)return;
+      new MutationObserver(()=>decorateRows(tbody)).observe(tbody,{childList:true});
+      decorateRows(tbody);
+    });
+    $("smaSelectVisible").addEventListener("click", () => {selectedAllLevels=false;$("smaChangeAll").checked=false;cachedLevels.forEach(item=>selectedLevelIds.add(item.id));renderLevelSelection();});
+    $("smaClearSelection").addEventListener("click", () => {selectedAllLevels=false;$("smaChangeAll").checked=false;selectedLevelIds.clear();renderLevelSelection();});
+    $("smaChangeAll").addEventListener("change", e => {selectedAllLevels=e.target.checked;if(selectedAllLevels)selectedLevelIds.clear();renderLevelSelection();});
+    $("smaSelectPage").addEventListener("change", e => {selectedAllLevels=false;$("smaChangeAll").checked=false;selectedLevelIds.clear();if(e.target.checked)cachedLevels.forEach(item=>selectedLevelIds.add(item.id));renderLevelSelection();});
+    $("smaApplyBulk").addEventListener("click", applyBulkUpdate);
     $("smaRefreshAll").addEventListener("click", () => loadAll(true));
     $("smaSearchPlayers").addEventListener("click", () => loadPlayers());
     $("smaRefreshReferrals").addEventListener("click", () => loadReferrals());
@@ -299,6 +367,42 @@
       <div class="sma-stat"><small>Total play time</small><strong>${totalHours.toLocaleString()} h</strong></div>
       <div class="sma-stat"><small>Active levels</small><strong>${Number(a.totalLevels)||0}</strong></div>`;
   }
+  const eyeOpen = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`;
+  const eyeClosed = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 3 18 18M10.7 5.1A11 11 0 0 1 12 5c6.5 0 10 7 10 7a14.5 14.5 0 0 1-3 3.8M6.1 6.1C3.4 8 2 12 2 12s3.5 7 10 7c1.6 0 3-.4 4.2-1"/><path d="M10 10a3 3 0 0 0 4 4"/></svg>`;
+  function playerIpCell(player) {
+    if (player.isAdmin) return `<td class="sma-ip-cell"><span class="sma-ip-value">🔒 Hidden (Admin)</span></td>`;
+    if (!player.ipAvailable) return `<td class="sma-ip-cell"><span class="sma-ip-value">Not recorded</span></td>`;
+    return `<td class="sma-ip-cell"><span class="sma-ip-value" data-ip-value>••••••••</span><button class="sma-ip-toggle" data-player-ip-uid="${escapeHtml(player.uid)}" type="button" aria-label="Show player IP address" aria-pressed="false">${eyeOpen} Show</button></td>`;
+  }
+  async function handlePlayerIpToggle(button) {
+    const cell = button.closest("td");
+    const value = cell?.querySelector("[data-ip-value]");
+    if (!value) return;
+    if (button.getAttribute("aria-pressed") === "true") {
+      value.textContent = "••••••••";
+      button.setAttribute("aria-pressed", "false");
+      button.setAttribute("aria-label", "Show player IP address");
+      button.innerHTML = `${eyeOpen} Show`;
+      return;
+    }
+    button.disabled = true;
+    try {
+      const data = await api(`/api/admin/players/${encodeURIComponent(button.dataset.playerIpUid)}/ip`);
+      if (data.isAdmin) {
+        cell.innerHTML = `<span class="sma-ip-value">🔒 Hidden (Admin)</span>`;
+        return;
+      }
+      value.textContent = typeof data.ip === "string" && data.ip ? data.ip : "Not recorded";
+      button.setAttribute("aria-pressed", "true");
+      button.setAttribute("aria-label", "Hide player IP address");
+      button.innerHTML = `${eyeClosed} Hide`;
+    } catch (error) {
+      value.textContent = "••••••••";
+      setStatus(error.message || "Could not retrieve this IP.", true);
+    } finally {
+      if (button.isConnected) button.disabled = false;
+    }
+  }
   async function loadPlayers() {
     const target = $("smaPlayersRows");
     if (!target) return;
@@ -309,10 +413,10 @@
       const players = Array.isArray(data.players) ? data.players : [];
       target.innerHTML = players.length ? players.map(p => `
         <tr>
-          <td><strong>${escapeHtml(p.displayName || "Player")}</strong><br><span class="sma-note">${escapeHtml(p.countryCode || "")}</span></td>
+          <td><strong>${escapeHtml(p.displayName && p.displayName !== "Guest Player" ? p.displayName : (p.email ? p.email.split("@")[0] : "Guest Player"))}</strong><br><span class="sma-note">${escapeHtml(p.accountType || "Registered")} · ${escapeHtml(p.countryCode || "")}</span></td>
           <td>${escapeHtml(p.playerId || "—")}</td><td>${escapeHtml(p.email || "Guest / anonymous")}</td>
-          <td>${escapeHtml(p.lastIp || "—")}</td><td>${escapeHtml(formatDate(p.lastSeen))}</td>
-          <td>${escapeHtml(formatTime(p.totalPlaySeconds))}</td><td>${Number(p.currentLevel)||1} / ${Number(p.maxUnlocked)||1}</td>
+          ${playerIpCell(p)}<td>${escapeHtml(formatDate(p.lastSeen))}</td>
+          <td>${escapeHtml(formatTime(p.totalPlaySeconds))}</td><td><strong>${Number(p.completedCount)||0} / ${Math.max(1,Number(data.totalLevels)||1)} levels</strong><div class="sma-progress" role="progressbar" aria-label="Player level completion" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Number(p.progressPercent)||0}"><span style="width:${Math.min(100,Math.max(0,Number(p.progressPercent)||0))}%"></span></div><small class="sma-note">${Number(p.progressPercent)||0}% · Unlocked ${Number(p.maxUnlocked)||1} · Best ${Number(p.bestScore)||0}</small></td>
           <td>${Number(p.referralCount)||0}</td><td>${p.banned ? `<span class="sma-banned">BANNED</span>` : `<span class="sma-active">ACTIVE</span>`}${p.banReason ? `<br><span class="sma-note">${escapeHtml(p.banReason)}</span>` : ""}</td>
           <td><div class="sma-actions">${p.banned ? `<button class="sma-edit" type="button" data-unban="${escapeHtml(p.uid)}">Unban</button>` : `<button class="sma-danger" type="button" data-ban="${escapeHtml(p.uid)}" data-name="${escapeHtml(p.displayName||"Player")}">Ban user</button>`}</div></td>
         </tr>`).join("") : `<tr><td colspan="10">No players found yet.</td></tr>`;
@@ -323,6 +427,8 @@
     }
   }
   async function handlePlayerAction(event) {
+    const ipButton = event.target.closest("[data-player-ip-uid]");
+    if (ipButton) { await handlePlayerIpToggle(ipButton); return; }
     const ban = event.target.closest("[data-ban]");
     const unban = event.target.closest("[data-unban]");
     if (!ban && !unban) return;
@@ -381,6 +487,7 @@
     $("smaLevelName").value = `Level ${n}`;
     $("smaLevelSeason").value = seasons[Math.floor((n - 1) / 20)] || `Bonus World ${Math.floor((n - 1) / 20) + 1}`;
     $("smaLevelType").value = type;
+    $("smaLevelDifficulty").value = "auto";
     $("smaTargetScore").value = 450 + (n - 1) * 4;
     $("smaMoves").value = Math.max(20, 24 - Math.floor((n - 1) / 20));
     $("smaTimeLimit").value = type === "timed" ? 60 + Math.floor((n - 1) / 20) * 15 : 0;
@@ -393,31 +500,63 @@
     $("smaLevelName").value = level.name || "";
     $("smaLevelSeason").value = level.season || "Candy Forest";
     $("smaLevelType").value = level.type || "score";
+    $("smaLevelDifficulty").value = level.difficultyOverride || "auto";
     $("smaTargetScore").value = Number(level.targetScore) || 450;
     $("smaMoves").value = Number(level.moves) || 24;
     $("smaTimeLimit").value = Number(level.timeLimit) || 0;
     $("smaJellyGoal").value = Number(level.jellyGoal) || 0;
     $("smaSaveLevel").textContent = "💾 Save changes";
     $("smaLevelName").focus();
-    setStatus(`Editing Level ${level.number}. Difficulty will still be assigned by level position.`);
+    setStatus(`Editing Level ${level.number}. Choose automatic or custom difficulty.`);
   }
   async function loadLevels() {
     const target = $("smaLevelsRows");
     if (!target) return;
-    target.innerHTML = `<tr><td colspan="9">Loading levels…</td></tr>`;
+    target.innerHTML = `<tr><td colspan="10">Loading levels…</td></tr>`;
     try {
       const data = await api("/api/admin/levels");
       cachedLevels = Array.isArray(data.levels) ? data.levels : [];
       populateCloneSources();
+      [...selectedLevelIds].forEach(id=>{if(!cachedLevels.some(level=>level.id===id))selectedLevelIds.delete(id);});
       target.innerHTML = cachedLevels.length ? cachedLevels.map(level => `
-        <tr><td>${Number(level.number)||0}</td><td><strong>${escapeHtml(level.name)}</strong><br><span class="sma-note">${escapeHtml(level.season)}</span></td>
-        <td>${escapeHtml(level.type)}</td><td>${Number(level.targetScore)||0}</td><td>${Number(level.moves)||0}</td><td>${Number(level.timeLimit)||0}s</td><td>${Number(level.jellyGoal)||0}</td><td><strong>${escapeHtml(level.difficulty||"—")}</strong></td>
-        <td><div class="sma-actions"><button class="sma-edit" type="button" data-edit-level="${escapeHtml(level.id)}">Edit</button><button class="secondary" type="button" data-clone-level="${escapeHtml(level.id)}">Clone</button><button class="sma-danger" type="button" data-delete-level="${escapeHtml(level.id)}" data-number="${Number(level.number)||0}">Delete</button></div></td></tr>`).join("") : `<tr><td colspan="9">No active levels. Add one to start the level map.</td></tr>`;
-      setStatus(`${cachedLevels.length} active level(s) loaded. Difficulty is automatic.`);
+        <tr><td><input class="sma-level-check" type="checkbox" data-select-level="${escapeHtml(level.id)}" aria-label="Select Level ${Number(level.number)||0}" ${selectedLevelIds.has(level.id)?"checked":""} ${selectedAllLevels?"disabled":""}></td><td>${Number(level.number)||0}</td><td><strong>${escapeHtml(level.name)}</strong><br><span class="sma-note">${escapeHtml(level.season)}</span></td>
+        <td>${escapeHtml(level.type)}</td><td>${Number(level.targetScore)||0}</td><td>${Number(level.moves)||0}</td><td>${Number(level.timeLimit)||0}s</td><td>${Number(level.jellyGoal)||0}</td><td><strong>${escapeHtml(level.difficulty||"—")}</strong>${level.difficultyOverride?'<br><small class="sma-note">Custom</small>':''}</td>
+        <td><div class="sma-actions"><button class="sma-edit" type="button" data-edit-level="${escapeHtml(level.id)}">Edit</button><button class="secondary" type="button" data-clone-level="${escapeHtml(level.id)}">Clone</button><button class="sma-danger" type="button" data-delete-level="${escapeHtml(level.id)}" data-number="${Number(level.number)||0}">Delete</button></div></td></tr>`).join("") : `<tr><td colspan="10">No active levels. Add one to start the level map.</td></tr>`;
+      renderLevelSelection();
+      setStatus(`${cachedLevels.length} active level(s) loaded. Select levels to bulk edit.`);
     } catch (error) {
-      target.innerHTML = `<tr><td colspan="9">${escapeHtml(error.message)}</td></tr>`;
+      target.innerHTML = `<tr><td colspan="10">${escapeHtml(error.message)}</td></tr>`;
       setStatus(error.message, true);
     }
+  }
+  function renderLevelSelection() {
+    if (!$('smaBulkCount')) return;
+    $("smaChangeAll").checked=selectedAllLevels;
+    $("smaBulkCount").textContent=selectedAllLevels?`All ${cachedLevels.length} active levels`:`${selectedLevelIds.size} selected`;
+    $("smaSelectPage").checked=!selectedAllLevels && cachedLevels.length>0 && selectedLevelIds.size===cachedLevels.length;
+    $("smaSelectPage").indeterminate=!selectedAllLevels && selectedLevelIds.size>0 && selectedLevelIds.size<cachedLevels.length;
+    document.querySelectorAll('#smaLevelsRows [data-select-level]').forEach(box=>{box.checked=selectedLevelIds.has(box.dataset.selectLevel);box.disabled=selectedAllLevels;});
+  }
+  async function applyBulkUpdate() {
+    const difficulty=$("smaBulkDifficulty").value, type=$("smaBulkMission").value;
+    const count=selectedAllLevels?cachedLevels.length:selectedLevelIds.size;
+    if(!count){setStatus("Tick levels or choose Change All first.",true);return;}
+    if(difficulty==="keep" && type==="keep"){setStatus("Select difficulty and/or mission type to update.",true);return;}
+    if(!window.confirm(`Update ${count} level(s)?\nDifficulty: ${difficulty}\nMission: ${type}\n\nExisting progress, coins and level numbers will not be changed.`))return;
+    const body={scope:selectedAllLevels?"all":"selected"};
+    if(!selectedAllLevels)body.ids=[...selectedLevelIds];
+    if(difficulty!=="keep")body.difficulty=difficulty;
+    if(type!=="keep")body.type=type;
+    const button=$("smaApplyBulk");button.disabled=true;button.textContent="Updating…";
+    try {
+      const result=await api("/api/admin/levels/bulk-update",{method:"POST",body});
+      selectedLevelIds.clear();selectedAllLevels=false;
+      $("smaChangeAll").checked=false;$("smaBulkDifficulty").value="keep";$("smaBulkMission").value="keep";
+      await loadLevels();
+      if(typeof window.sugarRushRefreshLevels==="function")await window.sugarRushRefreshLevels();
+      setStatus(`Updated ${Number(result.updatedCount)||0} levels successfully. Existing player progress preserved.`);
+    }catch(error){setStatus(error.message,true)}
+    finally{button.disabled=false;button.textContent="💾 Apply Bulk Update";}
   }
   function populateCloneSources() {
     const select = $("smaCloneSource");
@@ -493,7 +632,8 @@ The source level will stay unchanged.`);
     const body = {
       name: $("smaLevelName").value.trim(), season: $("smaLevelSeason").value.trim(), type: $("smaLevelType").value,
       targetScore: Number($("smaTargetScore").value), moves: Number($("smaMoves").value),
-      timeLimit: Number($("smaTimeLimit").value), jellyGoal: Number($("smaJellyGoal").value)
+      timeLimit: Number($("smaTimeLimit").value), jellyGoal: Number($("smaJellyGoal").value),
+      difficulty: $("smaLevelDifficulty").value
     };
     try {
       if (id) {
@@ -511,6 +651,10 @@ The source level will stay unchanged.`);
     } catch (error) { setStatus(error.message, true); }
   }
   async function handleLevelAction(event) {
+    const selection = event.target.closest("[data-select-level]");
+    if (selection) {selectedAllLevels=false;$("smaChangeAll").checked=false;
+      if(selection.checked)selectedLevelIds.add(selection.dataset.selectLevel);else selectedLevelIds.delete(selection.dataset.selectLevel);
+      renderLevelSelection();return;}
     const edit = event.target.closest("[data-edit-level]");
     const clone = event.target.closest("[data-clone-level]");
     const remove = event.target.closest("[data-delete-level]");

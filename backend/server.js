@@ -7,6 +7,7 @@ import pg from "pg";
 import firebaseAdmin from "firebase-admin";
 import { randomUUID, randomBytes } from "node:crypto";
 import { parseAdminUids } from "./admin-auth.js";
+import { ipForStorage, playerIpMetadata, revealedPlayerIp } from "./ip-privacy.js";
 import { FREE_WINDOW_MS, FREE_CLAIM_LIMIT, FREE_REWARD, DAILY_REWARDS, EVENT_REWARD, freeWindow, utcDate, dayBefore, weekendWindow, dailyStreakNext } from "./reward-policy.js";
 
 const { Pool } = pg;
@@ -20,7 +21,7 @@ const PORT = Number(runtimeConfig.PORT || 3000);
 // Accept plain UID, comma/newline-separated values, and a JSON string array.
 // Do not accept email addresses, names or client-side claims as admin proof.
 const ADMIN_UIDS = parseAdminUids(runtimeConfig.ADMIN_UIDS);
-const RELEASE_VERSION = "cloud-rewards-v7";
+const RELEASE_VERSION = "cloud-rewards-v7-admin-mobile-bulk-v10";
 const allowedOrigins = String(runtimeConfig.FRONTEND_ORIGINS || "https://sarfocraft.github.io,http://localhost:5500,http://127.0.0.1:5500")
   .split(",").map(x => x.trim()).filter(Boolean);
 
@@ -237,7 +238,8 @@ async function ensurePlayer(req) {
   const displayName = String(decoded.name || (decoded.email ? decoded.email.split("@")[0] : "Guest Player")).slice(0, 20) || "Guest Player";
   const email = decoded.email || null;
   const photoUrl = decoded.picture || null;
-  const ip = clientIp(req);
+  // Administrators never have their IP written to player tracking.
+  const ip = ipForStorage(decoded.uid, clientIp(req), ADMIN_UIDS);
   const result = await pool.query(
     `INSERT INTO players (uid, player_id, email, display_name, photo_url, referral_code, last_seen, last_ip)
      VALUES ($1,$2,$3,$4,$5,$6,NOW(),$7)
@@ -293,7 +295,8 @@ async function getLevels(activeOnly = true) {
       moves: Number(row.moves) || 24,
       timeLimit: Number(row.time_limit) || 0,
       jellyGoal: Number(row.jelly_goal) || 0,
-      difficulty: difficultyForLevel(number),
+      difficulty: row.difficulty_override || difficultyForLevel(number),
+      difficultyOverride: row.difficulty_override || null,
       active: Boolean(row.active),
       createdAt: row.created_at
     };
@@ -423,6 +426,7 @@ async function ensureSchema() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+    ALTER TABLE game_levels ADD COLUMN IF NOT EXISTS difficulty_override TEXT CHECK (difficulty_override IN ('Easy','Medium','Hard','Expert','Master'));
     CREATE INDEX IF NOT EXISTS game_levels_active_position_idx ON game_levels(active, position);
     CREATE TABLE IF NOT EXISTS coin_orders (
       id TEXT PRIMARY KEY,
@@ -444,6 +448,7 @@ async function ensureSchema() {
       reviewed_at TIMESTAMPTZ,
       reviewed_by TEXT
     );
+    ALTER TABLE coin_orders ADD COLUMN IF NOT EXISTS admin_archived_at TIMESTAMPTZ;
     CREATE INDEX IF NOT EXISTS coin_orders_status_created_idx ON coin_orders(status, created_at DESC);
     CREATE TABLE IF NOT EXISTS referrals (
       id UUID PRIMARY KEY,
@@ -663,17 +668,17 @@ app.patch("/api/player/profile", wrap(async (req, res) => {
 }));
 app.post("/api/player/session/start", wrap(async (req, res) => {
   await accrueSession(req.user.uid, true);
-  await pool.query("UPDATE players SET session_started_at = NOW(), last_heartbeat_at = NOW(), last_seen = NOW(), last_ip = $2 WHERE uid = $1", [req.user.uid, clientIp(req)]);
+  await pool.query("UPDATE players SET session_started_at = NOW(), last_heartbeat_at = NOW(), last_seen = NOW(), last_ip = $2 WHERE uid = $1", [req.user.uid, ipForStorage(req.user.uid, clientIp(req), ADMIN_UIDS)]);
   res.json({ ok: true });
 }));
 app.post("/api/player/session/heartbeat", wrap(async (req, res) => {
   await accrueSession(req.user.uid, false);
-  await pool.query("UPDATE players SET last_ip = $2 WHERE uid = $1", [req.user.uid, clientIp(req)]);
+  await pool.query("UPDATE players SET last_ip = $2 WHERE uid = $1", [req.user.uid, ipForStorage(req.user.uid, clientIp(req), ADMIN_UIDS)]);
   res.json({ ok: true });
 }));
 app.post("/api/player/session/end", wrap(async (req, res) => {
   await accrueSession(req.user.uid, true);
-  await pool.query("UPDATE players SET last_ip = $2 WHERE uid = $1", [req.user.uid, clientIp(req)]);
+  await pool.query("UPDATE players SET last_ip = $2 WHERE uid = $1", [req.user.uid, ipForStorage(req.user.uid, clientIp(req), ADMIN_UIDS)]);
   res.json({ ok: true });
 }));
 app.post("/api/player/start-level", wrap(async (req, res) => {
@@ -823,8 +828,13 @@ app.get("/api/coin-orders/mine", wrap(async (req, res) => {
 }));
 
 app.get("/api/admin/coin-orders", requireAdmin, wrap(async (_req, res) => {
-  const result = await pool.query("SELECT * FROM coin_orders ORDER BY CASE status WHEN 'pending' THEN 0 ELSE 1 END, created_at DESC LIMIT 250");
+  const result = await pool.query("SELECT * FROM coin_orders WHERE admin_archived_at IS NULL ORDER BY CASE status WHEN 'pending' THEN 0 ELSE 1 END, created_at DESC LIMIT 250");
   res.json({ orders: result.rows.map(orderShape) });
+}));
+// Clear only approved payments from the ADMIN queue; retain records and coins for audit and user history.
+app.post("/api/admin/coin-orders/archive-approved", requireAdmin, wrap(async (_req,res) => {
+  const result=await pool.query("UPDATE coin_orders SET admin_archived_at=NOW() WHERE status='approved' AND admin_archived_at IS NULL RETURNING id");
+  res.json({ok:true,archivedCount:result.rowCount});
 }));
 app.post("/api/admin/coin-orders/:id/:action", requireAdmin, wrap(async (req, res) => {
   const action = req.params.action;
@@ -937,16 +947,33 @@ app.get("/api/admin/players", requireAdmin, wrap(async (req, res) => {
   const q = String(req.query.q || "").trim().slice(0, 100);
   const pattern = `%${q}%`;
   const result = await pool.query(
-    `SELECT uid, player_id, email, display_name, country_code, referral_code, referral_count, banned, ban_reason, created_at, last_seen, last_ip, total_play_seconds, current_level, max_unlocked
-     FROM players WHERE ($1 = '' OR display_name ILIKE $2 OR COALESCE(email,'') ILIKE $2 OR player_id::text ILIKE $2 OR COALESCE(last_ip,'') ILIKE $2)
-     ORDER BY last_seen DESC NULLS LAST LIMIT 250`, [q, pattern]
+    `SELECT uid, player_id, email, display_name, country_code, referral_code, referral_count, banned, ban_reason, created_at, last_seen, last_ip, total_play_seconds, current_level, max_unlocked, completed_levels, level_stars, best_score
+     FROM players WHERE ($1 = '' OR display_name ILIKE $2 OR COALESCE(email,'') ILIKE $2 OR player_id::text ILIKE $2
+       OR (uid <> ALL($3::text[]) AND COALESCE(last_ip,'') ILIKE $2))
+     ORDER BY last_seen DESC NULLS LAST LIMIT 250`, [q, pattern, [...ADMIN_UIDS]]
   );
-  res.json({ players: result.rows.map(row => ({
+  const totalLevels = await levelCount();
+  res.set("Cache-Control", "private, no-store").json({ totalLevels, players: result.rows.map(row => ({
     uid: row.uid, playerId: row.player_id, email: row.email || "", displayName: row.display_name, countryCode: row.country_code,
     referralCode: row.referral_code, referralCount: Number(row.referral_count) || 0, banned: Boolean(row.banned), banReason: row.ban_reason || "",
-    createdAt: row.created_at, lastSeen: row.last_seen, lastIp: row.last_ip || "", totalPlaySeconds: Number(row.total_play_seconds) || 0,
-    currentLevel: Number(row.current_level) || 1, maxUnlocked: Number(row.max_unlocked) || 1
+    createdAt: row.created_at, lastSeen: row.last_seen,
+    // No IP string goes out in the bulk player list: reveal is opt-in per player.
+    ...playerIpMetadata(row, ADMIN_UIDS),
+    totalPlaySeconds: Number(row.total_play_seconds) || 0,
+    currentLevel: Number(row.current_level) || 1, maxUnlocked: Number(row.max_unlocked) || 1,
+    accountType: row.email ? "Registered" : "Anonymous account",
+    completedCount: Object.values(asJsonObject(row.completed_levels)).filter(Boolean).length,
+    bestScore: Number(row.best_score)||0,
+    totalStars: Object.values(asJsonObject(row.level_stars)).reduce((sum,n)=>sum+(Number(n)||0),0),
+    progressPercent: totalLevels ? Math.min(100,Math.round(Object.values(asJsonObject(row.completed_levels)).filter(Boolean).length/totalLevels*100)) : 0
   })) });
+}));
+// Reveal a single regular player's IP only after an authenticated admin clicks the eye button.
+// Never return an administrator IP, including an older IP still stored in the database.
+app.get("/api/admin/players/:uid/ip", requireAdmin, wrap(async (req, res) => {
+  const result = await pool.query("SELECT uid, last_ip FROM players WHERE uid = $1", [req.params.uid]);
+  if (!result.rows.length) return res.status(404).json({ error: "Player not found." });
+  res.set("Cache-Control", "private, no-store").json(revealedPlayerIp(result.rows[0], ADMIN_UIDS));
 }));
 app.post("/api/admin/players/:uid/ban", requireAdmin, wrap(async (req, res) => {
   if (req.params.uid === req.user.uid || ADMIN_UIDS.has(req.params.uid)) return res.status(400).json({ error: "You cannot ban an administrator account." });
@@ -995,6 +1022,15 @@ app.post("/api/admin/referrals/:id/:action", requireAdmin, wrap(async (req, res)
   res.json({ referral, rewardCoins: action === "approve" ? 3000 : 0 });
 }));
 
+// Admin-editable difficulty overrides preserve the original automatic bands by default.
+const DIFFICULTY_OVERRIDES = new Set(["Easy","Medium","Hard","Expert","Master"]);
+function readDifficultyOverride(body, fallback = null) {
+  if (!Object.prototype.hasOwnProperty.call(body, "difficulty")) return fallback;
+  const value = body.difficulty;
+  if (value === null || value === "auto") return null;
+  if (!DIFFICULTY_OVERRIDES.has(value)) throw Object.assign(new Error("Invalid difficulty. Use auto, Easy, Medium, Hard, Expert or Master."), {status:400});
+  return value;
+}
 app.get("/api/admin/levels", requireAdmin, wrap(async (_req, res) => res.json({ levels: await getLevels(true) })));
 app.post("/api/admin/levels", requireAdmin, wrap(async (req, res) => {
   const client = await pool.connect();
@@ -1007,12 +1043,15 @@ app.post("/api/admin/levels", requireAdmin, wrap(async (req, res) => {
     let item;
     try { item = normalizeLevelInput(req.body || {}, defaults); }
     catch (error) { await client.query("ROLLBACK"); return res.status(400).json({ error: error.message }); }
+    let difficultyOverride;
+    try { difficultyOverride = readDifficultyOverride(req.body || {}); }
+    catch (error) { await client.query("ROLLBACK"); return res.status(400).json({error:error.message}); }
     const positionResult = await client.query("SELECT COALESCE(MAX(position),0)::int + 1 AS position FROM game_levels WHERE active = TRUE");
     const position = Number(positionResult.rows[0].position) || currentCount + 1;
     const result = await client.query(
-      `INSERT INTO game_levels (id,position,name,season,type,target_score,moves,time_limit,jelly_goal)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-      [randomUUID(), position, item.name, item.season || seasonForLevel(position), item.type, item.targetScore, item.moves, item.timeLimit, item.jellyGoal]
+      `INSERT INTO game_levels (id,position,name,season,type,target_score,moves,time_limit,jelly_goal,difficulty_override)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+      [randomUUID(), position, item.name, item.season || seasonForLevel(position), item.type, item.targetScore, item.moves, item.timeLimit, item.jellyGoal, difficultyOverride]
     );
     await client.query("COMMIT");
     res.status(201).json({ level: result.rows[0] });
@@ -1026,12 +1065,61 @@ app.put("/api/admin/levels/:id", requireAdmin, wrap(async (req, res) => {
   if (!found.rows.length) return res.status(404).json({ error: "Active level not found." });
   let item;
   try { item = normalizeLevelInput(req.body || {}, found.rows[0]); } catch (error) { return res.status(400).json({ error: error.message }); }
+  let difficultyOverride;
+  try { difficultyOverride = readDifficultyOverride(req.body || {}, found.rows[0].difficulty_override || null); }
+  catch (error) { return res.status(400).json({error:error.message}); }
   await pool.query(
-    `UPDATE game_levels SET name=$2,season=$3,type=$4,target_score=$5,moves=$6,time_limit=$7,jelly_goal=$8,updated_at=NOW() WHERE id=$1`,
-    [req.params.id,item.name,item.season,item.type,item.targetScore,item.moves,item.timeLimit,item.jellyGoal]
+    `UPDATE game_levels SET name=$2,season=$3,type=$4,target_score=$5,moves=$6,time_limit=$7,jelly_goal=$8,difficulty_override=$9,updated_at=NOW() WHERE id=$1`,
+    [req.params.id,item.name,item.season,item.type,item.targetScore,item.moves,item.timeLimit,item.jellyGoal,difficultyOverride]
   );
   res.json({ levels: await getLevels(true) });
 }));
+// Update selected (or all) active levels atomically. Never renumber or delete player progress.
+app.post("/api/admin/levels/bulk-update", requireAdmin, wrap(async (req, res) => {
+  const body = req.body && typeof req.body === "object" ? req.body : {};
+  const all = body.scope === "all";
+  const ids = Array.isArray(body.ids) ? [...new Set(body.ids)] : [];
+  const idRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  if (!all && (!ids.length || ids.length > 2000 || !ids.every(id => typeof id === "string" && idRe.test(id)))) {
+    return res.status(400).json({error:"Select between 1 and 2000 valid level IDs, or choose Change All."});
+  }
+  if (all && ids.length) return res.status(400).json({error:"Choose either selected levels or all levels."});
+  const hasType = Object.prototype.hasOwnProperty.call(body,"type");
+  const hasDifficulty = Object.prototype.hasOwnProperty.call(body,"difficulty");
+  if (!hasType && !hasDifficulty) return res.status(400).json({error:"Choose mission type and/or difficulty to update."});
+  const type = hasType ? body.type : null;
+  if (hasType && !["score","timed","jelly"].includes(type)) return res.status(400).json({error:"Invalid mission type."});
+  let difficulty = null;
+  try { if (hasDifficulty) difficulty = readDifficultyOverride(body); }
+  catch (error) { return res.status(400).json({error:error.message}); }
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const countResult = await client.query(
+      `SELECT COUNT(*)::int AS count FROM game_levels WHERE active=TRUE AND ($1::boolean OR id=ANY($2::uuid[]))`,
+      [all,ids]
+    );
+    const count = Number(countResult.rows[0]?.count)||0;
+    if (!count) { await client.query("ROLLBACK"); return res.status(404).json({error:"No active levels found for this selection."}); }
+    if (!all && count > 2000) { await client.query("ROLLBACK"); return res.status(400).json({error:"Maximum 2000 selected levels per bulk update. Use Change All for the full catalog."}); }
+    // When changing missions, give timed/jelly levels valid defaults where absent.
+    // Difficulty update only does not touch mission parameters.
+    const result = await client.query(`
+      UPDATE game_levels SET
+        type = CASE WHEN $3::boolean THEN $4::text ELSE type END,
+        time_limit = CASE WHEN $3::boolean THEN CASE WHEN $4='timed' THEN GREATEST(10,CASE WHEN time_limit>=10 THEN time_limit ELSE 60 END) ELSE 0 END ELSE time_limit END,
+        jelly_goal = CASE WHEN $3::boolean THEN CASE WHEN $4='jelly' THEN GREATEST(1,CASE WHEN jelly_goal>=1 THEN jelly_goal ELSE 14 END) ELSE 0 END ELSE jelly_goal END,
+        difficulty_override = CASE WHEN $5::boolean THEN $6::text ELSE difficulty_override END,
+        updated_at=NOW()
+      WHERE active=TRUE AND ($1::boolean OR id=ANY($2::uuid[])) RETURNING id`,
+      [all,ids,hasType,type,hasDifficulty,difficulty]
+    );
+    await client.query("COMMIT");
+    res.json({ok:true,updatedCount:result.rowCount,scope:all?"all":"selected"});
+  } catch(error) { try {await client.query("ROLLBACK");}catch(_){} throw error; }
+  finally { client.release(); }
+}));
+
 app.post("/api/admin/levels/:id/clone", requireAdmin, wrap(async (req, res) => {
   const client = await pool.connect();
   try {
@@ -1043,9 +1131,9 @@ app.post("/api/admin/levels/:id/clone", requireAdmin, wrap(async (req, res) => {
     const posResult = await client.query("SELECT COALESCE(MAX(position),0)::int + 1 AS position FROM game_levels WHERE active = TRUE");
     const position = Number(posResult.rows[0].position) || 1;
     const result = await client.query(
-      `INSERT INTO game_levels (id,position,name,season,type,target_score,moves,time_limit,jelly_goal)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-      [randomUUID(),position,`${source.name} (Copy)`.slice(0,60),source.season||seasonForLevel(position),source.type,source.target_score,source.moves,source.time_limit,source.jelly_goal]
+      `INSERT INTO game_levels (id,position,name,season,type,target_score,moves,time_limit,jelly_goal,difficulty_override)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+      [randomUUID(),position,`${source.name} (Copy)`.slice(0,60),source.season||seasonForLevel(position),source.type,source.target_score,source.moves,source.time_limit,source.jelly_goal,source.difficulty_override]
     );
     await client.query("COMMIT");
     res.status(201).json({ level: result.rows[0] });
@@ -1130,6 +1218,10 @@ app.use((error, _req, res, _next) => {
 });
 
 await ensureSchema();
+// Remove historical IPs for currently configured admins. Existing player records stay intact.
+if (ADMIN_UIDS.size) {
+  await pool.query("UPDATE players SET last_ip = NULL WHERE uid = ANY($1::text[])", [[...ADMIN_UIDS]]);
+}
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Sugar Rush Adventure API listening on port ${PORT}`);
   console.log(`Admin authorization ${RELEASE_VERSION}: ${ADMIN_UIDS.size} configured UID(s), without exposing identities.`);
