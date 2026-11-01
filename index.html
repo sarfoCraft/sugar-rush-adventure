@@ -555,6 +555,19 @@ button.green{background:linear-gradient(135deg,#22c98c,#0b9b6c);box-shadow:0 4px
   background:linear-gradient(120deg,#e3f9ff55,#d7f4ff33 48%,#b9e7ff22),url("assets/candy-forest-background.svg") center 58%/cover no-repeat!important;
 }
 
+.bonus-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.bonus-tile{background:#fff7fd;border:1px solid #efdaf3;border-radius:16px;padding:15px;display:flex;flex-direction:column;gap:9px;min-width:0}
+.bonus-tile h3{margin:0}.bonus-tile p{margin:0;line-height:1.45}.bonus-tile strong{color:#6e2d94}
+.bonus-tile button{margin-top:auto}
+@media(max-width:700px){.bonus-grid{grid-template-columns:1fr}}
+/* Keep the playable board centered, and avoid page movement on touch. */
+#view-play .board-wrap{margin-inline:auto;max-width:min(100%,650px)}
+#view-play canvas{display:block;max-width:100%;height:auto;margin-inline:auto;touch-action:none}
+html{overflow-x:hidden}body{overflow-x:hidden}
+body:has(#appShell.game-focus:not([hidden])){height:100dvh;overflow-y:hidden}
+body:has(#appShell.game-focus:not([hidden])) #appShell{height:100dvh;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+#appShell.game-focus #view-play{justify-content:center}
+@media(max-height:700px){#appShell.game-focus #view-play{justify-content:flex-start}}
 </style>
 </head>
 <body>
@@ -708,7 +721,20 @@ button.green{background:linear-gradient(135deg,#22c98c,#0b9b6c);box-shadow:0 4px
         </div>
       </section>
 
-      <section class="page-view" id="view-rewards">
+      <section class="page-view" id="view-rewards"><section class="content-card" id="bonusHub" style="margin-bottom:14px">
+<h3>🎁 Free Coins · Daily Bonus · Special Events</h3>
+<p class="tiny-note">Free rewards need no ads. This browser preview saves claims locally; production rewards require server validation.</p>
+<div class="bonus-grid">
+<article class="bonus-tile"><h3>🪙 Free Coins</h3><p>2,500 coins per claim · 5 claims per 3-hour cycle</p><strong id="freeCoinStatus">Loading…</strong><button id="freeCoinClaim" type="button">Claim 2,500</button></article>
+<article class="bonus-tile"><h3>📅 Daily Login Bonus</h3><p id="dailyBonusStreak">7-day streak rewards</p><strong id="dailyBonusAmount">Loading…</strong><button id="dailyBonusClaim" type="button">Claim daily bonus</button></article>
+<article class="bonus-tile"><h3>🍭 Weekend Candy Rush</h3><p>Complete 3 levels during the weekend to earn 5,000 coins.</p><strong id="eventStatus">Loading…</strong><button id="eventClaim" type="button">Claim event prize</button></article>
+</div></section>
+<section class="content-card" id="myProgressHub" style="margin-bottom:14px"><h3>🏆 My Progress</h3><div class="bonus-grid">
+<div class="bonus-tile">🎮 <strong id="progressLevels">0</strong><p>Levels completed</p></div>
+<div class="bonus-tile">⭐ <strong id="progressStars">0</strong><p>Stars collected</p></div>
+<div class="bonus-tile">🏅 <strong id="progressBest">0</strong><p>Best score</p></div>
+</div></section>
+
         <div class="page-heading"><div><h2>🎁 Rewards Centre</h2><p>Check your daily progress and available test rewards.</p></div><span class="demo-badge">DEMO ONLY</span></div>
         <section class="content-card"><div class="reward-hero"><div><h3>Daily rewarded ads</h3><p>Complete up to 30 simulated ad sessions per UTC day. Each test completion adds 500 demo coins.</p></div><div class="reward-big">🎬</div></div><div class="daily-count" style="margin-top:18px"><span>Today's completed test ads</span><strong id="dailyCount">0 / 30</strong></div><div class="reward-progress"><span id="dailyProgress"></span></div><button class="green reward-button" id="watchAdBtn" type="button">▶ Test rewarded ad · +500 coins</button><div class="notice" style="margin-top:14px"><strong>Important:</strong> This button simulates a test reward only. It does not load a real ad. Production rewards must be triggered by the ad provider's verified completion event and the daily limit must be enforced by a server.</div></section>
         <section class="content-card"><div class="reward-hero"><div><h3>✨ AI Auto-Play</h3><p>AI visibly plays the board by swapping gems and making matches until the current level objective is complete. It then opens and plays the next level automatically. Each level costs 5,000 coins. Use AI as often as your wallet allows; only AI reward ads are limited to 3 per day, and each test ad adds 500 coins.</p></div><div class="reward-big">🤖</div></div><div class="ai-usage"><span>AI levels played today</span><strong id="aiUsageCount">0</strong></div><div class="ai-usage"><span>AI reward ads used today</span><strong id="aiAdsCount">0 / 3</strong></div><button class="ai-clear-button reward-button" type="button" data-go="play">Open game to use AI Auto-Play</button><p class="tiny-note">Both counters are local demo controls unless the backend and real rewarded-ad verification are configured.</p></section>
@@ -2626,11 +2652,26 @@ window.SugarRush = Object.assign(window.SugarRush || {}, {
   startLevel: level => startLevel(Math.max(1, Math.floor(Number(level) || 1))),
   refreshLevels: () => loadRemoteLevels(),
   showMessage: message => setStatus(String(message || "")),
-  getState: () => ({ coins: Number(save.coins) || 0, currentLevel: Number(save.currentLevel) || 1, maxUnlocked: Number(save.maxUnlocked) || 1, bestScore: Number(save.bestScore) || 0 })
+  getState: () => ({ coins: Number(save.coins) || 0, currentLevel: Number(save.currentLevel) || 1, maxUnlocked: Number(save.maxUnlocked) || 1, bestScore: Number(save.bestScore) || 0 }),
+  // Browser-local demonstration bridge. Reject local rewards when cloud backend is enabled.
+  getBonusSnapshot: () => ({
+    cloudMode: backendConfigured(),
+    coins: Number(save.coins) || 0,
+    completedLevels: Object.keys(save.completedLevels || {}).filter(key => !!save.completedLevels[key]).sort(),
+    stars: Object.values(save.levelStars || {}).reduce((sum, value) => sum + (Number(value) || 0), 0),
+    bestScore: Number(save.bestScore) || 0
+  }),
+  grantDemoBonus: amount => {
+    const coins = Number(amount);
+    if (backendConfigured() || !Number.isSafeInteger(coins) || coins <= 0 || coins > 10000) return false;
+    setCoins((Number(save.coins) || 0) + coins);
+    return true;
+  }
 });
 requestAnimationFrame(draw);
 })();
 </script>
+<script src="bonus-features.js?v=2"></script>
 <script src="site-customizer.js?v=1"></script>
 <script src="admin-tools.js"></script>
 <!-- Single audio controller: starts after the first user interaction (browser autoplay policy). -->
