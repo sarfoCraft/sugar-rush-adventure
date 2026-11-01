@@ -9,21 +9,26 @@ import { randomUUID, randomBytes } from "node:crypto";
 
 const { Pool } = pg;
 const app = express();
-const PORT = Number(process.env.PORT || 3000);
-const ADMIN_UIDS = new Set(String(process.env.ADMIN_UIDS || "").split(",").map(x => x.trim()).filter(Boolean));
-const allowedOrigins = String(process.env.FRONTEND_ORIGINS || "http://localhost:5500,http://127.0.0.1:5500")
+
+// Prisma Composer injects its typed runtime configuration before this module loads.
+// The process.env fallback preserves compatibility with ordinary Node.js hosts.
+const runtimeConfig = globalThis.__SUGAR_RUSH_RUNTIME_CONFIG__ || process.env;
+const PORT = Number(runtimeConfig.PORT || 3000);
+const ADMIN_UIDS = new Set(String(runtimeConfig.ADMIN_UIDS || "").split(",").map(x => x.trim()).filter(Boolean));
+const allowedOrigins = String(runtimeConfig.FRONTEND_ORIGINS || "https://sarfocraft.github.io,http://localhost:5500,http://127.0.0.1:5500")
   .split(",").map(x => x.trim()).filter(Boolean);
 
-if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required.");
-if (!process.env.FIREBASE_SERVICE_ACCOUNT_JSON) throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is required. Do not deploy without Firebase token verification.");
+if (!runtimeConfig.DATABASE_URL) throw new Error("DATABASE_URL is required.");
+if (!runtimeConfig.FIREBASE_SERVICE_ACCOUNT_JSON) throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is required. Do not deploy without Firebase token verification.");
 
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+const serviceAccount = JSON.parse(runtimeConfig.FIREBASE_SERVICE_ACCOUNT_JSON);
 firebaseAdmin.initializeApp({ credential: firebaseAdmin.credential.cert(serviceAccount) });
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_SSL === "false" ? false : { rejectUnauthorized: false },
-  max: 10,
-  idleTimeoutMillis: 30000,
+  connectionString: runtimeConfig.DATABASE_URL,
+  ssl: runtimeConfig.DATABASE_SSL === "false" ? false : { rejectUnauthorized: false },
+  // Keep the pool small because Prisma Compute can scale service instances to zero.
+  max: 2,
+  idleTimeoutMillis: 10000,
   connectionTimeoutMillis: 10000
 });
 
@@ -32,7 +37,7 @@ app.disable("x-powered-by");
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin) || (process.env.NODE_ENV !== "production" && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin))) return callback(null, true);
+    if (!origin || allowedOrigins.includes(origin) || (runtimeConfig.NODE_ENV !== "production" && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin))) return callback(null, true);
     return callback(new Error("This website origin is not allowed by the API CORS policy."));
   },
   methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
@@ -449,7 +454,7 @@ app.get("/health", (_req, res) => res.json({ ok: true, service: "sugar-rush-adve
 app.get("/api/levels", wrap(async (_req, res) => res.json({ levels: await getLevels(true) })));
 app.get("/api/payment-instructions", (_req, res) => {
   let instructions = {};
-  try { instructions = JSON.parse(process.env.PAYMENT_INSTRUCTIONS_JSON || "{}"); } catch { instructions = {}; }
+  try { instructions = JSON.parse(runtimeConfig.PAYMENT_INSTRUCTIONS_JSON || "{}"); } catch { instructions = {}; }
   res.json({ instructions });
 });
 
@@ -976,7 +981,7 @@ app.use((error, _req, res, _next) => {
 });
 
 await ensureSchema();
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Sugar Rush Adventure API listening on port ${PORT}`);
   if (!ADMIN_UIDS.size) console.warn("ADMIN_UIDS is empty. No account will have administrator access until you configure it.");
 });

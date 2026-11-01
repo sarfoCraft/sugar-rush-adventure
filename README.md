@@ -33,3 +33,10 @@ Play the game directly in your browser:
 The game now includes a one-time connection wizard at **Profile → Admin login / connection setup**. It stores the public Firebase Web App configuration and deployed HTTPS API URL in the current browser, so these values do not need to be pasted into `index.html`.
 
 For the secure admin dashboard to work, the backend still needs PostgreSQL, `FIREBASE_SERVICE_ACCOUNT_JSON`, and your Firebase account UID in `ADMIN_UIDS`. See `ADMIN-DEPLOYMENT-GUIDE.md`. Never paste service-account credentials into the browser.
+
+
+## Prisma Compute deployment
+
+This repository includes a Prisma Composer module and GitHub Actions workflow for deploying the secure API backend and a Prisma Postgres database. The public game frontend remains on GitHub Pages.
+
+See [`PRISMA-DEPLOYMENT-GUIDE.md`](PRISMA-DEPLOYMENT-GUIDE.md) for the required Firebase secret, deployment steps, and how to connect the deployed API URL to the game.
