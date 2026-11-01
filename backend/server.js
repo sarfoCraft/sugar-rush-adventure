@@ -19,7 +19,7 @@ const PORT = Number(runtimeConfig.PORT || 3000);
 // Accept plain UID, comma/newline-separated values, and a JSON string array.
 // Do not accept email addresses, names or client-side claims as admin proof.
 const ADMIN_UIDS = parseAdminUids(runtimeConfig.ADMIN_UIDS);
-const RELEASE_VERSION = "admin-access-fix-v5";
+const RELEASE_VERSION = "admin-access-fix-v6";
 const allowedOrigins = String(runtimeConfig.FRONTEND_ORIGINS || "https://sarfocraft.github.io,http://localhost:5500,http://127.0.0.1:5500")
   .split(",").map(x => x.trim()).filter(Boolean);
 

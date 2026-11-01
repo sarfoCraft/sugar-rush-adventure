@@ -18,7 +18,9 @@ Object.assign(globalThis, {
     PORT: String(service.port()),
     DATABASE_URL: db.url,
     FIREBASE_SERVICE_ACCOUNT_JSON: firebaseServiceAccountJson,
-    ADMIN_UIDS: input.adminUids ?? "",
+    // Fetch the required admin allowlist as a runtime secret rather than
+    // silently accepting an absent optional deployment snapshot.
+    ADMIN_UIDS: input.adminUids.expose(),
     FRONTEND_ORIGINS:
       input.frontendOrigins ??
       "https://sarfocraft.github.io,http://localhost:5500,http://127.0.0.1:5500",

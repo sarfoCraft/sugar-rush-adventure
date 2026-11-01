@@ -1400,7 +1400,7 @@ async function openAdminAccess() {
     // Check exactly what the deployed API knows before opening a protected page.
     // This also detects when Prisma is still serving an older build.
     const status = await backendRequest("/api/auth/status");
-    if (!status || status.version !== "admin-access-fix-v5") {
+    if (!status || status.version !== "admin-access-fix-v6") {
       const detail = "Old API version detected. Upload this corrected ZIP to GitHub and wait for a fresh Prisma deployment, then reload the game.";
       showAdminDiagnostic(detail);
       setStatus(detail);

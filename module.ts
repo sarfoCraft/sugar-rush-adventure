@@ -15,7 +15,7 @@ export default module("sugar-rush-adventure", ({ provision }) => {
     deps: { db },
     input: {
       firebaseServiceAccountJson: envSecret("FIREBASE_SERVICE_ACCOUNT_JSON"),
-      adminUids: envParam("ADMIN_UIDS"),
+      adminUids: envSecret("ADMIN_UIDS"),
       frontendOrigins: envParam("FRONTEND_ORIGINS"),
       paymentInstructionsJson: envParam("PAYMENT_INSTRUCTIONS_JSON"),
     },

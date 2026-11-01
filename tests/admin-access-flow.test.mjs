@@ -35,7 +35,7 @@ async function check(statusResponse, adminOrders = { orders: [] }) {
 }
 
 test('admin with verified server permission sees dashboard', async () => {
-  const out = await check({ version:'admin-access-fix-v5', isAdmin:true, configuredAdminCount:1 });
+  const out = await check({ version:'admin-access-fix-v6', isAdmin:true, configuredAdminCount:1 });
   assert.equal(out.view,'admin');
   assert.equal(out.isAdminMode,true);
   assert.equal(out.payments,1);
@@ -43,7 +43,7 @@ test('admin with verified server permission sees dashboard', async () => {
 });
 
 test('admin list empty gives useful persistent message and never calls protected route', async () => {
-  const out = await check({ version:'admin-access-fix-v5', isAdmin:false, configuredAdminCount:0 });
+  const out = await check({ version:'admin-access-fix-v6', isAdmin:false, configuredAdminCount:0 });
   assert.match(out.statusEl.textContent,/ZERO admin UIDs/);
   assert.equal(out.statusEl.hidden,false);
   assert.equal(out.isAdminMode,false);
@@ -51,7 +51,7 @@ test('admin list empty gives useful persistent message and never calls protected
 });
 
 test('UID mismatch reports live allowlist count without exposing other UIDs', async () => {
-  const out = await check({ version:'admin-access-fix-v5', isAdmin:false, configuredAdminCount:2, uidSuffix:'ABCDEF' });
+  const out = await check({ version:'admin-access-fix-v6', isAdmin:false, configuredAdminCount:2, uidSuffix:'ABCDEF' });
   assert.match(out.message,/2 admin UID\(s\)/);
   assert.match(out.statusEl.textContent,/ABCDEF/);
   assert.equal(out.view,'');

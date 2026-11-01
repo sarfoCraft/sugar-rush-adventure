@@ -29,11 +29,11 @@ In Prisma Console, open the `sugar-rush-adventure` project, select its productio
 | Variable | Required? | Value |
 |---|---|---|
 | `FIREBASE_SERVICE_ACCOUNT_JSON` | Yes | The complete Firebase Admin service-account JSON, stored as a secret |
-| `ADMIN_UIDS` | Recommended | Your Firebase Authentication user UID. Use the UID, not the email address |
+| `ADMIN_UIDS` | **Required** | Your Firebase Authentication user UID. Use the UID, not the email address |
 | `FRONTEND_ORIGINS` | Optional | `https://sarfocraft.github.io` |
 | `PAYMENT_INSTRUCTIONS_JSON` | Optional | JSON containing the payment instructions shown by the Coin Shop |
 
-`ADMIN_UIDS` can contain multiple comma-separated Firebase UIDs. If it is empty, the API can start, but no account will receive administrator access.
+`ADMIN_UIDS` can contain multiple comma-separated Firebase UIDs. This project now requires it as a Prisma runtime secret; a missing value should fail deployment instead of silently disabling admin access.
 
 ### Where to get the Firebase service-account JSON
 

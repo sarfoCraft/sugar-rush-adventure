@@ -8,7 +8,7 @@ import {
 
 const backendInput = type({
   firebaseServiceAccountJson: secretString(),
-  "adminUids?": "string",
+  adminUids: secretString(),
   "frontendOrigins?": "string",
   "paymentInstructionsJson?": "string",
 });
